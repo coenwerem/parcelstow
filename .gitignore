@@ -1,0 +1,24 @@
+# Python
+**/__pycache__/
+**/*.pyc
+**/*.egg-info/
+**/.pytest_cache/
+.DS_Store
+
+# Simulator and run outputs, released artifacts arrive through
+# scripts/download_artifacts.py, see ARTIFACTS.md
+outputs/
+logs/
+wandb/
+
+# Omniverse
+**/*.dmp
+**/.thumbs
+_isaac_sim*
+
+# Editors
+.idea/
+.vscode/
+
+# Large local media renders, released media lives in media/ explicitly
+media/local/

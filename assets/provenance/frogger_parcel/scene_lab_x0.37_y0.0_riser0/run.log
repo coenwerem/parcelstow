@@ -1,0 +1,2 @@
+{"object": "parcel_80x55x40", "objective": "risk_aware", "n_grasps": 0, "note": "EMPTY: no seated, clip-free, force-closed grasp found", "native_extents_mm": [40.0, 55.0, 80.0], "scale_factor": 1.0, "scale_mode": "native", "scaled": false}
+exit 0

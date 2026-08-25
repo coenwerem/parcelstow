@@ -1,0 +1,321 @@
+{
+ "family": "C",
+ "rot_axis": "y",
+ "rot_deg": -90.0,
+ "start_yaw_deg": 45.0,
+ "shelf_height": 0.16,
+ "lift_dx": 0.0,
+ "lift_dz": 0.12,
+ "reorient_travel": 0.5,
+ "floor_top": 0.88,
+ "insert_axis": "+x",
+ "entrance": [
+  0.4914,
+  0.1414,
+  0.93
+ ],
+ "R_start": [
+  [
+   0.7071067811865476,
+   -0.7071067811865475,
+   0.0
+  ],
+  [
+   0.7071067811865475,
+   0.7071067811865476,
+   0.0
+  ],
+  [
+   0.0,
+   0.0,
+   1.0
+  ]
+ ],
+ "start_quat_wxyz": [
+  0.9238795325112867,
+  0.0,
+  0.0,
+  0.3826834323650897
+ ],
+ "R_stow": [
+  [
+   4.329780281177467e-17,
+   -0.7071067811865475,
+   -0.7071067811865476
+  ],
+  [
+   4.329780281177466e-17,
+   0.7071067811865476,
+   -0.7071067811865475
+  ],
+  [
+   1.0,
+   0.0,
+   6.123233995736766e-17
+  ]
+ ],
+ "d": [
+  0.7071067811865476,
+  0.7071067811865475,
+  0.0
+ ],
+ "i_d": 0,
+ "i_loose": 1,
+ "i_tight": 2,
+ "L_d": 0.039999999999999994,
+ "L_loose": 0.055,
+ "L_tight": 0.08,
+ "W_loose": 0.165,
+ "W_tight": 0.1,
+ "D_in": 0.11,
+ "z_insert": 0.93,
+ "p_start": [
+  0.35,
+  0.0,
+  0.721
+ ],
+ "p_lift": [
+  0.35,
+  0.0,
+  0.841
+ ],
+ "p_preinsert": [
+  0.45604466094067264,
+  0.10604466094067264,
+  0.93
+ ],
+ "p_insert": [
+  0.5338264068711929,
+  0.18382640687119284,
+  0.93
+ ],
+ "insert_depth_target": 0.06,
+ "inserted_min_depth": 0.039999999999999994,
+ "transport_distance": 0.3335645300782844,
+ "slabs": {
+  "back": {
+   "center": [
+    0.5762528137423858,
+    0.2262528137423858,
+    0.93
+   ],
+   "size": [
+    0.02,
+    0.20500000000000002,
+    0.14
+   ],
+   "quat_wxyz": [
+    0.9238795325112867,
+    0.0,
+    0.0,
+    0.3826834323650897
+   ]
+  },
+  "side_a": {
+   "center": [
+    0.5956982502250159,
+    0.1148834957055045,
+    0.93
+   ],
+   "size": [
+    0.11,
+    0.02,
+    0.14
+   ],
+   "quat_wxyz": [
+    0.9238795325112867,
+    0.0,
+    0.0,
+    0.3826834323650897
+   ]
+  },
+  "side_b": {
+   "center": [
+    0.4648834957055045,
+    0.2456982502250158,
+    0.93
+   ],
+   "size": [
+    0.11,
+    0.02,
+    0.14
+   ],
+   "quat_wxyz": [
+    0.9238795325112867,
+    0.0,
+    0.0,
+    0.3826834323650897
+   ]
+  },
+  "floor": {
+   "center": [
+    0.5302908729652602,
+    0.18029087296526017,
+    0.79
+   ],
+   "size": [
+    0.11,
+    0.165,
+    0.18000000000000005
+   ],
+   "quat_wxyz": [
+    0.9238795325112867,
+    0.0,
+    0.0,
+    0.3826834323650897
+   ]
+  },
+  "top": {
+   "center": [
+    0.5302908729652602,
+    0.18029087296526017,
+    0.9900000000000001
+   ],
+   "size": [
+    0.11,
+    0.165,
+    0.02
+   ],
+   "quat_wxyz": [
+    0.9238795325112867,
+    0.0,
+    0.0,
+    0.3826834323650897
+   ]
+  }
+ },
+ "constants": {
+  "parcel_extents": [
+   0.08,
+   0.055,
+   0.04
+  ],
+  "parcel_mass": 0.12,
+  "parcel_friction": 0.5,
+  "table_top": 0.7,
+  "lift_dz": 0.08,
+  "wall_thickness": 0.02,
+  "c_tight": 0.01,
+  "c_loose": 0.055,
+  "depth_slack": 0.07,
+  "insert_back_margin": 0.03,
+  "preinsert_standoff": 0.03,
+  "retreat_distance": 0.1
+ },
+ "frozen_from": {
+  "probe": "outputs/paper/geometry_finalize.json",
+  "record": "assets/provenance/frogger_parcel/scene_lab_x0.35_riser0/parcel_80x55x40.json",
+  "time": "2026-08-18T04:51:54"
+ },
+ "grasp_yaw": 0.0,
+ "X_OH": [
+  [
+   0.04020658785631265,
+   0.8279889646550914,
+   0.5593010859119999,
+   -0.07156408056172207
+  ],
+  [
+   0.5991144045871792,
+   0.4279939425862555,
+   -0.6766706106560435,
+   0.02529081172125691
+  ],
+  [
+   -0.7996532751818769,
+   0.3622919534282576,
+   -0.4788519395095263,
+   0.10821978362016096
+  ],
+  [
+   0.0,
+   0.0,
+   0.0,
+   1.0
+  ]
+ ],
+ "hand_grasp": {
+  "rh_thumb_cmc_roll": 1.0724836996262082,
+  "rh_thumb_cmc_pitch": 0.14242307650984695,
+  "rh_thumb_dip": 0.26062043601045237,
+  "rh_index_mcp_pitch": 0.4529839160081142,
+  "rh_index_dip": 0.4529839160081142,
+  "rh_middle_mcp_pitch": 0.6066683195938588,
+  "rh_middle_dip": 0.6066683195938588,
+  "rh_ring_mcp_pitch": 0.6741388820227474,
+  "rh_ring_dip": 0.6741388820227474,
+  "rh_pinky_mcp_pitch": 0.709045467062634,
+  "rh_pinky_dip": 0.709045467062634
+ },
+ "hand_open": {
+  "rh_thumb_cmc_roll": -0.0872659981250763,
+  "rh_thumb_cmc_pitch": 0.0,
+  "rh_thumb_dip": -0.20550119876861572,
+  "rh_index_mcp_pitch": 0.0,
+  "rh_index_dip": -0.25540778040885925,
+  "rh_middle_mcp_pitch": 0.0,
+  "rh_middle_dip": -0.25540778040885925,
+  "rh_ring_mcp_pitch": 0.0,
+  "rh_ring_dip": -0.25540778040885925,
+  "rh_pinky_mcp_pitch": 0.0,
+  "rh_pinky_dip": -0.25540778040885925
+ },
+ "kinematic_summary": {
+  "family": "C",
+  "start_yaw_deg": 45.0,
+  "grasp_branch": 0,
+  "grasp_q": {
+   "waist_yaw_joint": 0.3024713099002838,
+   "waist_roll_joint": 0.01485681813210249,
+   "waist_pitch_joint": -0.28006434440612793,
+   "right_shoulder_pitch_joint": -0.508695662021637,
+   "right_shoulder_roll_joint": -0.16018781065940857,
+   "right_shoulder_yaw_joint": 0.7815223932266235,
+   "right_elbow_joint": 0.7017320394515991,
+   "right_wrist_roll_joint": 0.03584865480661392,
+   "right_wrist_pitch_joint": 0.9043391346931458,
+   "right_wrist_yaw_joint": -0.3625783324241638
+  },
+  "pregrasp_q": {
+   "waist_yaw_joint": -0.18751750886440277,
+   "waist_roll_joint": -0.39607226848602295,
+   "waist_pitch_joint": -0.3956799805164337,
+   "right_shoulder_pitch_joint": -0.46818122267723083,
+   "right_shoulder_roll_joint": -0.22529862821102142,
+   "right_shoulder_yaw_joint": 0.8041686415672302,
+   "right_elbow_joint": 0.3160695433616638,
+   "right_wrist_roll_joint": 0.14438901841640472,
+   "right_wrist_pitch_joint": 0.7344110608100891,
+   "right_wrist_yaw_joint": -0.03531639277935028
+  },
+  "grasp_yaw": 0.0,
+  "rot_axis": "y",
+  "rot_deg": -90.0,
+  "insert_axis": "+x",
+  "entrance_xy": [
+   0.4914,
+   0.1414
+  ],
+  "shelf_height": 0.16,
+  "lift_dx": 0.0,
+  "lift_dz": 0.12,
+  "reorient_travel": 0.5,
+  "palm_dot_d": -0.8187066856980053,
+  "grasp_ok": true,
+  "pregrasp_ok": true,
+  "ik_all_ok": true,
+  "worst_pos_err_mm": 3.802871544339667,
+  "worst_ori_err_deg": 1.7087570150166038,
+  "min_limit_margin": 0.1191612258553505,
+  "min_hand_z_after_lift": 0.7727022767066956,
+  "table_clear": true,
+  "min_wall_clearance": 0.0015077900886536662,
+  "wall_clear": true,
+  "release_clearance": 0.011171803474426256,
+  "release_clear": true,
+  "palm_trails": true,
+  "transport_distance": 0.3335645300782844,
+  "limit_bound_knots": 0,
+  "feasible": true
+ }
+}

@@ -1,0 +1,100 @@
+{
+ "object": "parcel_80x55x40",
+ "objective": "risk_aware",
+ "X_WB": [
+  [
+   0.5588222967008084,
+   -0.828775222294013,
+   -0.029142265209541385,
+   -0.0013368271501445587
+  ],
+  [
+   -0.5991692674870535,
+   -0.4278011552631332,
+   0.6767439400944472,
+   -0.025286393928387725
+  ],
+  [
+   -0.5733357041115279,
+   -0.36071845318341894,
+   -0.7356414669687268,
+   0.12111121390326267
+  ],
+  [
+   0.0,
+   0.0,
+   0.0,
+   1.0
+  ]
+ ],
+ "dof_order": [
+  "thumb_cmc_yaw",
+  "thumb_cmc_pitch",
+  "thumb_ip",
+  "index_mcp_pitch",
+  "index_dip",
+  "middle_mcp_pitch",
+  "middle_dip",
+  "ring_mcp_pitch",
+  "ring_dip",
+  "pinky_mcp_pitch",
+  "pinky_dip"
+ ],
+ "q": [
+  1.0726812436537339,
+  0.1424493098485505,
+  0.2606684404795207,
+  0.45378560551852565,
+  0.45378560551852565,
+  0.6068292747823518,
+  0.6068292747823518,
+  0.6742494946241109,
+  0.6742494946241109,
+  1.57,
+  1.4
+ ],
+ "grasp_extents_mm": [
+  40.0,
+  55.0,
+  80.0
+ ],
+ "n_registered": 4,
+ "hand": "realhand_l6",
+ "arm": "g1_right",
+ "l_star": 0.0071,
+ "source": "mesh parcel_80x55x40.obj (native)",
+ "native_extents_mm": [
+  40.0,
+  55.0,
+  80.0
+ ],
+ "scale_factor": 1.0,
+ "scale_mode": "native",
+ "scaled": false,
+ "n_grasps": 1,
+ "eps_dropout_objective": 0.0002,
+ "eps_nominal": 0.0019,
+ "rigid_pen_mm": 0.014,
+ "q_arm": {
+  "waist_yaw_joint": 0.4072794910049658,
+  "waist_roll_joint": 0.05557267174475431,
+  "waist_pitch_joint": 0.3380567214624673,
+  "right_shoulder_pitch_joint": -0.6277333082577337,
+  "right_shoulder_roll_joint": -0.7677208252916058,
+  "right_shoulder_yaw_joint": 0.17008197902594974,
+  "right_elbow_joint": -0.04424100753380469,
+  "right_wrist_roll_joint": -1.4556586419249546,
+  "right_wrist_pitch_joint": -1.2627675872154716,
+  "right_wrist_yaw_joint": 0.35399719155027837
+ },
+ "manipulability": 0.1738,
+ "limit_margin": 0.2178,
+ "arm_feasible": true,
+ "clearance_mm": 5.0,
+ "table_height_m": 0.742,
+ "object_xy": [
+  0.35,
+  0.0
+ ],
+ "riser_mm": 15.0
+}

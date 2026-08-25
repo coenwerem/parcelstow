@@ -1,0 +1,100 @@
+{
+ "object": "parcel_80x55x40",
+ "objective": "risk_aware",
+ "X_WB": [
+  [
+   0.09651574345289113,
+   0.8043434686317239,
+   0.5862732261797591,
+   -0.06185160502866946
+  ],
+  [
+   0.6006159445295955,
+   0.4226297237292449,
+   -0.678708040174392,
+   0.025708672663374725
+  ],
+  [
+   -0.7936908708323144,
+   0.41763105857925537,
+   -0.44231109014743586,
+   0.10328931409783543
+  ],
+  [
+   0.0,
+   0.0,
+   0.0,
+   1.0
+  ]
+ ],
+ "dof_order": [
+  "thumb_cmc_yaw",
+  "thumb_cmc_pitch",
+  "thumb_ip",
+  "index_mcp_pitch",
+  "index_dip",
+  "middle_mcp_pitch",
+  "middle_dip",
+  "ring_mcp_pitch",
+  "ring_dip",
+  "pinky_mcp_pitch",
+  "pinky_dip"
+ ],
+ "q": [
+  1.077957241230712,
+  0.14314994875507525,
+  0.26195054181997124,
+  0.5067683919060244,
+  0.5067683919060244,
+  0.6042751401003269,
+  0.6042751401003269,
+  0.6699373314948588,
+  0.6699373314948588,
+  0.7048439165347454,
+  0.7048439165347454
+ ],
+ "grasp_extents_mm": [
+  40.0,
+  55.0,
+  80.0
+ ],
+ "n_registered": 5,
+ "hand": "realhand_l6",
+ "arm": "g1_right",
+ "l_star": 0.0035,
+ "source": "mesh parcel_80x55x40.obj (native)",
+ "native_extents_mm": [
+  40.0,
+  55.0,
+  80.0
+ ],
+ "scale_factor": 1.0,
+ "scale_mode": "native",
+ "scaled": false,
+ "n_grasps": 3,
+ "eps_dropout_objective": 0.0003,
+ "eps_nominal": 0.0016,
+ "rigid_pen_mm": 0.0,
+ "q_arm": {
+  "waist_yaw_joint": 0.3878762103657672,
+  "waist_roll_joint": -0.1462676261896228,
+  "waist_pitch_joint": 0.2630861509157197,
+  "right_shoulder_pitch_joint": -0.84695458744775,
+  "right_shoulder_roll_joint": 0.08630439997495819,
+  "right_shoulder_yaw_joint": -0.16630377359983747,
+  "right_elbow_joint": 0.5226979440813764,
+  "right_wrist_roll_joint": 0.05246415319494157,
+  "right_wrist_pitch_joint": 1.1244706662185868,
+  "right_wrist_yaw_joint": -1.0981882468340507
+ },
+ "manipulability": 0.182,
+ "limit_margin": 0.3035,
+ "arm_feasible": true,
+ "clearance_mm": 5.0,
+ "table_height_m": 0.742,
+ "object_xy": [
+  0.43,
+  0.0
+ ],
+ "riser_mm": 8.0
+}

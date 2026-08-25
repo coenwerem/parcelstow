@@ -1,0 +1,100 @@
+{
+ "object": "parcel_80x55x40",
+ "objective": "risk_aware",
+ "X_WB": [
+  [
+   -0.008830314167217135,
+   0.8885140198320548,
+   0.45876449526264673,
+   -0.039692822605801335
+  ],
+  [
+   0.6132011811139729,
+   0.3672074375940753,
+   -0.6993875958694306,
+   0.02971311401653915
+  ],
+  [
+   -0.7898774189911602,
+   0.27513911815202885,
+   -0.5480804034358344,
+   0.11030844570947035
+  ],
+  [
+   0.0,
+   0.0,
+   0.0,
+   1.0
+  ]
+ ],
+ "dof_order": [
+  "thumb_cmc_yaw",
+  "thumb_cmc_pitch",
+  "thumb_ip",
+  "index_mcp_pitch",
+  "index_dip",
+  "middle_mcp_pitch",
+  "middle_dip",
+  "ring_mcp_pitch",
+  "ring_dip",
+  "pinky_mcp_pitch",
+  "pinky_dip"
+ ],
+ "q": [
+  1.1318942187499998,
+  0.150312640625,
+  0.27505757421875,
+  0.5322224992645916,
+  0.5322224992645916,
+  0.585779814673562,
+  0.585779814673562,
+  0.6343589194672528,
+  0.6343589194672528,
+  0.6539373809874913,
+  0.6539373809874913
+ ],
+ "grasp_extents_mm": [
+  40.0,
+  55.0,
+  80.0
+ ],
+ "n_registered": 5,
+ "hand": "realhand_l6",
+ "arm": "g1_right",
+ "l_star": 0.005,
+ "source": "mesh parcel_80x55x40.obj (native)",
+ "native_extents_mm": [
+  40.0,
+  55.0,
+  80.0
+ ],
+ "scale_factor": 1.0,
+ "scale_mode": "native",
+ "scaled": false,
+ "n_grasps": 3,
+ "eps_dropout_objective": 0.0001,
+ "eps_nominal": 0.0022,
+ "rigid_pen_mm": 0.056,
+ "q_arm": {
+  "waist_yaw_joint": 0.330576875358961,
+  "waist_roll_joint": -0.22658745662970417,
+  "waist_pitch_joint": 0.19166162693091343,
+  "right_shoulder_pitch_joint": -0.860108126215934,
+  "right_shoulder_roll_joint": 0.1757689420810447,
+  "right_shoulder_yaw_joint": -0.24500787189267106,
+  "right_elbow_joint": 0.5616606841718139,
+  "right_wrist_roll_joint": 0.15707295334688232,
+  "right_wrist_pitch_joint": 1.2866638742893663,
+  "right_wrist_yaw_joint": -1.1350015855441928
+ },
+ "manipulability": 0.173,
+ "limit_margin": 0.203,
+ "arm_feasible": true,
+ "clearance_mm": 5.0,
+ "table_height_m": 0.742,
+ "object_xy": [
+  0.38,
+  0.0
+ ],
+ "riser_mm": 15.0
+}
