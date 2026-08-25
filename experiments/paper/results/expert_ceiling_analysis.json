@@ -1,0 +1,282 @@
+{
+ "note_joint_velocity": "max_joint_velocity_utilization sits near 1 at every rate including r 0.5 because the finger squeeze of the rate-fixed CLOSE phase touches the hand velocity limit, the value is rate-invariant and does not explain the ceiling",
+ "orientation_tolerance_deg": 10.0,
+ "inserted_predicate_m": 0.05,
+ "per_rate": {
+  "0.5": {
+   "n": 100,
+   "success": 1.0,
+   "max_arm_velocity_utilization": {
+    "p50": 0.09915433451533318,
+    "p90": 0.20934365689754486
+   },
+   "max_joint_velocity_utilization": {
+    "p50": 0.997899204492569,
+    "p90": 0.9988014101982117
+   },
+   "max_hand_object_translation_m": {
+    "p50": 0.005820924416184425,
+    "p90": 0.006503969291225076
+   },
+   "max_hand_object_rotation_deg": {
+    "p50": 8.147930736394141,
+    "p90": 11.351085234473938
+   },
+   "min_orientation_error_deg": {
+    "p50": 2.8225353337029837,
+    "p90": 4.563567244414019
+   },
+   "insertion_depth": {
+    "p50": 0.0636945441365242,
+    "p90": 0.0679122492671013
+   },
+   "max_receptacle_force": {
+    "p50": 2.745071053504944,
+    "p90": 6.450903177261355
+   },
+   "peak_hand_linear_velocity": {
+    "p50": 0.2178703397512436,
+    "p90": 0.24526275843381884
+   },
+   "failure_reasons": {}
+  },
+  "1": {
+   "n": 100,
+   "success": 1.0,
+   "max_arm_velocity_utilization": {
+    "p50": 0.12161079421639442,
+    "p90": 0.13361885398626328
+   },
+   "max_joint_velocity_utilization": {
+    "p50": 0.9962954819202423,
+    "p90": 0.9966007769107819
+   },
+   "max_hand_object_translation_m": {
+    "p50": 0.008192902896553278,
+    "p90": 0.008687484543770552
+   },
+   "max_hand_object_rotation_deg": {
+    "p50": 8.411733132707543,
+    "p90": 9.43507279916178
+   },
+   "min_orientation_error_deg": {
+    "p50": 2.146017796296209,
+    "p90": 2.9890454632379404
+   },
+   "insertion_depth": {
+    "p50": 0.056313322857022285,
+    "p90": 0.0598494403064251
+   },
+   "max_receptacle_force": {
+    "p50": 3.0736448764801025,
+    "p90": 5.28283319473267
+   },
+   "peak_hand_linear_velocity": {
+    "p50": 0.3105640709400177,
+    "p90": 0.3177388072013855
+   },
+   "failure_reasons": {}
+  },
+  "1.5": {
+   "n": 100,
+   "success": 0.99,
+   "max_arm_velocity_utilization": {
+    "p50": 0.08179387077689171,
+    "p90": 0.16856981068849566
+   },
+   "max_joint_velocity_utilization": {
+    "p50": 0.9974900782108307,
+    "p90": 0.9979139268398285
+   },
+   "max_hand_object_translation_m": {
+    "p50": 0.00823060143738985,
+    "p90": 0.008696671947836876
+   },
+   "max_hand_object_rotation_deg": {
+    "p50": 8.705146106620244,
+    "p90": 9.513648234524618
+   },
+   "min_orientation_error_deg": {
+    "p50": 4.72006753962125,
+    "p90": 5.590470732822438
+   },
+   "insertion_depth": {
+    "p50": 0.05246426910161972,
+    "p90": 0.05301633588969708
+   },
+   "max_receptacle_force": {
+    "p50": 4.667163610458374,
+    "p90": 6.006131505966188
+   },
+   "peak_hand_linear_velocity": {
+    "p50": 0.3587024360895157,
+    "p90": 0.3700560450553894
+   },
+   "failure_reasons": {
+    "insertion_jam": 1
+   }
+  },
+  "2": {
+   "n": 100,
+   "success": 0.84,
+   "max_arm_velocity_utilization": {
+    "p50": 0.10836591199040413,
+    "p90": 0.11050294935703278
+   },
+   "max_joint_velocity_utilization": {
+    "p50": 0.9981999099254608,
+    "p90": 0.9987054347991944
+   },
+   "max_hand_object_translation_m": {
+    "p50": 0.00806668121367693,
+    "p90": 0.021819896064698696
+   },
+   "max_hand_object_rotation_deg": {
+    "p50": 9.990337979625115,
+    "p90": 85.52106429208837
+   },
+   "min_orientation_error_deg": {
+    "p50": 7.6028073623199,
+    "p90": 10.178898926664292
+   },
+   "insertion_depth": {
+    "p50": 0.04995420202612877,
+    "p90": 0.05122163482010365
+   },
+   "max_receptacle_force": {
+    "p50": 5.676951169967651,
+    "p90": 7.210255336761477
+   },
+   "peak_hand_linear_velocity": {
+    "p50": 0.37085525691509247,
+    "p90": 0.4076909363269806
+   },
+   "failure_reasons": {
+    "insertion_jam": 16
+   }
+  },
+  "2.25": {
+   "n": 100,
+   "success": 0.8,
+   "max_arm_velocity_utilization": {
+    "p50": 0.12124362215399742,
+    "p90": 0.12333413809537888
+   },
+   "max_joint_velocity_utilization": {
+    "p50": 0.9984870553016663,
+    "p90": 0.9988333284854889
+   },
+   "max_hand_object_translation_m": {
+    "p50": 0.008230308536440134,
+    "p90": 0.02330546025186777
+   },
+   "max_hand_object_rotation_deg": {
+    "p50": 10.554264864484402,
+    "p90": 87.71937297079748
+   },
+   "min_orientation_error_deg": {
+    "p50": 8.87815095631526,
+    "p90": 10.475491097503543
+   },
+   "insertion_depth": {
+    "p50": 0.049526918679475784,
+    "p90": 0.05037543587386608
+   },
+   "max_receptacle_force": {
+    "p50": 6.975314617156982,
+    "p90": 9.705661964416505
+   },
+   "peak_hand_linear_velocity": {
+    "p50": 0.39754892885684967,
+    "p90": 0.41756680607795715
+   },
+   "failure_reasons": {
+    "insertion_jam": 20
+   }
+  },
+  "2.5": {
+   "n": 100,
+   "success": 0.29,
+   "max_arm_velocity_utilization": {
+    "p50": 0.1327117532491684,
+    "p90": 0.13508067280054092
+   },
+   "max_joint_velocity_utilization": {
+    "p50": 0.9985028207302094,
+    "p90": 0.9987105667591095
+   },
+   "max_hand_object_translation_m": {
+    "p50": 0.008504890371114016,
+    "p90": 0.02408452108502388
+   },
+   "max_hand_object_rotation_deg": {
+    "p50": 10.951856152486368,
+    "p90": 87.83636318297712
+   },
+   "min_orientation_error_deg": {
+    "p50": 10.288713085969828,
+    "p90": 11.064258697355246
+   },
+   "insertion_depth": {
+    "p50": 0.04913078807294369,
+    "p90": 0.04989799596369267
+   },
+   "max_receptacle_force": {
+    "p50": 8.14431619644165,
+    "p90": 11.350152683258058
+   },
+   "peak_hand_linear_velocity": {
+    "p50": 0.4049554020166397,
+    "p90": 0.4152616381645203
+   },
+   "failure_reasons": {
+    "insertion_misalignment": 38,
+    "insertion_jam": 29,
+    "excessive_inhand_slip": 3,
+    "timeout": 1
+   }
+  },
+  "3": {
+   "n": 100,
+   "success": 0.0,
+   "max_arm_velocity_utilization": {
+    "p50": 0.1573723703622818,
+    "p90": 0.16156477779150008
+   },
+   "max_joint_velocity_utilization": {
+    "p50": 0.9976103603839874,
+    "p90": 0.9985110104084015
+   },
+   "max_hand_object_translation_m": {
+    "p50": 0.02079988643527031,
+    "p90": 0.02452091630548239
+   },
+   "max_hand_object_rotation_deg": {
+    "p50": 78.74817426204177,
+    "p90": 94.49827766542718
+   },
+   "min_orientation_error_deg": {
+    "p50": 10.769835879973758,
+    "p90": 11.470746306751153
+   },
+   "insertion_depth": {
+    "p50": 0.030367298983037472,
+    "p90": 0.036756688728928566
+   },
+   "max_receptacle_force": {
+    "p50": 13.6016206741333,
+    "p90": 16.083978271484376
+   },
+   "peak_hand_linear_velocity": {
+    "p50": 0.4658801555633545,
+    "p90": 0.4765705347061157
+   },
+   "failure_reasons": {
+    "insertion_jam": 81,
+    "excessive_inhand_slip": 9,
+    "insertion_misalignment": 9,
+    "timeout": 1
+   }
+  }
+ }
+}

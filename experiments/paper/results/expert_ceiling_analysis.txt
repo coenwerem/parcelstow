@@ -1,0 +1,13 @@
+======================================================================================================================
+Expert ceiling attribution, medians (p90) over 100 episodes per rate, frozen tolerances 10 deg and 50 mm
+======================================================================================================================
+ rate  succ        arm_util         slip_mm        slip_deg  orient_err_deg        depth_mm        recept_N  failure reasons
+  0.5  1.00   0.10 (  0.21)   5.82 (  6.50)   8.15 ( 11.35)   2.82 (  4.56)  63.69 ( 67.91)   2.75 (  6.45)  none
+    1  1.00   0.12 (  0.13)   8.19 (  8.69)   8.41 (  9.44)   2.15 (  2.99)  56.31 ( 59.85)   3.07 (  5.28)  none
+  1.5  0.99   0.08 (  0.17)   8.23 (  8.70)   8.71 (  9.51)   4.72 (  5.59)  52.46 ( 53.02)   4.67 (  6.01)  insertion_jam:1
+    2  0.84   0.11 (  0.11)   8.07 ( 21.82)   9.99 ( 85.52)   7.60 ( 10.18)  49.95 ( 51.22)   5.68 (  7.21)  insertion_jam:16
+ 2.25  0.80   0.12 (  0.12)   8.23 ( 23.31)  10.55 ( 87.72)   8.88 ( 10.48)  49.53 ( 50.38)   6.98 (  9.71)  insertion_jam:20
+  2.5  0.29   0.13 (  0.14)   8.50 ( 24.08)  10.95 ( 87.84)  10.29 ( 11.06)  49.13 ( 49.90)   8.14 ( 11.35)  insertion_misalignment:38, insertion_jam:29, excessive_inhand_slip:3, timeout:1
+    3  0.00   0.16 (  0.16)  20.80 ( 24.52)  78.75 ( 94.50)  10.77 ( 11.47)  30.37 ( 36.76)  13.60 ( 16.08)  insertion_jam:81, excessive_inhand_slip:9, insertion_misalignment:9, timeout:1
+
+max_joint_velocity_utilization sits near 1 at every rate including r 0.5 because the finger squeeze of the rate-fixed CLOSE phase touches the hand velocity limit, the value is rate-invariant and does not explain the ceiling

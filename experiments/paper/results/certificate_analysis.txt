@@ -1,0 +1,7 @@
+set                        n   acq eb_lift>0  rho(eb_lift,success)  rho(eb_lift,slip_t)  AUROC P(s|eb>0) P(s|eb<=0)
+expert                   700   700     0.000                 0.046               -0.263  0.517      None      0.703
+dagger                   700   375     0.139                 0.125               -0.135  0.721     0.058      0.022
+dp                       700   604     0.003                 0.106               -0.215  0.547     0.000      0.440
+act                      700   542     0.004                 0.393               -0.595  0.711     0.000      0.674
+pooled                  2800  2221     0.025                -0.066               -0.004  0.468     0.054      0.521
+[written] outputs/wrl_functional/eval/certificate_analysis.json

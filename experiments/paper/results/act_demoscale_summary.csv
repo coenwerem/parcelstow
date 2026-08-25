@@ -1,0 +1,7 @@
+condition,rate,success,n,acquired,nfc,nfc_successes
+act_n50,1,27,100,100,4,0
+act_n50,1.5,23,100,100,5,0
+act_n50,2,46,100,98,6,0
+act_n100,1,44,100,100,12,0
+act_n100,1.5,65,100,100,17,0
+act_n100,2,44,100,100,35,0

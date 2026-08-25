@@ -1,0 +1,47 @@
+{
+ "protocol": "ACT demo scaling, frozen recipe, model_seed 0, rate-stratified subsets, eval_seed 13345 draws identical to the final evaluation",
+ "cells": {
+  "act_n50@1": {
+   "success": 27,
+   "n": 100,
+   "acquired": 100,
+   "nfc": 4,
+   "nfc_successes": 0
+  },
+  "act_n50@1.5": {
+   "success": 23,
+   "n": 100,
+   "acquired": 100,
+   "nfc": 5,
+   "nfc_successes": 0
+  },
+  "act_n50@2": {
+   "success": 46,
+   "n": 100,
+   "acquired": 98,
+   "nfc": 6,
+   "nfc_successes": 0
+  },
+  "act_n100@1": {
+   "success": 44,
+   "n": 100,
+   "acquired": 100,
+   "nfc": 12,
+   "nfc_successes": 0
+  },
+  "act_n100@1.5": {
+   "success": 65,
+   "n": 100,
+   "acquired": 100,
+   "nfc": 17,
+   "nfc_successes": 0
+  },
+  "act_n100@2": {
+   "success": 44,
+   "n": 100,
+   "acquired": 100,
+   "nfc": 35,
+   "nfc_successes": 0
+  }
+ }
+}

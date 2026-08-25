@@ -1,0 +1,65 @@
+====================================================================================================
+PRIMARY, nominal epsilon at lift
+====================================================================================================
+Spearman and quartiles over the force-closure grasps, nfc = no-force-closure count (their success), value -1 by the frogger convention
+cell                      n  succ  eps>0       nfc  rho(succ)  rho(d_p)  rho(d_R)  success by quartile Q1..Q4
+expert@1                100  1.00   1.00         0         na     -0.12      0.24  1.00(n25) 1.00(n25) 1.00(n25) 1.00(n25)
+expert@1.5              100  0.99   1.00         0      -0.13     -0.46     -0.02  1.00(n25) 1.00(n25) 1.00(n25) 0.96(n25)
+expert@2                100  0.84   1.00         0      -0.02     -0.36     -0.14  0.80(n25) 0.84(n25) 0.96(n25) 0.76(n25)
+expert@pooled           300  0.94   1.00         0       0.04     -0.30     -0.15  (all acquired as recorded, rho succ  0.04, d_p -0.30)
+act_seed1@1             100  1.00   1.00         0         na     -0.28      0.12  1.00(n25) 1.00(n25) 1.00(n25) 1.00(n25)
+act_seed1@1.5           100  0.91   1.00         0      -0.07     -0.25     -0.04  1.00(n25) 0.88(n25) 0.76(n25) 1.00(n25)
+act_seed1@2             100  0.53   0.92   8(0.00)       0.17     -0.15      0.03  0.30(n23) 0.87(n23) 0.52(n23) 0.61(n23)
+act_seed1@pooled        300  0.81   0.97   8(0.00)       0.37     -0.43     -0.17  (all acquired as recorded, rho succ  0.43, d_p -0.47)
+act_seed2@1             100  0.70   0.78  22(0.00)      -0.23      0.27      0.14  0.95(n20) 0.95(n19) 1.00(n19) 0.70(n20)
+act_seed2@1.5            98  0.59   0.83  17(0.00)      -0.51      0.42      0.42  0.95(n20) 0.95(n20) 0.70(n20) 0.29(n21)
+act_seed2@2             100  0.36   0.76  24(0.00)      -0.27      0.20      0.17  0.68(n19) 0.47(n19) 0.42(n19) 0.32(n19)
+act_seed2@pooled        298  0.55   0.79  63(0.00)      -0.12      0.08     -0.00  (all acquired as recorded, rho succ  0.34, d_p -0.24)
+act_seed3@1             100  0.62   0.70  30(0.00)      -0.17     -0.25     -0.18  0.89(n18) 0.94(n17) 1.00(n17) 0.72(n18)
+act_seed3@1.5           100  0.44   0.69  31(0.00)      -0.26     -0.13      0.17  0.88(n17) 0.59(n17) 0.71(n17) 0.39(n18)
+act_seed3@2             100  0.14   0.59  41(0.00)      -0.04     -0.14     -0.03  0.27(n15) 0.21(n14) 0.33(n15) 0.13(n15)
+act_seed3@pooled        300  0.40   0.66 102(0.00)       0.18     -0.42     -0.26  (all acquired as recorded, rho succ  0.57, d_p -0.34)
+
+Rate-controlled models, coef [95 percent CI, HC1], sample per margin as stated above
+model sample              n          b_eps (logit)            b_r (logit)           a_eps d_p mm          c_eps d_R deg
+expert                  300   0.235 [ -0.278,  0.749]  -6.014 [ -9.748, -2.279]  -0.149 [ -0.376,  0.078]  -0.067 [ -0.820,  0.686]
+act_seed1               292   0.608 [  0.093,  1.123]  -4.107 [ -5.418, -2.797]  -0.344 [ -0.532, -0.156]  -0.430 [ -1.259,  0.399]
+act_seed2               235  -0.620 [ -0.982, -0.258]  -2.609 [ -3.561, -1.657]   0.113 [ -0.161,  0.388]  -1.702 [ -2.886, -0.518]
+act_seed3               198  -0.460 [ -0.869, -0.050]  -3.768 [ -4.833, -2.703]  -0.659 [ -1.166, -0.152]  -3.685 [ -6.422, -0.948]
+act pooled + seed FE    725  -0.213 [ -0.426,  0.000]  -3.244 [ -3.818, -2.671]  -0.172 [ -0.361,  0.016]  -0.952 [ -1.853, -0.052]
+
+====================================================================================================
+SECONDARY, epsilon^(beta) at lift, beta 0.95, sigma_mu 0.15
+====================================================================================================
+Spearman and quartiles over all acquired episodes as recorded (values at or under zero are the saturated tail)
+cell                      n  succ  eps>0       nfc  rho(succ)  rho(d_p)  rho(d_R)  success by quartile Q1..Q4
+expert@1                100  1.00   0.00         0         na     -0.56      0.18  1.00(n100)
+expert@1.5              100  0.99   0.00         0      -0.26     -0.48     -0.17  0.99(n100)
+expert@2                100  0.84   0.00         0      -0.11     -0.17     -0.18  0.84(n100)
+expert@pooled           300  0.94   0.00         0      -0.06     -0.43     -0.16  (all acquired as recorded, rho succ -0.06, d_p -0.43)
+act_seed1@1             100  1.00   0.00         0         na     -0.39      0.10  1.00(n50) 1.00(n25) 1.00(n25)
+act_seed1@1.5           100  0.91   0.00         0       0.17     -0.46     -0.02  0.91(n100)
+act_seed1@2             100  0.53   0.00         0       0.20     -0.24     -0.21  0.53(n100)
+act_seed1@pooled        300  0.81   0.00         0       0.30     -0.54     -0.18  (all acquired as recorded, rho succ  0.30, d_p -0.54)
+act_seed2@1             100  0.70   0.00         0       0.19     -0.15     -0.03  0.70(n100)
+act_seed2@1.5            98  0.59   0.00         0      -0.04     -0.12      0.02  0.59(n98)
+act_seed2@2             100  0.36   0.00         0       0.08     -0.19     -0.18  0.36(n100)
+act_seed2@pooled        298  0.55   0.00         0       0.09     -0.15     -0.06  (all acquired as recorded, rho succ  0.09, d_p -0.15)
+act_seed3@1             100  0.62   0.00         0       0.39     -0.44     -0.11  0.62(n100)
+act_seed3@1.5           100  0.44   0.00         0      -0.04      0.05     -0.03  0.44(n100)
+act_seed3@2             100  0.14   0.00         0      -0.04     -0.15     -0.08  0.14(n100)
+act_seed3@pooled        300  0.40   0.00         0       0.27     -0.30     -0.19  (all acquired as recorded, rho succ  0.27, d_p -0.30)
+
+Rate-controlled models, coef [95 percent CI, HC1], sample per margin as stated above
+model sample              n          b_eps (logit)            b_r (logit)           a_eps d_p mm          c_eps d_R deg
+expert                  300  -0.360 [ -0.883,  0.164]  -6.351 [ -9.920, -2.782]  -0.434 [ -0.839, -0.030]   0.736 [ -1.249,  2.720]
+act_seed1               300   1.153 [  0.364,  1.942]  -4.530 [ -5.913, -3.148]  -0.395 [ -0.535, -0.255]  -0.007 [ -0.673,  0.660]
+act_seed2               298   0.167 [ -0.077,  0.410]  -1.429 [ -2.028, -0.830]  -0.912 [ -1.413, -0.411]  -1.547 [ -2.334, -0.761]
+act_seed3               300   0.384 [  0.129,  0.639]  -1.987 [ -2.650, -1.324]  -0.162 [ -0.707,  0.382]  -0.697 [ -3.365,  1.970]
+act pooled + seed FE    898   0.671 [  0.412,  0.931]  -2.054 [ -2.471, -1.637]  -0.299 [ -0.598, -0.000]   0.503 [ -0.503,  1.509]
+
+====================================================================================================
+epsilon^(beta) domain alignment
+====================================================================================================
+ParcelStow holds nominal friction at mu=0.5 and varies task-induced dynamics, not friction. The selected FIRMGrasp prior (beta 0.95, sigma_mu 0.15) evaluates an adverse low-friction tail that is rarely realized in this benchmark. Consequently, epsilon^(beta) is expected to be conservative/saturated here and is not the primary predictor tested by this experiment. Under this nominal-friction task epsilon^(beta) does not resolve outcomes, it is conservative under the selected adverse-friction prior, and the benchmark does not excite the uncertainty dimension targeted by the risk-adjusted margin.
+
