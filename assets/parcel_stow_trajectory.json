@@ -1,6 +1,6 @@
 {
- "geometry_file": "/home/drce/ResearchProjects/parcelstow/assets/parcel_stow_geometry.json",
- "bank_file": "/home/drce/ResearchProjects/parcelstow/assets/gdf_bank_parcel.json",
+ "geometry_file": "/home/drce/ResearchProjects/g1_locomanip_lab/assets/parcel_stow_geometry.json",
+ "bank_file": "/home/drce/ResearchProjects/g1_locomanip_lab/assets/gdf_bank_parcel.json",
  "X_OH": [
   [
    0.04020658785631265,

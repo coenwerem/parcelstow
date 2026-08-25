@@ -203,7 +203,7 @@
   "retreat_distance": 0.1
  },
  "frozen_from": {
-  "probe": "outputs/paper/geometry_finalize.json",
+  "probe": "outputs/wrl_functional/geometry_finalize.json",
   "record": "assets/provenance/frogger_parcel/scene_lab_x0.35_riser0/parcel_80x55x40.json",
   "time": "2026-08-18T04:51:54"
  },
