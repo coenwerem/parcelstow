@@ -1,0 +1,35 @@
+ParcelStow
+Copyright 2026 Clinton Enwerem
+
+ParcelStow-authored source code is licensed under the Apache License,
+Version 2.0 (see LICENSE). The components below are third-party work
+redistributed under their own licenses, which the top-level license does
+not replace.
+
+third_party/act/
+  State-only ACT transformer, from https://github.com/tonyzhaozh/act
+  MIT License, Copyright (c) 2023 Tony Z. Zhao (itself derived from
+  Facebook DETR). See third_party/act/LICENSE and NOTICE.
+
+third_party/diffusion_policy/
+  Diffusion Policy modules, from
+  https://github.com/real-stanford/diffusion_policy
+  MIT License, Copyright (c) 2023 Columbia Artificial Intelligence and
+  Robotics Lab. See third_party/diffusion_policy/LICENSE and NOTICE.
+
+assets/g1_l6/meshes/g1/ and the G1 portion of the merged URDFs
+  Unitree G1 description, from https://github.com/unitreerobotics/unitree_ros
+  (robots/g1_description), BSD 3-Clause License, Copyright (c) 2016-2022
+  HangZhou YuShu TECHNOLOGY CO.,LTD. ("Unitree Robotics").
+  See assets/LICENSES/UNITREE_BSD-3-CLAUSE.txt and assets/NOTICE.md.
+
+assets/linkerhand_l6/, assets/linkerhand_l6_left/, assets/g1_l6/meshes/l6r/,
+assets/g1_l6/meshes/l6l/, and the L6 portion of the merged URDFs
+  LinkerHand L6 description, from https://github.com/linker-bot/linkerhand-urdf
+  (L6/right, L6/left), Apache License 2.0, LinkerBot / LinkerHand.
+  See assets/LICENSES/LINKERHAND_APACHE-2.0.txt and assets/NOTICE.md.
+
+The frozen grasp bank assets/gdf_bank_parcel.json was synthesized with a
+private driver over FRoGGeR (https://github.com/alberthli/frogger, MIT
+License, Copyright (c) 2023 Albert H. Li). No FRoGGeR source code is
+redistributed here, docs/ASSET_PROVENANCE.md records the details.
