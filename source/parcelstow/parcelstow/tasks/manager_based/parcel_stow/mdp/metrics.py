@@ -62,21 +62,14 @@ def _quat_angle(q):
 
 
 def score_contact_set(cs, mu=0.5, beta=0.95, mu_std=0.15, n_particles=50):
-    """Ferrari-Canny margin at friction mu about the parcel center and the
-    risk-adjusted epsilon^(beta) of a recorded contact set (firmgrasp).
-    Fewer than two contacts, or firmgrasp missing, gives (-1, -1)."""
+    """Ferrari-Canny margin at friction mu about the parcel center (computed
+    in-repo, ferrari_canny.py) and the risk-adjusted epsilon^(beta) of a
+    recorded contact set (optional, needs the firmgrasp package). Fewer than
+    two contacts gives (-1, -1), a missing firmgrasp gives epsilon_beta -1."""
     if cs is None or len(cs["contacts"]) < 2:
         return -1.0, -1.0
-    try:
-        fg_path = os.environ.get(
-            "PARCELSTOW_FIRMGRASP", os.path.expanduser("~/ResearchProjects/firmgrasp")
-        )
-        if fg_path not in sys.path:
-            sys.path.insert(0, fg_path)
-        import firmgrasp
-        from firmgrasp.metric import ferrari_canny_from_contacts
-    except Exception:
-        return -1.0, -1.0
+    from .ferrari_canny import ferrari_canny_from_contacts
+
     p = np.array([c["point_w"] for c in cs["contacts"]])
     nrm = np.array([c["normal_in_w"] for c in cs["contacts"]])
     com = np.array(cs["object_pos_w"])
@@ -85,6 +78,11 @@ def score_contact_set(cs, mu=0.5, beta=0.95, mu_std=0.15, n_particles=50):
     except Exception:
         eps = -1.0
     try:
+        fg_path = os.environ.get("PARCELSTOW_FIRMGRASP")
+        if fg_path and fg_path not in sys.path:
+            sys.path.insert(0, fg_path)
+        import firmgrasp
+
         g = firmgrasp.Grasp(points=p, normals=nrm, mu_nominal=mu, object_com=com)
         r = firmgrasp.evaluate(g, firmgrasp.FrictionPrior.gaussian(mu, mu_std), beta=beta, n_particles=n_particles)
         epsb = float(r.epsilon_cvar)

@@ -37,16 +37,21 @@ isolation.
 
 At acquisition, end of reorientation, and insertion start, the monitor
 records the realized contact set (points, normals, forces) and scores it
-with the Ferrari-Canny margin `epsilon_*` at the nominal friction. The
-released analysis (`scripts/reproduce.py certificate`) shows the one-sided
-acquisition result of the paper, across the released records no acquired
-episode lacking force closure completes the task. The certificate is a
-diagnostic only, it enters no success predicate, and the paper does not
-present the continuous margin as an explanation of the task-rate envelope.
+with the Ferrari-Canny margin `epsilon_*` at the nominal friction,
+computed in-repo by `mdp/ferrari_canny.py` (numpy and scipy only, -1 is
+the no-force-closure sentinel). The in-repo scorer reproduces all 6322
+recorded margins of the released records exactly under the producing
+scipy version, with 15 sign ties at |epsilon| under 1e-12 across qhull
+versions. The released analysis (`scripts/reproduce.py certificate`)
+shows the one-sided acquisition result of the paper, across the released
+records no acquired episode lacking force closure completes the task. The
+certificate is a diagnostic only, it enters no success predicate, and the
+paper does not present the continuous margin as an explanation of the
+task-rate envelope.
 
 `epsilon_beta_*` additionally scores a risk-adjusted margin under friction
 uncertainty (CVaR at beta 0.95). Computing it needs the optional
-`firmgrasp` package (set `PARCELSTOW_FIRMGRASP` to its checkout, absent by
+`firmgrasp` package (set `PARCELSTOW_FIRMGRASP` to its location, unset by
 default and the field reads -1). The risk-adjusted margin concerns
 friction uncertainty, a different axis from task rate, and the paper does
 not use it to explain rate sensitivity.
