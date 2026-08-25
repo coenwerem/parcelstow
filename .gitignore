@@ -22,3 +22,5 @@ _isaac_sim*
 
 # Large local media renders, released media lives in media/ explicitly
 media/local/
+.ruff_cache/
+.pytest_cache/
