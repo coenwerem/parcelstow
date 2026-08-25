@@ -1,0 +1,12 @@
+cff-version: 1.2.0
+message: "If you use ParcelStow, please cite it as below."
+title: "ParcelStow: Task-Rate Robustness Evaluation for Learned Dexterous Manipulation"
+authors:
+  - family-names: Enwerem
+    given-names: Clinton
+type: software
+version: 0.1.0
+# TODO fill once assigned, one line here and the README citation block
+# identifiers:
+#   - type: other
+#     value: "arXiv:XXXX.XXXXX"

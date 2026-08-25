@@ -1,0 +1,31 @@
+name: ci
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  no-isaac:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install analysis dependencies
+        run: pip install numpy matplotlib pytest ruff
+      - name: Lint
+        run: ruff check scripts/plot_envelope.py scripts/reproduce.py scripts/evaluate.py scripts/run_task.py scripts/download_artifacts.py examples/custom_policy.py
+      - name: Pure geometry tests
+        run: python -m pytest tests/ -q
+      - name: Artifact manifest schema
+        run: python -c "import json; m = json.load(open('artifacts/manifest.json')); [m['artifacts'][n] for b in m['bundles'].values() for n in b]"
+      - name: Tier 0 reproduction from released records
+        run: |
+          python scripts/reproduce.py envelope
+          python scripts/reproduce.py stages
+          python scripts/reproduce.py certificate
+          python scripts/reproduce.py expert-ceiling
+# Simulator-backed tests (pytest tests/ --isaac) need Isaac Lab and a GPU,
+# run them locally per docs/REPRODUCING_THE_PAPER.md.
