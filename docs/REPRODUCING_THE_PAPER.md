@@ -29,14 +29,41 @@ Expected primary numbers, expert and ACT-A both 100/100 at r=1, expert
 84/100 and ACT-A 53/100 at r=2, paired bootstrap 95% interval of the gap
 at r=2 equal to [0.18, 0.44].
 
+## Tested environment
+
+The released records and every verification in this repository ran under
+the versions below. The simulation stack comes from an Isaac Lab
+installation, the analysis tier needs only the three Python packages.
+
+| component | tested version |
+|---|---|
+| Isaac Sim | 5.1.0 |
+| Isaac Lab | 0.54.2 |
+| Python (Isaac environment) | 3.11.14 |
+| PyTorch | 2.7.0+cu128 |
+| SciPy (Isaac environment) | 1.15.3 |
+| numpy (Isaac environment) | 1.26.4 |
+| diffusers (DP baseline) | 0.30.3 |
+| gymnasium | 1.2.1 |
+
+SciPy 1.15.3 is the version behind the frozen Ferrari-Canny
+diagnostics. The in-repo scorer reproduces all 6322 recorded margins
+exactly under it, while a different SciPy/Qhull build (checked with
+system SciPy 1.16.1) flips 15 of 6322 values at the force-closure
+boundary, every one with |epsilon| under 1e-12 against the -1 sentinel.
+The tie is a numerical-version fact of the boundary, not an
+implementation difference, and rescoring for comparison against the
+released margins should pin SciPy 1.15.3.
+
 ## Full simulation reproduction, Isaac plus GPU
 
-Prerequisites, an Isaac Lab installation (tested with Isaac Sim 5.1,
-Isaac Lab under `../IsaacLab`), the extension installed into its
-environment,
+Prerequisites, an Isaac Lab installation matching the tested versions
+above, the extension installed into its environment,
 
 ```bash
 uv pip install -p <isaaclab-venv>/bin/python -e source/parcelstow
+# add [diffusion] for the Diffusion Policy baseline, [analysis] for the
+# record-reproduction tier, [all] for everything
 ```
 
 Then, in dependency order,

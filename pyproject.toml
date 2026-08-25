@@ -102,6 +102,10 @@ docstring-code-format = true
 
 [tool.pyright]
 
+# Developer-local editor configuration only. It assumes an Isaac Lab
+# checkout beside this repository so pyright resolves simulator imports,
+# no supported workflow depends on it. Point venvPath/venv and the
+# extraPaths below at your own Isaac Lab location, or ignore them.
 venvPath = ".."
 venv = "IsaacLab/.venv"
 

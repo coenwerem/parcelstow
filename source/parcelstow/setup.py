@@ -10,7 +10,20 @@ EXTENSION_TOML_DATA = toml.load(os.path.join(EXTENSION_PATH, "config", "extensio
 
 INSTALL_REQUIRES = [
     "psutil",
+    # realized-contact certificate scoring (mdp/ferrari_canny.py)
+    "scipy",
 ]
+
+# Dependency tiers beyond the Isaac Lab environment (torch, gymnasium,
+# and scipy arrive with Isaac Lab). The analysis extra covers the
+# no-simulator record reproduction, the diffusion extra covers the
+# Diffusion Policy baseline, ACT and DAgger need torch only.
+EXTRAS_REQUIRE = {
+    "analysis": ["numpy", "scipy", "matplotlib"],
+    "diffusion": ["diffusers"],
+    "hub": ["huggingface_hub"],
+}
+EXTRAS_REQUIRE["all"] = sorted({d for ds in EXTRAS_REQUIRE.values() for d in ds})
 
 setup(
     name="parcelstow",
@@ -22,6 +35,7 @@ setup(
     description=EXTENSION_TOML_DATA["package"]["description"],
     keywords=EXTENSION_TOML_DATA["package"]["keywords"],
     install_requires=INSTALL_REQUIRES,
+    extras_require=EXTRAS_REQUIRE,
     license="Apache-2.0",
     include_package_data=True,
     python_requires=">=3.10",
