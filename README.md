@@ -5,8 +5,9 @@ Task-rate robustness evaluation for learned dexterous manipulation.
 ParcelStow is an Isaac Lab benchmark for measuring whether learned
 contact-rich manipulation policies preserve task success as execution
 rate increases while task geometry and acquisition timing remain fixed.
-A humanoid arm-hand system acquires a small parcel, reorients it by
-90 degrees, and inserts it into a cubby with 10 mm clearance. The single
+A humanoid arm-hand system (Unitree G1 with a RealHand L6 dexterous
+hand) acquires a small parcel, reorients it by 90 degrees, and inserts
+it into a cubby with 10 mm clearance. The single
 controlled variable is the task rate r, the requested speed of the
 demonstrated manipulation cycle, visible to every policy in its
 observation.

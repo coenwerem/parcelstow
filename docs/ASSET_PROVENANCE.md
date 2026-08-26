@@ -5,12 +5,18 @@ None of these files needs regeneration to run or evaluate ParcelStow,
 the benchmark treats them as frozen inputs. `assets/NOTICE.md` maps each
 family to its upstream license.
 
-## Robot asset, G1 with LinkerHand L6 hands
+## Robot asset, G1 with RealHand L6 hands
+
+ParcelStow refers to the hand as the RealHand L6, reflecting the
+manufacturer's current branding (https://www.realhand.com/). The
+redistributed robot-description assets originate from the manufacturer's
+legacy LinkerHand repository and therefore retain historical LinkerHand
+naming in upstream files, paths, and metadata.
 
 Pipeline behind the frozen runtime asset,
 
 ```
-Unitree G1 description                LinkerHand L6 description
+Unitree G1 description                RealHand L6 description (legacy LinkerHand repo)
 robots/g1_description/                L6/right, L6/left
 g1_29dof_rev_1_0.urdf + meshes       linkerhand_l6v3.1_{right,left}.urdf + meshes
         \                                  /
@@ -29,8 +35,9 @@ byte-identical (sha256) to
 `robots/g1_description/meshes` at commit `4ddbf6d`, and all shipped L6
 URDFs and meshes are byte-identical to
 [linker-bot/linkerhand-urdf](https://github.com/linker-bot/linkerhand-urdf)
-`L6/right` and `L6/left` at commit `075cc7d`. The hand is the LinkerHand
-L6 (v3.1 URDFs). The merged URDFs are transformed, the merge strips the
+`L6/right` and `L6/left` at commit `075cc7d`. The hand is the RealHand
+L6 (v3.1 URDFs, published under the manufacturer's legacy LinkerHand
+naming). The merged URDFs are transformed, the merge strips the
 stock Unitree rubber-hand links, prefixes mesh paths, and adds two fixed
 mount joints at the wrist yaw links (mount transforms validated in a
 MuJoCo graft before the merge).

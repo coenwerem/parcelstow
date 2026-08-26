@@ -2,6 +2,10 @@
 
 Verified 2026-08-25 by sha256 comparison against the upstream
 repositories, docs/ASSET_PROVENANCE.md holds the full provenance chain.
+ParcelStow refers to the hand as the RealHand L6, the manufacturer's
+current branding, while the redistributed description assets originate
+from the manufacturer's legacy LinkerHand repository and retain the
+historical LinkerHand naming in upstream files, paths, and metadata.
 
 | asset family | upstream | license | copyright | state |
 |---|---|---|---|---|

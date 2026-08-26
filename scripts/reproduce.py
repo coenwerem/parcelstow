@@ -1,17 +1,22 @@
-"""Reproduce the paper's tables and figures from released records, no Isaac.
+"""Reproduce the reported quantitative results from the released episode
+records, no Isaac.
 
 Every target reads the frozen episode records shipped in data/records/ (or
-the artifacts fetched by scripts/download_artifacts.py) and writes figures
-to media/ and derived analyses to outputs/reproduce/. Nothing here reruns
-the simulator, docs/REPRODUCING_THE_PAPER.md describes the full simulation
-path.
+the artifacts fetched by scripts/download_artifacts.py) and writes derived
+analyses to outputs/reproduce/. Principal evaluation plots regenerate to
+media/ as well. Nothing here reruns the simulator, and exact camera-ready
+paper figures are not part of the release contract,
+docs/REPRODUCING_THE_PAPER.md maps every reported quantity to its record
+and command.
 
 Targets,
-  envelope     operating-envelope figure, table, and the paired bootstrap
+  envelope     operating-envelope numbers and plot, per-rate success with
+               Wilson intervals, and the 20000-resample paired bootstrap
                interval of the expert over ACT-A success gap at r=2
   stages       per-stage completion against rate for every actor
   certificate  realized-contact force-closure analysis of the acquisition
                diagnostic
+  certificate-oos  held-out force-closure ranking and calibration
   expert-ceiling  tracking-accuracy attribution of the expert rate limit
   all          every target above
 
@@ -36,16 +41,32 @@ EVAL_DIR = os.path.join(REPO, "outputs", "paper", "eval")
 ACTORS = ["expert", "act", "dagger", "dp"]
 
 
+REPLICATION = {
+    "act_seed1_rerun.jsonl.gz": "act_multiseed/eval/act_seed1_rerun.jsonl",
+    "act_seed2.jsonl.gz": "act_multiseed/eval/act_seed2.jsonl",
+    "act_seed3.jsonl.gz": "act_multiseed/eval/act_seed3.jsonl",
+    "act_n50.jsonl.gz": "act_demoscale/eval/act_n50.jsonl",
+    "act_n100.jsonl.gz": "act_demoscale/eval/act_n100.jsonl",
+}
+
+
+def _gunzip(src, dst):
+    if not os.path.exists(dst):
+        os.makedirs(os.path.dirname(dst), exist_ok=True)
+        with gzip.open(src, "rb") as fin, open(dst, "wb") as fout:
+            shutil.copyfileobj(fin, fout)
+        print(f"[records] {src} -> {dst}")
+
+
 def ensure_records():
     """Materialize the shipped records where the analyzers expect them."""
     os.makedirs(EVAL_DIR, exist_ok=True)
     for a in ACTORS:
-        dst = os.path.join(EVAL_DIR, a + ".jsonl")
-        src = os.path.join(RECORDS, a + "_episodes.jsonl.gz")
-        if not os.path.exists(dst):
-            with gzip.open(src, "rb") as fin, open(dst, "wb") as fout:
-                shutil.copyfileobj(fin, fout)
-            print(f"[records] {src} -> {dst}")
+        _gunzip(os.path.join(RECORDS, a + "_episodes.jsonl.gz"),
+                os.path.join(EVAL_DIR, a + ".jsonl"))
+    for src, rel in REPLICATION.items():
+        _gunzip(os.path.join(RECORDS, "replication", src),
+                os.path.join(REPO, "outputs", "paper", rel))
     dst = os.path.join(EVAL_DIR, "summary.jsonl")
     if not os.path.exists(dst):
         shutil.copyfile(os.path.join(RECORDS, "eval_summary.jsonl"), dst)
@@ -95,6 +116,16 @@ def target_certificate():
          "--eval_dir", EVAL_DIR, "--out", out])
 
 
+def target_certificate_oos():
+    ensure_records()
+    out_dir = os.path.join(REPO, "outputs", "reproduce")
+    os.makedirs(out_dir, exist_ok=True)
+    run([sys.executable, "scripts/manipulation/analyze_certificate_oos.py",
+         "--eval_dir", EVAL_DIR,
+         "--multiseed_dir", os.path.join(REPO, "outputs", "paper", "act_multiseed", "eval"),
+         "--out_dir", out_dir])
+
+
 def target_expert_ceiling():
     ensure_records()
     out_dir = os.path.join(REPO, "outputs", "reproduce")
@@ -107,6 +138,7 @@ TARGETS = {
     "envelope": target_envelope,
     "stages": target_stages,
     "certificate": target_certificate,
+    "certificate-oos": target_certificate_oos,
     "expert-ceiling": target_expert_ceiling,
 }
 

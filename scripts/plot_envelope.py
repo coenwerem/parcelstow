@@ -48,7 +48,7 @@ def find_records(name, override=None):
     raise FileNotFoundError(f"no released records for {name}, looked at {candidates}")
 
 
-def paired_gap_ci(recs_a, recs_b, rate, n_boot=10000, seed=0):
+def paired_gap_ci(recs_a, recs_b, rate, n_boot=20000, seed=0):
     """Percentile bootstrap interval for the success gap of actor A over
     actor B at one rate, paired over the shared evaluation draws."""
     def successes(recs):
