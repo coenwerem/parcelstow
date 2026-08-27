@@ -27,8 +27,7 @@ leaves the parcel on its side against the receptacle wall.
 
 DAgger completes 3 of 100 episodes at the nominal rate, so it holds no
 nominal parity to lose and its behavior at r=2 separates no rate effect
-from that deficit. It appears here because its failure is visible in
-motion. ACT-A completes 100 of 100 at the nominal rate, and its failure
+from that deficit. ACT-A completes 100 of 100 at the nominal rate, and its failure
 at r=2 is a 17.1 degree final orientation error against a 10 degree
 settling tolerance, panel (b) below.
 
