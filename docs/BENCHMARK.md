@@ -4,6 +4,15 @@ ParcelStow measures one quantity, the task-rate operating envelope of a
 manipulation policy, success fraction as a function of the requested task
 rate r while everything else about the task stays fixed.
 
+The envelope is the output of a perturbation procedure. The scene, the
+object, the friction coefficient, every geometric reference, and the
+acquisition timing hold their nominal values while one task-intrinsic
+quantity varies, and a learner's envelope is compared against the
+envelope of the expert that supplied its demonstrations at matched
+values. Comparing at matched values separates preservation under the
+perturbation from a deficit already present at the nominal value. Task
+rate is the quantity this benchmark instantiates.
+
 ## The controlled variable
 
 The task rate r scales the duration of the manipulation phase schedule.

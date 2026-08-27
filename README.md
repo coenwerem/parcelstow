@@ -11,6 +11,16 @@ it into a cubby with 10 mm clearance. ParcelStow varies one quantity,
 the requested task rate r, which scales the duration of the manipulation
 phase schedule. Every policy reads r in its observation.
 
+A perturbation of one task-intrinsic quantity defines the measurement.
+The scene, the object, the friction coefficient, every geometric
+reference, and the acquisition timing hold their nominal values while
+that quantity varies, and a learner's success curve is compared against
+the curve of the expert that supplied its demonstrations at matched
+values. Comparing at matched values separates preservation under the
+perturbation from a deficit already present at the nominal value. Task
+rate is the quantity instantiated here, and success measured over r
+traces the task-rate operating envelope.
+
 At r=2 the expert seats the parcel and a DAgger-distilled policy topples
 it against the receptacle wall.
 
