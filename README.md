@@ -10,16 +10,13 @@ hand) acquires a small parcel, reorients it by 90 degrees, and inserts
 it into a cubby with 10 mm clearance. ParcelStow varies one quantity,
 the requested task rate r, which scales the duration of the manipulation
 phase schedule. Every policy reads r in its observation.
+[docs/BENCHMARK.md](docs/BENCHMARK.md) specifies the perturbation
+procedure, the frozen evaluation protocol, and the reference actors.
 
-A perturbation of one task-intrinsic quantity defines the measurement.
-The scene, the object, the friction coefficient, every geometric
-reference, and the acquisition timing hold their nominal values while
-that quantity varies, and a learner's success curve is compared against
-the curve of the expert that supplied its demonstrations at matched
-values. Comparing at matched values separates preservation under the
-perturbation from a deficit already present at the nominal value. Task
-rate is the quantity instantiated here, and success measured over r
-traces the task-rate operating envelope.
+| | | |
+|---|---|---|
+| [Quick start](#quick-start) | [Evaluate your policy](#evaluate-your-policy) | [Reproduce the paper](docs/REPRODUCING_THE_PAPER.md) |
+| [Benchmark specification](docs/BENCHMARK.md) | [Data and checkpoints](docs/DATA_AND_CHECKPOINTS.md) | [Citation](#citation) |
 
 At r=2 the expert completes the insertion and a DAgger-distilled policy
 leaves the parcel on its side against the receptacle wall.
@@ -68,11 +65,6 @@ rate.
 <p align="center">
   <img src="media/operating_envelope.png" alt="Task-rate operating envelope" width="600">
 </p>
-
-| | | |
-|---|---|---|
-| [Quick start](#quick-start) | [Evaluate your policy](#evaluate-your-policy) | [Reproduce the paper](docs/REPRODUCING_THE_PAPER.md) |
-| [Benchmark specification](docs/BENCHMARK.md) | [Data and checkpoints](docs/DATA_AND_CHECKPOINTS.md) | [Citation](#citation) |
 
 ## What can I do with ParcelStow?
 
