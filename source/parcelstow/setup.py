@@ -17,7 +17,7 @@ INSTALL_REQUIRES = [
 # Dependency tiers beyond the Isaac Lab environment (torch, gymnasium,
 # and scipy arrive with Isaac Lab). The analysis extra covers the
 # no-simulator record reproduction, the diffusion extra covers the
-# Diffusion Policy baseline, ACT and DAgger need torch only.
+# Diffusion Policy reference actor, ACT and DAgger need torch only.
 EXTRAS_REQUIRE = {
     "analysis": ["numpy", "scipy", "matplotlib"],
     "diffusion": ["diffusers"],

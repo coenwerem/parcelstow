@@ -7,7 +7,7 @@ writes one episode-record JSONL per actor plus a summary JSONL.
 
 Actors,
   expert                     scripted reference policy
-  act | dp | dagger          released learned baselines, checkpoints via
+  act | dp | dagger          released learned reference actors, checkpoints via
                              scripts/download_artifacts.py --paper
   module.path:ClassName      your policy, see docs/POLICY_INTERFACE.md
 

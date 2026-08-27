@@ -56,7 +56,7 @@ installation, the analysis tier needs only the three Python packages.
 | PyTorch | 2.7.0+cu128 |
 | SciPy (Isaac environment) | 1.15.3 |
 | numpy (Isaac environment) | 1.26.4 |
-| diffusers (DP baseline) | 0.30.3 |
+| diffusers (Diffusion Policy) | 0.30.3 |
 | gymnasium | 1.2.1 |
 
 SciPy 1.15.3 is the version behind the frozen Ferrari-Canny
@@ -75,7 +75,7 @@ above, the extension installed into its environment,
 
 ```bash
 uv pip install -p <isaaclab-venv>/bin/python -e source/parcelstow
-# add [diffusion] for the Diffusion Policy baseline, [analysis] for the
+# add [diffusion] for the Diffusion Policy reference actor, [analysis] for the
 # record-reproduction tier, [all] for everything
 ```
 

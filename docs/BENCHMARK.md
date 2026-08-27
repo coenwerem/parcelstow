@@ -86,4 +86,4 @@ produces records in the released schema, and
 python scripts/plot_envelope.py --summary outputs/eval/summary.jsonl
 ```
 
-draws the operating envelope next to the released baselines.
+draws the operating envelope next to the released reference actors.

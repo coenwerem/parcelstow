@@ -108,7 +108,7 @@ episodes,
 python scripts/run_task.py
 ```
 
-**Tier 2, evaluate a policy.** Run a released baseline or your own policy
+**Tier 2, evaluate a policy.** Run a released reference actor or your own policy
 over rates ([docs/POLICY_INTERFACE.md](docs/POLICY_INTERFACE.md)),
 
 ```bash
