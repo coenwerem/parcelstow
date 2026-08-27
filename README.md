@@ -135,7 +135,7 @@ python -m pytest tests/ --isaac -q    # simulator-backed physics tests
 
 ## Citation
 
-The accompanying preprint is in preparation, the arXiv identifier will
+The accompanying preprint is in preparation. The arXiv identifier will
 appear here and in `CITATION.cff` once assigned.
 
 ```bibtex
