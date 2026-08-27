@@ -12,7 +12,7 @@ the requested task rate r, which scales the duration of the manipulation
 phase schedule. Every policy reads r in its observation.
 
 <p align="center">
-  <img src="media/expert_vs_act_r2.gif" alt="Expert and ACT-A at r=2" width="640">
+  <img src="media/task_rate_robustness.gif" alt="Expert and DAgger at r=2" width="640">
 </p>
 
 **The primary result.** ACT-A, trained on the scripted expert's
