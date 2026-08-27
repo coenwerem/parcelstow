@@ -11,9 +11,28 @@ it into a cubby with 10 mm clearance. ParcelStow varies one quantity,
 the requested task rate r, which scales the duration of the manipulation
 phase schedule. Every policy reads r in its observation.
 
+At r=2 the expert seats the parcel and a DAgger-distilled policy topples
+it against the receptacle wall.
+
 <p align="center">
   <img src="media/task_rate_robustness.gif" alt="Expert and DAgger at r=2" width="640">
 </p>
+
+DAgger is a deliberately weak reference that fails at every rate, so its
+failure at r=2 isolates nothing about rate. ACT-A fails without toppling
+anything: it matches the expert 100/100 at the nominal rate and still
+places the parcel outside the 10 degree settling tolerance at r=2, panel
+(b) below.
+
+<p align="center">
+  <img src="media/terminal_states_r2.png" alt="Terminal states at r=2 for the expert, ACT-A, and DAgger" width="700">
+</p>
+
+Terminal states at r=2, with the receptacle interior magnified. Each
+subcaption reports the final parcel orientation error of the displayed
+episode against the 10 degree settling tolerance. The three panels come
+from separate episodes and show terminal geometry, not a matched
+initial-condition comparison.
 
 **The primary result.** ACT-A, trained on the scripted expert's
 demonstrations, and the expert both succeed 100/100 at the nominal rate.
