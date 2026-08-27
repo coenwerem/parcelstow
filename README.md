@@ -45,24 +45,25 @@ episode against the 10 degree settling tolerance. The three panels come
 from separate episodes and show terminal geometry, not a matched
 initial-condition comparison.
 
-**The primary result.** ACT-A, trained on the scripted expert's
-demonstrations, and the expert both succeed 100/100 at the nominal rate.
-At r=2, still inside the ACT training-rate range [0.5, 2], ACT-A succeeds
-in 53 of 100 episodes while the expert succeeds in 84.
+ACT-A, trained on the scripted expert's demonstrations, and the expert
+each complete 100 of 100 episodes at the nominal rate. At r=2, inside the
+ACT training-rate range [0.5, 2], ACT-A loses 47 percentage points
+against 16 for the expert.
 
-| | r=1 | r=2 |
-|---|---|---|
-| Expert | **100/100** | **84/100** |
-| ACT-A | **100/100** | **53/100** |
+| | r=1 | r=2 | change |
+|---|---|---|---|
+| Expert | 100/100 | 84/100 | -16 |
+| ACT-A | 100/100 | 53/100 | -47 |
 
 Every cell runs 100 episodes on draws seeded identically for all actors
 ([docs/BENCHMARK.md](docs/BENCHMARK.md)). A 20000-resample paired
-bootstrap over those draws puts the r=2 success gap at [0.18, 0.44] with
-95% confidence. The other two seeds lose more over the same rate change,
-ACT-B from 70/100 to 36/100 and ACT-C from 62/100 to 14/100, against
-100/100 to 84/100 for the expert. ParcelStow measures whether success
-holds as the requested rate rises, not whether a policy reproduces the
-demonstrated task at its nominal rate.
+bootstrap over those draws puts the matched-rate gap at r=2 at [0.18,
+0.44] with 95% confidence. Two further ACT policies, differing only in
+pseudorandom parameter initialization, lose 34 and 48 percentage points
+over the same rate change, from 70/100 and 62/100 at the nominal rate.
+ParcelStow measures whether success holds as the requested rate rises,
+not whether a policy reproduces the demonstrated task at its nominal
+rate.
 
 <p align="center">
   <img src="media/operating_envelope.png" alt="Task-rate operating envelope" width="600">
