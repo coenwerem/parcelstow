@@ -1,7 +1,7 @@
 """Expert-ceiling attribution across the rate grid (WRL workshop addition
 of 2026-08-21). Reads the expert rows of the final evaluation and reports,
 per rate, the quantities separating three candidate explanations of the
-expert collapse at r >= 2.5, actuator saturation, grasp failure, and servo
+expert decline at r >= 2.5, actuator saturation, grasp failure, and servo
 tracking accuracy at the insertion interface.
 
 Reported per rate (median and p90 over 100 episodes),
