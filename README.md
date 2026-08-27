@@ -1,16 +1,22 @@
 # ParcelStow
 
-Evaluate how learned dexterous-manipulation policies respond to higher
-task rates.
+Task-rate robustness evaluation for learned dexterous manipulation.
 
-ParcelStow is an Isaac Lab benchmark for measuring policy success as the
-requested task rate `r` increases. A Unitree G1 arm with a RealHand L6
-dexterous hand acquires a small parcel, reorients it by 90 degrees, and
-inserts it into a cubby with 10 mm clearance. The task rate scales the
-duration of the manipulation phases; the scene geometry, object, grasp,
-acquisition timing, success criteria, and policy interfaces remain fixed.
-Every policy receives `r` in its observation. The success fraction as a
-function of `r` is the policy's task-rate operating envelope.
+ParcelStow is an Isaac Lab benchmark for a contact-rich parcel insertion
+task. The robot acquires a free rigid parcel, lifts it from the table,
+reorients it by 90 degrees, transports it to an open-front receptacle,
+inserts it with 10 mm of clearance per side along the tight axis, and
+releases it. A successful episode requires the parcel to settle within
+the final position and orientation tolerances. The simulation uses a
+fixed-base Unitree G1 humanoid with a RealHand L6 anthropomorphic right
+hand.
+
+The benchmark measures how policy success changes with the requested
+task rate `r`. Increasing `r` shortens the post-acquisition manipulation
+phases while the scene, parcel, receptacle, grasp, acquisition timing,
+success criteria, observation, and action remain fixed. Every policy
+receives `r` in its observation. The success fraction as a function of
+`r` defines the policy's task-rate operating envelope.
 [docs/BENCHMARK.md](docs/BENCHMARK.md) specifies the rate perturbation,
 evaluation protocol, and reference actors.
 
