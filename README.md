@@ -14,20 +14,24 @@ observation.
 
 ![Expert and ACT-A at r=2](media/expert_vs_act_r2.gif)
 
-**The primary result.** The scripted expert and an ACT policy trained on
-its demonstrations both succeed 100/100 at the nominal rate. At r=2,
-still inside the ACT training-rate range [0.5, 2],
+**The primary result.** ACT-A, trained on the scripted expert's
+demonstrations, and the expert both succeed 100/100 at the nominal rate.
+At r=2, still inside the ACT training-rate range [0.5, 2], ACT-A succeeds
+in 53 of 100 episodes while the expert succeeds in 84.
 
 | | r=1 | r=2 |
 |---|---|---|
 | Expert | **100/100** | **84/100** |
 | ACT-A | **100/100** | **53/100** |
 
-with a paired bootstrap 95% interval of [0.18, 0.44] for the success gap
-at r=2 on shared evaluation draws. ACT-B and ACT-C degrade more from r=1
-to r=2 than the expert as well. Nominal task reproduction and
-preservation of the demonstrated physical operating envelope are
-different properties, and ParcelStow measures the second.
+Every cell runs 100 episodes on draws seeded identically for all actors
+([docs/BENCHMARK.md](docs/BENCHMARK.md)). A 20000-resample paired
+bootstrap over those draws puts the r=2 success gap at [0.18, 0.44] with
+95% confidence. The other two seeds lose more over the same rate change,
+ACT-B from 70/100 to 36/100 and ACT-C from 62/100 to 14/100, against
+100/100 to 84/100 for the expert. ParcelStow measures whether success
+holds as the requested rate rises, not whether a policy reproduces the
+demonstrated task at its nominal rate.
 
 ![Task-rate operating envelope](media/operating_envelope.png)
 
