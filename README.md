@@ -39,7 +39,7 @@ different properties, and ParcelStow measures the second.
 ## What can I do with ParcelStow?
 
 - **Evaluate a policy over a task-rate grid.** One command runs any
-  policy implementing the two-method actor interface over the frozen
+  policy exposing the three-member actor interface over the frozen
   evaluation draws and writes records in the released schema
   ([docs/POLICY_INTERFACE.md](docs/POLICY_INTERFACE.md)).
 - **Reproduce the paper's comparisons.** Expert, ACT (three seeds),
