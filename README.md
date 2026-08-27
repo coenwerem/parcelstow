@@ -13,10 +13,10 @@ phase schedule. Every policy reads r in its observation.
 [docs/BENCHMARK.md](docs/BENCHMARK.md) specifies the perturbation
 procedure, the frozen evaluation protocol, and the reference actors.
 
-| | | |
-|---|---|---|
-| [Quick start](#quick-start) | [Evaluate your policy](#evaluate-your-policy) | [Reproduce the paper](docs/REPRODUCING_THE_PAPER.md) |
-| [Benchmark specification](docs/BENCHMARK.md) | [Data and checkpoints](docs/DATA_AND_CHECKPOINTS.md) | [Citation](#citation) |
+| | | | |
+|---|---|---|---|
+| [Quick start](#quick-start) | [Evaluate your policy](#evaluate-your-policy) | [Benchmark specification](docs/BENCHMARK.md) | [Policy interface](docs/POLICY_INTERFACE.md) |
+| [Reproduce the paper](docs/REPRODUCING_THE_PAPER.md) | [Data and checkpoints](docs/DATA_AND_CHECKPOINTS.md) | [Diagnostics](docs/DIAGNOSTICS.md) | [Citation](#citation) |
 
 At r=2 the expert completes the insertion and a DAgger-distilled policy
 leaves the parcel on its side against the receptacle wall.
@@ -66,20 +66,13 @@ rate.
   <img src="media/operating_envelope.png" alt="Task-rate operating envelope" width="600">
 </p>
 
-## What can I do with ParcelStow?
+Success against task rate for every reference actor, the task-rate
+operating envelope. Wilson 95% intervals, 100 episodes per point, with
+r > 2 outside the demonstrated training range.
 
-- **Evaluate a policy over a task-rate grid.** One command runs any
-  policy exposing the three-member actor interface over the frozen
-  evaluation draws and writes records in the released schema
-  ([docs/POLICY_INTERFACE.md](docs/POLICY_INTERFACE.md)).
-- **Reproduce the paper's comparisons.** Expert, ACT (three seeds),
-  Diffusion Policy, and DAgger, from the released episode records without
-  a simulator, or from scratch with Isaac Lab
-  ([docs/REPRODUCING_THE_PAPER.md](docs/REPRODUCING_THE_PAPER.md)).
-- **Diagnose where failures enter.** Stage outcomes, hand-object motion,
-  relative-motion handoffs, and realized-contact measurements localize
-  the failure stage per episode
-  ([docs/DIAGNOSTICS.md](docs/DIAGNOSTICS.md)).
+Stage outcomes, hand-object motion, relative-motion handoffs, and
+realized-contact measurements in the released records localize the
+failure stage per episode ([docs/DIAGNOSTICS.md](docs/DIAGNOSTICS.md)).
 
 ## Quick start
 
@@ -100,8 +93,8 @@ episodes,
 python scripts/run_task.py
 ```
 
-**Tier 2, evaluate a policy.** Run a released reference actor or your own policy
-over rates ([docs/POLICY_INTERFACE.md](docs/POLICY_INTERFACE.md)),
+**Tier 2, run a released reference actor.** Evaluate the ACT-A
+checkpoint over a rate pair,
 
 ```bash
 python scripts/download_artifacts.py --demo     # ACT-A checkpoint
@@ -111,22 +104,6 @@ python scripts/evaluate.py --actor act --rates 1.0 2.0 --episodes 100
 **Tier 3, full reproduction.** Fetch demonstrations and all checkpoints,
 or retrain them, then rerun the full evaluation
 ([docs/REPRODUCING_THE_PAPER.md](docs/REPRODUCING_THE_PAPER.md)).
-
-## Evaluate your policy
-
-Implement three members, `name`, `reset(ids, obs)`, and
-`act(obs) -> (action, q_target)`, over the frozen 147-D state observation
-(requested rate included at index 146) and 16-D joint-position action at
-50 Hz. `examples/custom_policy.py` is a complete runnable example,
-
-```bash
-python scripts/evaluate.py --actor examples.custom_policy:HoldPosturePolicy \
-    --rates 1.0 --episodes 5 --num_envs 8
-python scripts/plot_envelope.py --summary outputs/eval/summary.jsonl
-```
-
-[docs/POLICY_INTERFACE.md](docs/POLICY_INTERFACE.md) documents the
-observation slices, action semantics, reset protocol, and record schema.
 
 ## Installation
 
@@ -145,6 +122,22 @@ then verify with the physical-integrity tests,
 python -m pytest tests/ -q            # pure geometry tests, no simulator
 python -m pytest tests/ --isaac -q    # simulator-backed physics tests
 ```
+
+## Evaluate your policy
+
+Implement three members, `name`, `reset(ids, obs)`, and
+`act(obs) -> (action, q_target)`, over the frozen 147-D state observation
+(requested rate included at index 146) and 16-D joint-position action at
+50 Hz. `examples/custom_policy.py` is a complete runnable example,
+
+```bash
+python scripts/evaluate.py --actor examples.custom_policy:HoldPosturePolicy \
+    --rates 1.0 --episodes 5 --num_envs 8
+python scripts/plot_envelope.py --summary outputs/eval/summary.jsonl
+```
+
+[docs/POLICY_INTERFACE.md](docs/POLICY_INTERFACE.md) documents the
+observation slices, action semantics, reset protocol, and record schema.
 
 ## Repository map
 
