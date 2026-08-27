@@ -55,12 +55,12 @@ analytic grasp metric enters any predicate.
 
 ## Reference actors
 
-| actor | description |
-|---|---|
-| expert | model-derived scripted policy, IK-tracked object path with grasp-bank acquisition |
-| act | state-only ACT (Zhao et al., RSS 2023) trained on 297 expert demonstrations, seeds A/B/C |
-| dp | state-based Diffusion Policy (ConditionalUnet1D) on the same demonstrations |
-| dagger | MLP student distilled with DAgger, a deliberately weak reference |
+| actor | construction | role in the measurement |
+|---|---|---|
+| expert | model-derived scripted policy, IK-tracked object path with grasp-bank acquisition | supplies the demonstrations and the reference envelope every learner is compared against at matched rates |
+| act | state-only ACT (Zhao et al., RSS 2023) trained on 297 expert demonstrations, seeds A/B/C | reaches nominal parity, 100/100 at r=1 for seed A, so its envelope is comparable to the expert's across the grid |
+| dp | state-based Diffusion Policy (ConditionalUnet1D) on the same demonstrations | a second architecture on the same demonstrations, 68/100 at r=1, below nominal parity |
+| dagger | MLP student distilled with DAgger | 3/100 at r=1 and below parity at every rate, the control for what the measurement cannot separate |
 
 ## Diagnostics beside the envelope
 

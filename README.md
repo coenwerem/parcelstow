@@ -21,18 +21,19 @@ perturbation from a deficit already present at the nominal value. Task
 rate is the quantity instantiated here, and success measured over r
 traces the task-rate operating envelope.
 
-At r=2 the expert seats the parcel and a DAgger-distilled policy topples
-it against the receptacle wall.
+At r=2 the expert completes the insertion and a DAgger-distilled policy
+leaves the parcel on its side against the receptacle wall.
 
 <p align="center">
   <img src="media/task_rate_robustness.gif" alt="Expert and DAgger at r=2" width="640">
 </p>
 
-DAgger is a deliberately weak reference that fails at every rate, so its
-failure at r=2 isolates nothing about rate. ACT-A fails without toppling
-anything: it matches the expert 100/100 at the nominal rate and still
-places the parcel outside the 10 degree settling tolerance at r=2, panel
-(b) below.
+DAgger completes 3 of 100 episodes at the nominal rate, so it holds no
+nominal parity to lose and its behavior at r=2 separates no rate effect
+from that deficit. It appears here because its failure is visible in
+motion. ACT-A completes 100 of 100 at the nominal rate, and its failure
+at r=2 is a 17.1 degree final orientation error against a 10 degree
+settling tolerance, panel (b) below.
 
 <p align="center">
   <img src="media/terminal_states_r2.png" alt="Terminal states at r=2 for the expert, ACT-A, and DAgger" width="700">
