@@ -1,83 +1,89 @@
 # ParcelStow
 
-Task-rate robustness evaluation for learned dexterous manipulation.
+Evaluate how learned dexterous-manipulation policies respond to higher
+task rates.
 
-ParcelStow is an Isaac Lab benchmark for measuring whether learned
-contact-rich manipulation policies preserve task success as execution
-rate increases while task geometry and acquisition timing remain fixed.
-A humanoid arm-hand system (Unitree G1 with a RealHand L6 dexterous
-hand) acquires a small parcel, reorients it by 90 degrees, and inserts
-it into a cubby with 10 mm clearance. ParcelStow varies one quantity,
-the requested task rate r, which scales the duration of the manipulation
-phase schedule. Every policy reads r in its observation.
-[docs/BENCHMARK.md](docs/BENCHMARK.md) specifies the perturbation
-procedure, the frozen evaluation protocol, and the reference actors.
+ParcelStow is an Isaac Lab benchmark for measuring policy success as the
+requested task rate `r` increases. A Unitree G1 arm with a RealHand L6
+dexterous hand acquires a small parcel, reorients it by 90 degrees, and
+inserts it into a cubby with 10 mm clearance. The task rate scales the
+duration of the manipulation phases; the scene geometry, object, grasp,
+acquisition timing, success criteria, and policy interfaces remain fixed.
+Every policy receives `r` in its observation. The success fraction as a
+function of `r` is the policy's task-rate operating envelope.
+[docs/BENCHMARK.md](docs/BENCHMARK.md) specifies the rate perturbation,
+evaluation protocol, and reference actors.
 
 | | | | |
 |---|---|---|---|
 | [Quick start](#quick-start) | [Evaluate your policy](#evaluate-your-policy) | [Benchmark specification](docs/BENCHMARK.md) | [Policy interface](docs/POLICY_INTERFACE.md) |
 | [Reproduce the paper](docs/REPRODUCING_THE_PAPER.md) | [Data and checkpoints](docs/DATA_AND_CHECKPOINTS.md) | [Diagnostics](docs/DIAGNOSTICS.md) | [Citation](#citation) |
 
-At r=2 the expert completes the insertion and a DAgger-distilled policy
-leaves the parcel on its side against the receptacle wall.
+At `r=2`, the expert completes the insertion, while DAgger leaves the
+parcel on its side against the receptacle wall.
 
 <p align="center">
   <img src="media/task_rate_robustness.gif" alt="Expert and DAgger at r=2" width="640">
 </p>
 
-DAgger completes 3 of 100 episodes at the nominal rate, so it holds no
-nominal parity to lose and its behavior at r=2 separates no rate effect
-from that deficit. ACT-A completes 100 of 100 at the nominal rate, and its failure
-at r=2 is a 17.1 degree final orientation error against a 10 degree
-settling tolerance, panel (b) below.
+DAgger succeeds in only 3 of 100 episodes at the nominal rate. Its
+behavior at `r=2` therefore cannot isolate sensitivity to task rate from
+its nominal-rate failures. ACT-A succeeds in all 100 nominal-rate
+episodes. In the `r=2` episode shown below, ACT-A finishes with a 17.1
+degree orientation error, which exceeds the 10 degree settling
+tolerance.
 
 <p align="center">
   <img src="media/terminal_states_r2.png" alt="Terminal states at r=2 for the expert, ACT-A, and DAgger" width="700">
 </p>
 
-Terminal states at r=2, with the receptacle interior magnified. Each
-subcaption reports the final parcel orientation error of the displayed
-episode against the 10 degree settling tolerance. The three panels come
-from separate episodes and show terminal geometry, not a matched
-initial-condition comparison.
+Terminal states at `r=2`, with the receptacle interior magnified. Each
+subcaption reports the final parcel orientation error for the displayed
+episode; successful settling requires an error of at most 10 degrees.
+The panels show separate episodes, not outcomes from a shared initial
+condition.
 
-ACT-A, trained on the scripted expert's demonstrations, and the expert
-each complete 100 of 100 episodes at the nominal rate. At r=2, inside the
-ACT training-rate range [0.5, 2], ACT-A loses 47 percentage points
-against 16 for the expert.
+The expert and ACT-A, which was trained on the expert's demonstrations,
+each succeed in 100 of 100 episodes at `r=1`. At `r=2`, within ACT-A's
+training range of `[0.5, 2]`, expert success decreases by 16 percentage
+points and ACT-A success decreases by 47 percentage points.
 
-| | r=1 | r=2 | change |
+| actor | `r=1` | `r=2` | change |
 |---|---|---|---|
 | Expert | 100/100 | 84/100 | -16 |
 | ACT-A | 100/100 | 53/100 | -47 |
 
-Every cell runs 100 episodes on draws seeded identically for all actors
-([docs/BENCHMARK.md](docs/BENCHMARK.md)). A 20000-resample paired
-bootstrap over those draws puts the matched-rate gap at r=2 at [0.18,
-0.44] with 95% confidence. Two further ACT policies, differing only in
-pseudorandom parameter initialization, lose 34 and 48 percentage points
-over the same rate change, from 70/100 and 62/100 at the nominal rate.
-ParcelStow measures whether success holds as the requested rate rises,
-not whether a policy reproduces the demonstrated task at its nominal
-rate.
+Each condition contains 100 episodes, with identical evaluation draws
+for every actor ([docs/BENCHMARK.md](docs/BENCHMARK.md)). At `r=2`, the
+expert exceeds ACT-A by 31 percentage points; a 20,000-resample paired
+bootstrap gives a 95% confidence interval of `[0.18, 0.44]` for this
+gap. Two ACT policies trained with different parameter-initialization
+seeds decrease by 34 and 48 percentage points between `r=1` and `r=2`,
+although their nominal success rates are lower at 70/100 and 62/100.
+Across these three training seeds, ACT success decreases more than expert
+success as the task rate rises from `r=1` to `r=2`. Comparing the expert
+and policy operating envelopes isolates sensitivity to task rate only
+when their success rates match at the nominal rate.
 
 <p align="center">
   <img src="media/operating_envelope.png" alt="Task-rate operating envelope" width="600">
 </p>
 
-Success against task rate for every reference actor, the task-rate
-operating envelope. Wilson 95% intervals, 100 episodes per point, with
-r > 2 outside the demonstrated training range.
+Success fraction against task rate for every reference actor. Each point
+contains 100 episodes and shows a Wilson 95% confidence interval. Rates
+above `r=2` lie outside the demonstrated training range.
 
-Stage outcomes, hand-object motion, relative-motion handoffs, and
-realized-contact measurements in the released records localize the
-failure stage per episode ([docs/DIAGNOSTICS.md](docs/DIAGNOSTICS.md)).
+The released records identify the first failed task predicate in each
+episode. They also report in-hand translation and rotation, actuator
+utilization, target-tracking error, and realized contact sets
+([docs/DIAGNOSTICS.md](docs/DIAGNOSTICS.md)).
 
 ## Quick start
 
 **Tier 0, no Isaac, no GPU.** The complete episode-level evaluation
-records ship in this repository. Reproduce the operating-envelope figure,
-the success table, and the gap interval directly from a clone,
+records ship in this repository. Reproduce the success-versus-rate
+figure, success table, and paired-bootstrap interval directly from a
+clone,
 
 ```bash
 pip install numpy matplotlib
@@ -115,7 +121,7 @@ Lab Python environment,
 uv pip install -p <isaaclab-venv>/bin/python -e source/parcelstow
 ```
 
-then verify with the physical-integrity tests,
+then run the geometry and simulator-backed physics tests,
 
 ```bash
 python -m pytest tests/ -q            # pure geometry tests, no simulator
