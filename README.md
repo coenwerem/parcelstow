@@ -11,7 +11,9 @@ it into a cubby with 10 mm clearance. ParcelStow varies one quantity,
 the requested task rate r, which scales the duration of the manipulation
 phase schedule. Every policy reads r in its observation.
 
-![Expert and ACT-A at r=2](media/expert_vs_act_r2.gif)
+<p align="center">
+  <img src="media/expert_vs_act_r2.gif" alt="Expert and ACT-A at r=2" width="640">
+</p>
 
 **The primary result.** ACT-A, trained on the scripted expert's
 demonstrations, and the expert both succeed 100/100 at the nominal rate.
@@ -32,7 +34,9 @@ ACT-B from 70/100 to 36/100 and ACT-C from 62/100 to 14/100, against
 holds as the requested rate rises, not whether a policy reproduces the
 demonstrated task at its nominal rate.
 
-![Task-rate operating envelope](media/operating_envelope.png)
+<p align="center">
+  <img src="media/operating_envelope.png" alt="Task-rate operating envelope" width="600">
+</p>
 
 | | | |
 |---|---|---|
