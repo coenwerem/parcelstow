@@ -1,8 +1,9 @@
-"""Expert-ceiling attribution across the rate grid (WRL workshop addition
-of 2026-08-21). Reads the expert rows of the final evaluation and reports,
-per rate, the quantities separating three candidate explanations of the
-expert decline at r >= 2.5, actuator saturation, grasp failure, and servo
-tracking accuracy at the insertion interface.
+"""Expert-ceiling attribution across the speedup grid (WRL workshop
+addition of 2026-08-21). Reads the expert rows of the final evaluation and
+reports, per execution speed, the quantities bearing on three candidate
+explanations of the expert's success decrease at r >= 2.5, actuator
+saturation, grasp failure, and target-tracking accuracy at the insertion
+interface.
 
 Reported per rate (median and p90 over 100 episodes),
 - max_arm_velocity_utilization, the arm-joint velocity fraction of the

@@ -1,11 +1,12 @@
-"""Per-environment task phase and task rate of the ParcelStow task.
+"""Per-environment task phase and speedup factor of the ParcelStow task.
 
 The phase clock derives from the per-environment step counter and the
-per-environment task rate. Time t = steps * dt runs through the phase
+per-environment speedup factor. Time t = steps * dt runs through the phase
 schedule of geometry.PHASES with the manipulation phases divided by the
-rate r, so two environments at different rates sit at different phases at
-the same wall time. The rate buffer lives on the environment and the reset
-event samples it from RATE_SPEC, which the drivers set before every reset.
+speedup factor r, so two environments at different speeds sit at different
+phases at the same wall time. The speedup-factor buffer lives on the
+environment and the reset event samples it from RATE_SPEC, which the
+drivers set before every reset.
 """
 
 from __future__ import annotations
@@ -19,7 +20,7 @@ from .. import geometry as G
 if TYPE_CHECKING:
     from isaaclab.envs import ManagerBasedRLEnv
 
-# Driver-set specification of the task-rate law applied at reset.
+# Driver-set specification of the speedup-factor law applied at reset.
 #   {"mode": "fixed", "value": r}
 #   {"mode": "uniform", "lo": a, "hi": b}
 #   {"mode": "per_env", "values": tensor (E,)}
@@ -67,13 +68,14 @@ def task_phase(env: ManagerBasedRLEnv) -> torch.Tensor:
 
 
 def task_rate(env: ManagerBasedRLEnv) -> torch.Tensor:
-    """Observation, the task rate r, shape (E, 1)."""
+    """Observation, the speedup factor r (stored in the legacy task_rate
+    field), shape (E, 1)."""
     return rate_buf(env).unsqueeze(1)
 
 
 def sample_task_rate(env: ManagerBasedRLEnv, env_ids: torch.Tensor):
-    """Reset event, draws the task rate of the resetting environments from
-    RATE_SPEC."""
+    """Reset event, draws the speedup factor of the resetting environments
+    from RATE_SPEC."""
     r = rate_buf(env)
     spec = RATE_SPEC
     n = len(env_ids)

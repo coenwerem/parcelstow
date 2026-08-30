@@ -1,11 +1,11 @@
-"""Task-rate operating-envelope figure and table from evaluation records.
+"""Task-success-curve figure and table from evaluation records.
 
 Runs without Isaac. Reads the per-condition summary records (JSONL, one row
-per actor and rate with success counts and Wilson intervals) and draws
-success fraction against task rate for every actor. With --gap the script
-also computes a paired bootstrap confidence interval for the success gap
-between two actors at one rate from the per-episode records, which share
-their evaluation draws across actors.
+per actor and execution speed with success counts and Wilson intervals) and
+draws success fraction against the speedup factor r for every actor. With
+--gap the script also computes a paired bootstrap confidence interval for
+the success gap between two actors at one speed from the per-episode
+records, which share their evaluation draws across actors.
 
 Run,
   python scripts/plot_envelope.py
@@ -50,7 +50,7 @@ def find_records(name, override=None):
 
 def paired_gap_ci(recs_a, recs_b, rate, n_boot=20000, seed=0):
     """Percentile bootstrap interval for the success gap of actor A over
-    actor B at one rate, paired over the shared evaluation draws."""
+    actor B at one speed, paired over the shared evaluation draws."""
     def successes(recs):
         rows = sorted(
             (r for r in recs if abs(r["task_rate"] - rate) < 1e-9),
@@ -122,7 +122,7 @@ def main():
             hi = [max(0.0, p[3] - p[1]) for p in pts]
             ax.errorbar(x, y, yerr=[lo, hi], marker="o", ms=4, lw=1.6, capsize=2,
                         color=COLORS.get(actor, "#444444"), label=LABELS.get(actor, actor))
-        ax.set_xlabel("task rate r")
+        ax.set_xlabel("speedup factor r")
         ax.set_ylabel("success fraction")
         ax.set_ylim(-0.03, 1.05)
         ax.grid(True)

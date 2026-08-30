@@ -1,13 +1,13 @@
-"""Evaluate a policy on the ParcelStow task-rate grid. Needs Isaac Lab.
+"""Evaluate a policy on the ParcelStow execution-speed grid. Needs Isaac Lab.
 
 The command wraps the validated evaluation driver
 scripts/manipulation/eval_stow_policies.py, which runs every requested
-actor over every requested rate on the shared frozen evaluation draws and
+actor over every requested speed on the shared frozen evaluation draws and
 writes one episode-record JSONL per actor plus a summary JSONL.
 
 Actors,
-  expert                     scripted reference policy
-  act | dp | dagger          released learned reference actors, checkpoints via
+  expert                     scripted expert policy
+  act | dp | dagger          released learner policies, checkpoints via
                              scripts/download_artifacts.py --paper
   module.path:ClassName      your policy, see docs/POLICY_INTERFACE.md
 

@@ -1,4 +1,4 @@
-"""Rate-conditioned analysis of the nominal realized-contact Ferrari-Canny
+"""Speed-conditioned analysis of the nominal realized-contact Ferrari-Canny
 margin at stable lift (part C of the 2026-08-18 evening protocol).
 
 The margin epsilon_lift is read from the evaluation records as stored

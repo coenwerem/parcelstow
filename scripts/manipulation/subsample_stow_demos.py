@@ -1,9 +1,10 @@
-"""Rate-stratified demonstration subsets for the ACT demo-scaling sweep
+"""Speed-stratified demonstration subsets for the ACT demo-scaling sweep
 (WRL workshop addition of 2026-08-21). The full set holds 297 successful
-expert episodes with task_rate drawn from U[0.5, 2.0]. A subset of size n
-sorts the episodes by task_rate and takes the ranks round(j (N-1) / (n-1))
-for j in 0..n-1, so every subset spans the training rate range evenly and
-smaller subsets nearly nest inside larger ones. The subset file preserves
+expert episodes with task_rate (the speedup factor r) drawn from
+U[0.5, 2.0]. A subset of size n sorts the episodes by task_rate and takes
+the ranks round(j (N-1) / (n-1)) for j in 0..n-1, so every subset spans the
+training speed range evenly and smaller subsets nearly nest inside larger
+ones. The subset file preserves
 the schema of the source file (episodes, records, rate_spec, jitter, seed,
 obs_dim, act_dim, config) and adds a subsample provenance block, so
 run_stow_act.py trains on a subset unchanged.

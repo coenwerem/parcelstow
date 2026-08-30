@@ -1,9 +1,10 @@
 # Policy interface
 
 ParcelStow evaluates any policy exposing a three-member actor interface.
-The reference actors (scripted expert, ACT, Diffusion Policy, DAgger) use
-the same interface, defined in `scripts/manipulation/stow_runtime.py` and
-frozen by section 10 of [TASK_SPEC.md](TASK_SPEC.md).
+The released expert and learners (scripted expert, ACT, Diffusion Policy,
+DAgger) use the same interface, defined in
+`scripts/manipulation/stow_runtime.py` and frozen by section 10 of
+[TASK_SPEC.md](TASK_SPEC.md).
 
 ## The actor interface
 
@@ -54,10 +55,10 @@ model of the evaluation protocol (corruption off during evaluation),
 | 125:140 | 15 | distal phalanx positions in the pelvis frame, five fingers times xyz |
 | 140:145 | 5 | distal contact force magnitudes, clipped at 50 N, scaled by 1/10 |
 | 145 | 1 | task phase, (k + f) / N_PHASES in [0, 1] |
-| 146 | 1 | requested task rate r |
+| 146 | 1 | speedup factor r |
 
-The requested rate reaches the policy only through `obs[:, 146]`, a
-rate-aware policy reads it there.
+The speedup factor reaches the policy only through `obs[:, 146]`, a
+speed-aware policy reads it there.
 
 ## Action, 16-D joint-position target
 
@@ -92,7 +93,7 @@ decimation 4). An action of zero holds the default posture.
 
 The interface is part of the frozen benchmark definition. Comparisons
 against the released numbers require the 147-D observation, the 16-D
-action, the requested rate inside the observation, and 50 Hz control,
+action, the speedup factor inside the observation, and 50 Hz control,
 unchanged. A policy built on a different interface can still run in the
 environment, but its numbers no longer compare against the released
-envelope.
+task-success curves.

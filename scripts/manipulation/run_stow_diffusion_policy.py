@@ -6,8 +6,8 @@ kernel 5, 8 groups, FiLM global conditioning on 2 observation steps, DDPM
 steps, horizon 16, 8 executed action steps, AdamW 1e-4 betas (0.95, 0.999)
 weight decay 1e-6, cosine schedule with 500 warmup steps, batch 256, EMA
 power 0.75), trained on the same successful full-task expert episodes the
-DAgger student and ACT receive, then evaluated with a diagnostic set at the
-nominal rate. Checkpoint outputs/paper/dp/dp_stow.pt.
+DAgger student and ACT receive, then evaluated with a diagnostic set at
+nominal speed. Checkpoint outputs/paper/dp/dp_stow.pt.
 
 Run,
   python scripts/manipulation/run_stow_diffusion_policy.py --demos outputs/paper/demos/expert_episodes.pt \

@@ -21,22 +21,22 @@ Every reported quantity maps to a released record and a public command,
 
 | reported quantity | source record | command |
 |---|---|---|
-| per-rate success fractions and Wilson intervals, all four actors, incl. the upper bound at zero successes | `data/records/eval_summary.jsonl` | `reproduce.py envelope` |
+| per-speed success fractions and Wilson intervals, all four policies, incl. the upper bound at zero successes | `data/records/eval_summary.jsonl` | `reproduce.py envelope` |
 | expert over ACT-A matched gap at r=2 (0.31) and its 20000-resample paired bootstrap 95% interval ([0.18, 0.44]) | `{expert,act}_episodes.jsonl.gz` | `reproduce.py envelope` (or `plot_envelope.py --gap expert act`) |
-| stage-completion and terminal-failure counts per actor and rate | `eval_summary.jsonl`, episode records | `reproduce.py stages`, fields per episode |
+| stage-completion and terminal-failure counts per policy and speed | `eval_summary.jsonl`, episode records | `reproduce.py stages`, fields per episode |
 | ACT-B/C replication cells and degradation r=1 to r=2 | `data/records/replication/summary_seed{1_rerun,2,3}.jsonl` and episode records | direct inspection, `summarize_act_multiseed.py` |
 | demonstration-scaling cells (n=50/100/297) | `data/records/replication/summary_n{50,100}.jsonl`, `eval_summary.jsonl` | direct inspection |
-| expert calibration counts, eleven rates 0.5 through 6.0 | `experiments/paper/results/expert_sweep_summary.jsonl` | direct inspection |
-| expert high-rate ceiling statistics, arm joint-velocity utilization, tracking error | `expert_episodes.jsonl.gz` | `reproduce.py expert-ceiling` |
+| expert calibration counts, eleven candidate speeds 0.5 through 6.0 | `experiments/paper/results/expert_sweep_summary.jsonl` | direct inspection |
+| expert high-speed ceiling statistics, arm joint-velocity utilization, tracking error | `expert_episodes.jsonl.gz` | `reproduce.py expert-ceiling` |
 | hand-object relative-motion summaries (slip per phase) | episode records, `eval_summary.jsonl` | fields per episode, `reproduce.py stages` inputs |
-| relative-motion handoff denominators and outcomes | `experiments/paper/results/relative_handoff_summary.jsonl`, `handoff_summary.jsonl` | direct inspection, `summarize_relative_handoff.py` |
+| relative-motion handoff denominators and outcomes | `experiments/paper/results/relative_handoff_summary.jsonl` | direct inspection, `summarize_relative_handoff.py` |
 | force-closure counts and the one-sided acquisition result | episode records | `reproduce.py certificate` |
 | held-out force-closure ranking and calibration statistics | main plus replication episode records | `reproduce.py certificate-oos` |
 
-The learned-policy evaluation grid is the seven rates {0.5, 1, 1.5, 2,
+The learned-policy evaluation grid is the seven speeds {0.5, 1, 1.5, 2,
 2.25, 2.5, 3}. The expert-only calibration preceding it spans eleven
-candidate rates, 0.5 through 6.0, recorded in
-`expert_sweep_summary.jsonl` with 64 episodes per rate.
+candidate speeds, 0.5 through 6.0, recorded in
+`expert_sweep_summary.jsonl` with 64 episodes per speed.
 
 Expected primary numbers, expert and ACT-A both 100/100 at r=1, expert
 84/100 and ACT-A 53/100 at r=2, matched gap 0.31 with the
@@ -75,7 +75,7 @@ above, the extension installed into its environment,
 
 ```bash
 uv pip install -p <isaaclab-venv>/bin/python -e source/parcelstow
-# add [diffusion] for the Diffusion Policy reference actor, [analysis] for the
+# add [diffusion] for Diffusion Policy, [analysis] for the
 # record-reproduction tier, [all] for everything
 ```
 
@@ -102,7 +102,7 @@ up to simulator nondeterminism.
 
 ## Anchors to the frozen protocol
 
-- evaluation draws, seed 12345 + 1000 x rate-index, shared across actors
-- rate grid, r in {0.5, 1.0, 1.5, 2.0, 2.25, 2.5, 3.0}
+- evaluation draws, seed 12345 + 1000 x speed-index, shared across policies
+- speedup grid, r in {0.5, 1.0, 1.5, 2.0, 2.25, 2.5, 3.0}
 - 100 episodes per condition, corruption off, jitter 10 mm
 - ACT-A demonstrations, 297 episodes over r in [0.5, 2.0]

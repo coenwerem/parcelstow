@@ -10,11 +10,11 @@ only after every PENDING entry reads FROZEN.
 
 ## 1. Scientific question
 
-The benchmark asks whether physical manipulation robustness persists through
-imitation of a dexterous behavior. A model-derived expert acquires a small
+The benchmark asks whether temporal robustness persists through imitation
+of a dexterous behavior. A model-derived expert acquires a small
 parcel and executes a full reorient-and-stow manipulation with real
 contacts. DAgger, Diffusion Policy, and ACT imitate the same demonstration
-set. The endpoint is physical task capability as a function of task rate,
+set. The endpoint is task success as a function of the speedup factor r,
 never an analytical grasp margin. Ferrari-Canny epsilon and the risk-adjusted
 epsilon^(beta) on the realized contact set are diagnostics only. They enter
 no success predicate, no termination, no expert acceptance rule, no rate
@@ -27,8 +27,8 @@ selection, and no action filter.
   face, 40 mm tall).
 - Mass, 0.120 kg (density 682 kg/m^3, a filled small carton).
 - Physics material, static and dynamic friction 0.5, restitution 0.0, the
-  same values the cube protocol used and the friction the certificate
-  scorer takes as nominal.
+  same values the cube protocol used and the friction the force-closure
+  margin scorer takes as nominal.
 - Collision geometry, one box collider, no decorative mesh.
 - Rationale, the L6 pad aperture measured in the synthesis tool spans 38.8
   to 65.5 mm, so opposition across the 55 mm width sits inside the band with
@@ -84,17 +84,17 @@ Family C of IMPLEMENTATION_LOG.md, the parcel tilts by 90 deg about its
 own width axis (Ry(-90) in the task frame, the task frame is the world
 frame yawed by the start yaw of +45 deg), stands on its 55 x 40 mm end,
 and slides forward-left along d = (0.707, 0.707, 0) into an open-front
-cubby whose entrance faces the robot. The reorientation runs at the lift
+receptacle whose entrance faces the robot. The reorientation runs at the lift
 point (start plus 120 mm) while the parcel starts half of its travel toward
 the pre-insertion pose (reorient_travel 0.5), the transfer completes the
 travel. Total transport, 0.334 m. Palm behind and below the parcel center
 (the record's hand root sits 72 mm toward the robot and 108 mm above the
 flat parcel), fingers on the two 80 x 40 mm faces, no phalanx under the
 parcel at release (release clearance +11 mm), so the release drops the
-parcel 10 mm onto the cubby floor and the hand withdraws straight back
+parcel 10 mm onto the receptacle floor and the hand withdraws straight back
 along -d by 0.10 m.
 
-Cubby, five kinematic rigid boxes (floor, side_a, side_b, back, top), wall
+Receptacle, five kinematic rigid boxes (floor, side_a, side_b, back, top), wall
 thickness 20 mm, floor top 0.16 m above the table (a pedestal box from the
 table to the floor top), yawed with the task frame. Interior, tight axis
 vertical (parcel height 80 mm plus 2 x 10 mm, 100 mm), loose axis
@@ -127,7 +127,7 @@ axis fits a slot of width w + 2 c_tight only while its yaw about the slot
 normal stays under about 2 c_tight / L = 0.2 rad = 11.5 deg. The final
 orientation tolerance is therefore 10 deg (section 8).
 
-## 7. Phase sequence and task rate (FROZEN, rate grid frozen at M6)
+## 7. Phase sequence and speedup factor (FROZEN, speedup grid frozen at M6)
 
 Phases in order, with the nominal duration at unit rate,
 
@@ -146,7 +146,7 @@ Phases in order, with the nominal duration at unit rate,
     RETREAT         1.0 s   scaled by 1/r
     SETTLE          0.6 s   fixed (measurement window)
 
-The task rate r scales the manipulation segment (LIFT through RETREAT,
+The speedup factor r scales the manipulation segment (LIFT through RETREAT,
 7.8 s at r = 1). The acquisition segment runs at fixed timing so the rate
 axis isolates the downstream demand of the same geometric manipulation.
 Cycle time at rate r equals 5.7 s + 7.8 s / r + 0.6 s. Phase progress is a
@@ -158,8 +158,8 @@ schedule at M4 (freeze log), before any learner ran, after the first expert
 sweep showed the arm servo lag releasing the parcel 3 cm short of the
 insert pose at r >= 1.
 
-Development slow rate for the M4 validation, r = 0.5. Frozen rate grid
-(M6, from the expert sweep of 64 episodes per rate at 1 cm jitter,
+Development slow speed for the M4 validation, r = 0.5. Frozen speedup grid
+(M6, from the expert sweep of 64 episodes per speed at 1 cm jitter,
 outputs/paper/expert/sweep_summary.jsonl), r in
 {0.5, 1.0, 1.5, 2.0, 2.25, 2.5, 3.0}. The expert reads 63/64, 63/64,
 64/64, 58/64 at 0.5, 1.0, 1.5, 2.0, then 19/64 at 2.5, 1/64 at 3.0, and 0
@@ -183,7 +183,7 @@ Stage markers, each latched at the first step its condition holds,
   waypoint and orientation error under 15 deg.
 - inserted, parcel center at least 50 mm past the entrance plane along the
   insertion axis and inside the interior cross-section box (front face at
-  least 10 mm inside the cubby).
+  least 10 mm inside the receptacle).
 - released, after inserted, the summed parcel-filtered distal contact force
   under 0.5 N for at least 0.1 s.
 - settled, after released, the parcel remains inserted for a dwell of 0.4 s
@@ -193,8 +193,8 @@ Stage markers, each latched at the first step its condition holds,
   orientation error under 10 deg.
 
 None of these predicates reads epsilon, epsilon^(beta), the GDF field, or
-any bank quantity. A regression test supplies a bogus negative certificate
-and asserts task_success is unchanged.
+any bank quantity. A regression test supplies a bogus negative force-closure
+margin and asserts task_success is unchanged.
 
 Failure reason, the first category that applies in the order below,
 
@@ -243,7 +243,7 @@ joint_pos_rel (51), joint_vel_rel (51), last_action (16), parcel pose in the
 pelvis frame (position 3, quaternion wxyz 4), distal phalanx positions in
 the pelvis frame (15), distal contact force magnitudes clipped and scaled
 (5), task_phase (1), task_rate (1). Total 147. No GDF, no bank quantity, no
-certificate value. Corruption noise as in the distill task during
+force-closure margin value. Corruption noise as in the distill task during
 demonstration collection, off during evaluation.
 
 ## 11. Expert construction (FROZEN in method)
@@ -257,7 +257,7 @@ scheme as scripts/vla/expert.py.
 Manipulation, task-space object waypoints T_WO^d(k, f) along the frozen
 path (lift by 80 mm, SLERP reorientation by 90 deg about the parcel center,
 smooth translation to the pre-insertion pose, straight insertion along the
-cubby axis, release by opening the hand to the bank pregrasp shape, retreat
+receptacle axis, release by opening the hand to the bank pregrasp shape, retreat
 along the reverse of the insertion axis). Desired hand pose T_WH^d = T_WO^d
 X_OH with X_OH the bank grasp transform (verified numerically by forward
 kinematics of the solved grasp), solved by damped least squares IK on
@@ -277,11 +277,12 @@ that decays to zero over the REORIENT phase.
 ## 12. Training distribution (FROZEN at M6)
 
 - Start jitter, uniform dx, dy in [-10, 10] mm, no yaw jitter.
-- Task rate, uniform over [0.5, 2.0], the range over which the expert
+- Speedup factor, uniform over [0.5, 2.0], the range over which the expert
   succeeds in at least 0.9 of its episodes (its feasible range without the
-  transition zone 2.25 to 3.0). Grid rates 0.5 to 2.0 are therefore
+  transition zone 2.25 to 3.0). Grid speeds 0.5 to 2.0 are therefore
   in-distribution for every learner and 2.25, 2.5, 3.0 test extrapolation
-  in rate for the learners while the expert itself degrades there.
+  beyond the demonstrated speed range for the learners while the expert
+  itself degrades there.
 - Demonstrations, complete expert episodes through SETTLE, admitted by
   physical task_success only, 300 expert episodes collected once, saved to
   outputs/paper/demos/expert_episodes.pt, and reused by every
@@ -290,10 +291,10 @@ that decays to zero over the REORIENT phase.
 
 ## 13. Evaluation distribution (FROZEN at M6)
 
-- The same jitter law as training, seeds fixed per rate (12345 + 1000 x
-  rate index) and identical across actors.
-- Rate grid {0.5, 1.0, 1.5, 2.0, 2.25, 2.5, 3.0}, 100 episodes per actor
-  and rate in the final run, 32 environments per process.
+- The same jitter law as training, seeds fixed per speed (12345 + 1000 x
+  speed index) and identical across policies.
+- Speedup grid {0.5, 1.0, 1.5, 2.0, 2.25, 2.5, 3.0}, 100 episodes per
+  policy and speed in the final run, 32 environments per process.
 - Corruption off.
 
 ## 14. Primary metrics (FROZEN)
@@ -305,7 +306,7 @@ that decays to zero over the REORIENT phase.
 - Slip distributions (max translation, max rotation) per actor and rate.
 - Secondary scalars, area under the success-versus-rate curve and the
   largest grid rate at which success stays at or above 0.8.
-- Certificate diagnostics, epsilon and epsilon^(beta) (beta 0.95, Gaussian
+- Force-closure diagnostics, epsilon and epsilon^(beta) (beta 0.95, Gaussian
   friction prior with std 0.15 about 0.5) on the realized distal contact
   set at acquired, at the end of REORIENT, and at INSERT start, correlated
   with outcome by Spearman rank and by success stratified on margin

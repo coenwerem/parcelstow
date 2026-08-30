@@ -1,6 +1,6 @@
 cff-version: 1.2.0
 message: "If you use ParcelStow, please cite it as below."
-title: "ParcelStow: Task-Rate Robustness Evaluation for Learned Dexterous Manipulation"
+title: "ParcelStow: A Benchmark for Temporal Robustness in Learned Dexterous Manipulation"
 authors:
   - family-names: Enwerem
     given-names: Clinton

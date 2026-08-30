@@ -8,8 +8,9 @@ monitor reports, initial, grasp established (acquired), lift (parcel 60 mm
 up), about 45 deg of reorientation, about 90 deg (reoriented), pre-insertion
 reached, insertion contact (first receptacle force or inserted), and
 release/settled (or the episode end). Frames have no overlay, the montage
-script draws the minimal diagnostic text (actor, task rate, epsilon^(beta)
-at lift, max in-hand slip, task outcome) from the saved episode record.
+script draws the minimal diagnostic text (actor, speedup factor r,
+epsilon^(beta) at lift, max in-hand slip, task outcome) from the saved
+episode record.
 
 Run,
   python scripts/manipulation/record_stow_rollouts.py --actor expert --rate 1.0 --episodes 1 \

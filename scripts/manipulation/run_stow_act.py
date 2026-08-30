@@ -6,7 +6,7 @@ batch 8, one random chunk start per episode per epoch, z-score
 normalization with a 1e-2 floor, L1 over the unpadded chunk plus KL, 2000
 epochs, temporal ensembling exponent 0.01), trained on the same successful
 full-task expert episodes as the other learners, then evaluated with a
-diagnostic set at the nominal rate. Checkpoint outputs/paper/act/act_stow.pt.
+diagnostic set at nominal speed. Checkpoint outputs/paper/act/act_stow.pt.
 
 Run,
   python scripts/manipulation/run_stow_act.py --demos outputs/paper/demos/expert_episodes.pt \

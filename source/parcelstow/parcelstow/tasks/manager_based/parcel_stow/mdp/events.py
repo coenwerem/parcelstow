@@ -1,5 +1,5 @@
 """Reset events of the ParcelStow task. The parcel start pose reset reuses
-the shared reset_root_state_uniform, the task-rate sampling lives in
+the shared reset_root_state_uniform, the speedup-factor sampling lives in
 task_clock, and the parcel material and mass are fixed by the scene
 configuration (no per-episode randomization of friction or mass in the
 main experiment)."""

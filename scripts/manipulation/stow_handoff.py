@@ -6,7 +6,7 @@ stable lift onset (the monitor's acquired marker plus the parcel 40 mm
 above its start height) the driver freezes the actor's realized hand
 target and replaces the waist and arm outputs with one common downstream
 trajectory, the expert's IK path for LIFT through RETREAT at the episode's
-task rate, blended in from the actor's arm target over 0.5 s. From RELEASE
+speedup factor, blended in from the actor's arm target over 0.5 s. From RELEASE
 onward the hand follows the expert's opening. The parcel stays a free rigid
 body throughout, and the handoff runs in the live episode (no snapshot or
 restore). The question the run answers, given the grasp this actor

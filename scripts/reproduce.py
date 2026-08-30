@@ -10,14 +10,16 @@ docs/REPRODUCING_THE_PAPER.md maps every reported quantity to its record
 and command.
 
 Targets,
-  envelope     operating-envelope numbers and plot, per-rate success with
+  envelope     task-success-curve numbers and plot, per-speed success with
                Wilson intervals, and the 20000-resample paired bootstrap
                interval of the expert over ACT-A success gap at r=2
-  stages       per-stage completion against rate for every actor
+  stages       per-stage completion against execution speed for every actor
   certificate  realized-contact force-closure analysis of the acquisition
                diagnostic
   certificate-oos  held-out force-closure ranking and calibration
-  expert-ceiling  tracking-accuracy attribution of the expert rate limit
+  expert-ceiling  arm joint-velocity utilization and target-tracking
+               measurements behind the expert's success decrease at
+               higher execution speeds
   all          every target above
 
 Run,
@@ -97,7 +99,7 @@ def target_stages():
             ax.plot([r["rate"] for r in sub], [r[st]["frac"] for r in sub],
                     marker="o", ms=3, lw=1.2, label=st)
         ax.set_title(labels[actor])
-        ax.set_xlabel("task rate r")
+        ax.set_xlabel("speedup factor r")
         ax.grid(True, alpha=0.15)
     axes[0].set_ylabel("stage completion")
     axes[0].legend(fontsize=8, frameon=False)

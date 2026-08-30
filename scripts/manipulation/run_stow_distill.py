@@ -10,7 +10,7 @@ for the entire task (approach, grasp, reorient, transfer, insert, release,
 retreat) with Gaussian action noise on half the environments, the expert
 relabels every visited state through its own phase-clock plan and parallel
 integrator, and every visited state enters the aggregate. After every fit a
-diagnostic evaluation runs at the nominal rate. The final student is
+diagnostic evaluation runs at nominal speed. The final student is
 outputs/paper/dagger/student_final.pt. No scripted controller takes
 over at any point of the student rollouts.
 

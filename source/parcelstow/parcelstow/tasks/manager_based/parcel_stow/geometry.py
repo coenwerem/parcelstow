@@ -1,5 +1,5 @@
 """Pure-math pieces of the ParcelStow task, the phase schedule with the
-task-rate law, SO(3) helpers, the receptacle geometry derived from the
+speedup-factor law, SO(3) helpers, the receptacle geometry derived from the
 frozen task specification, and the object task-space path T_WO(k, f) of the
 manipulation.
 
@@ -76,7 +76,7 @@ T_SETTLE = float(NOMINAL_DURATIONS[PHASE_INDEX["SETTLE"]])
 
 
 def phase_durations(rate: float) -> np.ndarray:
-    """Per-phase durations in seconds at task rate r."""
+    """Per-phase durations in seconds at speedup factor r."""
     d = NOMINAL_DURATIONS.copy()
     d[RATE_SCALED] = d[RATE_SCALED] / float(rate)
     return d

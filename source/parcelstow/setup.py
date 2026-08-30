@@ -10,14 +10,14 @@ EXTENSION_TOML_DATA = toml.load(os.path.join(EXTENSION_PATH, "config", "extensio
 
 INSTALL_REQUIRES = [
     "psutil",
-    # realized-contact certificate scoring (mdp/ferrari_canny.py)
+    # realized-contact force-closure margin scoring (mdp/ferrari_canny.py)
     "scipy",
 ]
 
 # Dependency tiers beyond the Isaac Lab environment (torch, gymnasium,
 # and scipy arrive with Isaac Lab). The analysis extra covers the
-# no-simulator record reproduction, the diffusion extra covers the
-# Diffusion Policy reference actor, ACT and DAgger need torch only.
+# no-simulator record reproduction, the diffusion extra covers
+# Diffusion Policy, ACT and DAgger need torch only.
 EXTRAS_REQUIRE = {
     "analysis": ["numpy", "scipy", "matplotlib"],
     "diffusion": ["diffusers"],

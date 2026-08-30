@@ -4,9 +4,9 @@ actuator utilization, all read from the simulator state after every control
 step. The drivers own the object, call step() after env.step(), and take
 episode_record(i) when environment i finishes.
 
-Every predicate here reads physical state only. The certificate values
-(epsilon, epsilon^(beta)) are computed from the recorded contact sets as
-diagnostics and never feed a marker. TASK_SPEC.md sections 8 and 9 hold the
+Every predicate here reads physical state only. The force-closure margin
+values (epsilon, epsilon^(beta)) are computed from the recorded contact
+sets as diagnostics and never feed a marker. TASK_SPEC.md sections 8 and 9 hold the
 thresholds, repeated as module constants below.
 """
 

@@ -1,16 +1,16 @@
-"""Final capability evaluation of the ParcelStow actors (M10, M11), the
+"""Final evaluation of the ParcelStow actors (M10, M11), the
 same episodes for every actor.
 
-For every actor (expert, dagger, dp, act) and every rate of the frozen
+For every actor (expert, dagger, dp, act) and every speed of the frozen
 grid, the driver runs N episodes with the identical evaluation seed per
-rate, the same start-jitter law, corruption off, under the physical
+speed, the same start-jitter law, corruption off, under the physical
 monitor. Every episode record holds the stage markers, the failure reason,
 slip diagnostics, the realized contact sets at acquisition, end of
-reorientation, and insertion start with their certificate diagnostics
+reorientation, and insertion start with their force-closure diagnostics
 (epsilon at the parcel friction, epsilon^(beta) at beta 0.95, Gaussian
 prior std 0.15), actuator utilization, and the configuration stamp. The
 records go to one JSONL per actor and a summary JSONL, figures and the
-certificate analysis read them.
+force-closure analysis read them.
 
 Run,
   python scripts/manipulation/eval_stow_policies.py --actors expert dagger dp act \

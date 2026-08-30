@@ -1,5 +1,5 @@
-"""Out-of-sample validation of the realized-contact certificate as a
-success predictor (WRL workshop addition of 2026-08-21).
+"""Out-of-sample validation of the realized-contact force-closure margin as
+a success predictor (WRL workshop addition of 2026-08-21).
 
 Every margin is read from the evaluation records as stored (mdp/metrics.py,
 score_contact_set at the parcel friction 0.5), nothing is recomputed. The

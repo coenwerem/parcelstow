@@ -10,7 +10,7 @@ readme  = "README.md"
 title = "ParcelStow"
 author = "Clinton Enwerem"
 maintainer = "Clinton Enwerem"
-description="Task-rate robustness evaluation for learned dexterous manipulation, an Isaac Lab benchmark"
+description="Matched expert-learner evaluation of temporal robustness across task execution speeds, an Isaac Lab benchmark for learned dexterous manipulation"
 repository = ""
 keywords = ["benchmark", "manipulation", "imitation-learning", "isaaclab"]
 

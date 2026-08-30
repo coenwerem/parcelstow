@@ -1,15 +1,15 @@
 """Scripted-expert driver of the ParcelStow task, expert validation (M4),
-the task-rate sweep (M5), and demonstration collection (M7).
+the speedup-factor sweep (M5), and demonstration collection (M7).
 
 Every episode runs the full manipulation under the physical monitor and
 writes one JSON line (policy expert, seed, task_rate, task_duration_s, the
 stage markers, the failure reason, slip diagnostics, realized contact sets
-with their certificate diagnostics, actuator utilization). Success is the
+with their force-closure diagnostics, actuator utilization). Success is the
 physical predicate of TASK_SPEC.md section 8, nothing else.
 
 Modes,
-  validate   fixed rate, fixed jitter, N episodes (M4 wants 20/20 at r 0.5)
-  sweep      the same over a rate list (calibration of the rate grid)
+  validate   fixed speed, fixed jitter, N episodes (M4 wants 20/20 at r 0.5)
+  sweep      the same over a speed list (calibration of the speedup grid)
   demos      uniform rate in [lo, hi] and planar jitter, collects complete
              episodes with (obs, expert action) and saves the physically
              successful ones to --demo_out (the shared demonstration set)

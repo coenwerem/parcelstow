@@ -2,13 +2,13 @@
 (docs/TASK_SPEC.md).
 
 Fixed-pelvis G1 with the LinkerHand L6, the tabletop, a rigid 80 x 55 x 40
-mm parcel, and an open-front cubby built from five static collision boxes.
-The control interface is the one of the cube tasks, absolute joint-position
-targets on the 16 joints of CHAIN_ACTUATED at 50 Hz with the same PD
-gains. The policy observes joint state, its last action, the parcel pose in
-the pelvis frame, the distal phalanx positions and contact forces, the task
-phase, and the task rate. No GDF, bank, or certificate quantity enters the
-observation, the rewards, or the terminations. Task success is decided by
+mm parcel, and an open-front receptacle built from five static collision
+boxes. The control interface is the one of the cube tasks, absolute
+joint-position targets on the 16 joints of CHAIN_ACTUATED at 50 Hz with the
+same PD gains. The policy observes joint state, its last action, the parcel
+pose in the pelvis frame, the distal phalanx positions and contact forces,
+the task phase, and the speedup factor r. No GDF, bank, or force-closure
+quantity enters the observation, the rewards, or the terminations. Task success is decided by
 the physical monitor (mdp/metrics.py) in the drivers, never by the reward.
 
 The parcel is a free rigid body. Nothing attaches it to the hand, and the

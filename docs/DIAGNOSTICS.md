@@ -12,8 +12,8 @@ Booleans in task order, `acquired`, `lifted_clear`, `reoriented`,
 plus `failure_reason` and `failure_detail` naming the first violated
 predicate (for example `insertion_jam`, `insertion_misalignment`,
 `excessive_inhand_slip`, `timeout`). The per-condition summary aggregates
-each stage with Wilson intervals, so a stage-versus-rate plot shows which
-stage separates two actors at a given rate.
+each stage with Wilson intervals, so a stage-versus-speed plot shows which
+stage separates two policies at a given execution speed.
 
 ## Hand-object motion
 
@@ -25,15 +25,32 @@ contact-driven slip at insertion.
 
 ## Relative-motion handoff
 
-The handoff drivers (`scripts/manipulation/stow_relative_handoff.py`,
-`stow_handoff.py`) replay episodes where control of the free-space
-transport switches between actors while the acquisition and insertion
-segments stay with a reference. The released summaries under
+`scripts/manipulation/stow_relative_handoff.py` implements the
+relative-motion handoff of the paper. The evaluated policy (expert or an
+ACT training seed) runs its own controller through acquisition. At stable
+handoff, after acquisition and before RELEASE, control passes to a shared
+controller (`stow_relative_controller.py`) that commands the waist and arm
+so the hand follows the expert's post-acquisition hand motion expressed
+relative to the policy's own realized hand pose at handoff, while the hand
+shape holds the policy's own realized grasp. This shared controller
+supplies free-space manipulation, lift, reorientation, and transfer,
+through the primary endpoint, the first control step of INSERT or the
+first receptacle contact, whichever comes first. From RELEASE onward the
+same shared controller supplies insertion, release, and retreat: the hand
+follows the expert's opening motion and the arm follows the expert's
+relative retreat path. Episodes in which the policy never acquires the
+parcel run to their end under the policy's own controller and are marked
+`relative_handoff` false. The released summaries under
 `experiments/paper/results/relative_handoff_summary.jsonl` quantify how
-well each actor preserves the parcel during free-space transport in
-isolation.
+well each policy's acquisition preserves the parcel under this shared
+downstream motion.
 
-## Realized-contact certificate
+`scripts/manipulation/stow_handoff.py` implements an earlier, separate
+common-controller ablation (M12) that is not the relative-motion handoff
+above and is not part of the paper's reported relative-motion handoff
+results; its own docstring marks it as an ablation, not the main method.
+
+## Acquisition-time force closure
 
 At acquisition, end of reorientation, and insertion start, the monitor
 records the realized contact set (points, normals, forces) and scores it
@@ -45,25 +62,26 @@ scipy version, with 15 sign ties at |epsilon| under 1e-12 across qhull
 versions. The released analysis (`scripts/reproduce.py certificate`)
 shows the one-sided acquisition result of the paper, across the released
 records no acquired episode lacking force closure completes the task. The
-certificate is a diagnostic only, it enters no success predicate, and the
-paper does not present the continuous margin as an explanation of the
-task-rate envelope.
+margin is a diagnostic only, it enters no success predicate, and the
+paper does not present the continuous margin as an explanation of task
+success across execution speeds.
 
 `epsilon_beta_*` additionally scores a risk-adjusted margin under friction
 uncertainty (CVaR at beta 0.95). Computing it needs the optional
 `firmgrasp` package (set `PARCELSTOW_FIRMGRASP` to its location, unset by
 default and the field reads -1). The risk-adjusted margin concerns
-friction uncertainty, a different axis from task rate, and the paper does
-not use it to explain rate sensitivity.
+friction uncertainty, a different axis from execution speed, and the
+paper does not use it to explain temporal sensitivity.
 
 ## Actuation and tracking
 
 `max_joint_velocity_utilization`, `max_arm_velocity_utilization`,
 `max_target_tracking_error_rad`, and `max_action_magnitude` support the
-expert-ceiling attribution, arm-speed utilization stays low through r 2
-while tracking error against the commanded targets grows, so servo
-tracking, not actuator saturation, bounds the expert
-(`scripts/reproduce.py expert-ceiling`).
+expert-ceiling attribution (`scripts/reproduce.py expert-ceiling`). Arm
+joint-velocity utilization remains low through r=2 while target-tracking
+error against the commanded targets grows. The records provide no
+evidence that arm joint-velocity saturation explains the expert's
+observed success decrease at higher execution speeds.
 
 ## Physical-integrity checks
 
@@ -71,4 +89,4 @@ tracking, not actuator saturation, bounds the expert
 premises behind the records, no weld between hand and parcel, gravity
 acts on the released parcel, insertion outside clearance or past the
 orientation tolerance fails, scoring never mutates state, and per-env
-phase and rate stay independent.
+phase and speedup factor stay independent.

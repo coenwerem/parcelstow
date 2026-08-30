@@ -41,7 +41,7 @@ class HoldPosturePolicy:
 
     @torch.no_grad()
     def act(self, obs):
-        # obs[:, 146] holds the requested task rate r, a rate-aware
+        # obs[:, 146] holds the speedup factor r, a speed-aware
         # policy reads it here
         action = torch.zeros(self.n, 16, device=self.base.device)
         return action, None

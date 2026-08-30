@@ -11,7 +11,7 @@ Covered,
 - centered scripted insertion satisfies the predicate, a scripted insertion
   outside the tight clearance does not, an over-rotated parcel does not,
 - release and settle detection,
-- task success does not depend on the certificate value,
+- task success does not depend on the force-closure margin value,
 - per-environment phase and rate progression,
 - realized-contact scoring leaves the environment state unchanged,
 - observation dimensionality of the task matches the learner adapters.
@@ -178,7 +178,7 @@ def _park_arm(ns, steps=40):
 
 
 def test_receptacle_collides(sim):
-    """A parcel dropped above the cubby floor rests on the floor slab, and a
+    """A parcel dropped above the receptacle floor rests on the floor slab, and a
     parcel driven into a side wall stops outside the wall."""
     ns = sim
     base, G, torch, geom = ns["base"], ns["G"], ns["torch"], ns["geom"]
@@ -276,7 +276,7 @@ def test_over_rotated_insertion_fails(sim):
 
 
 def test_release_and_settle_detection_and_certificate_independence(sim, monkeypatch):
-    """A parcel resting inside the cubby with no hand contact and no motion
+    """A parcel resting inside the receptacle with no hand contact and no motion
     is released and settled, and task_success does not change when the
     certificate scorer returns a bogus negative value."""
     ns = sim

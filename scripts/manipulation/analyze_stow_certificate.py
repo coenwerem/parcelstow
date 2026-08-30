@@ -1,7 +1,7 @@
-"""Certificate diagnostics of the ParcelStow evaluation (M11).
+"""Force-closure diagnostics of the ParcelStow evaluation (M11).
 
 Reads the per-episode records of eval_stow_policies.py and asks whether the
-realized analytical margins predict physical manipulation capability. Per
+realized analytical margins predict task success. Per
 policy and per rate (and pooled), the script reports Spearman rank
 correlations of epsilon and epsilon^(beta) at acquisition, at the end of
 reorientation, and at insertion start against task success, insertion, the
