@@ -99,7 +99,13 @@ def main():
         import matplotlib.font_manager as fm
         import matplotlib.pyplot as plt
 
-        for p in ("/usr/share/fonts/truetype/cmu/cmunsx.ttf", "/usr/share/fonts/truetype/cmu/cmunss.ttf"):
+        cmu_fonts = (
+            Path.home() / "Library" / "Fonts" / "cmunss.ttf",
+            Path.home() / "Library" / "Fonts" / "cmunsx.ttf",
+            Path("/usr/share/fonts/truetype/cmu/cmunss.ttf"),
+            Path("/usr/share/fonts/truetype/cmu/cmunsx.ttf"),
+        )
+        for p in cmu_fonts:
             if Path(p).exists():
                 fm.fontManager.addfont(p)
         plt.rcParams.update({
