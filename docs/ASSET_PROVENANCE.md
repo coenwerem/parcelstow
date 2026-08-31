@@ -1,11 +1,11 @@
-# Asset provenance
+# Asset Provenance
 
 Provenance of every frozen construction input shipped in `assets/`.
 None of these files needs regeneration to run or evaluate ParcelStow,
 the benchmark treats them as frozen inputs. `assets/NOTICE.md` maps each
 family to its upstream license.
 
-## Robot asset, G1 with RealHand L6 hands
+## Robot Asset, G1 with RealHand L6 Hands
 
 ParcelStow refers to the hand as the RealHand L6, reflecting the
 manufacturer's current branding (https://www.realhand.com/). The
@@ -50,7 +50,7 @@ reads the file, and it stays byte-identical as generated provenance.
 Rerunning the conversion is never required, the checked-in USD is the
 runtime asset.
 
-## Grasp bank
+## Grasp Bank
 
 `assets/gdf_bank_parcel.json` is the frozen five-contact grasp of the
 benchmark, one entry with the grasp transform X_OH, joint targets, and
@@ -71,7 +71,7 @@ object mesh, run log) behind the frozen entry. Path strings inside these
 records and inside the bank's `source_record`/`geometry_file` fields
 name the producing machine's layout and stay unmodified.
 
-## Geometry and trajectory
+## Geometry and Trajectory
 
 `assets/parcel_stow_geometry.json` (receptacle and path geometry) and
 `assets/parcel_stow_trajectory.json` (IK-solved expert knots) were

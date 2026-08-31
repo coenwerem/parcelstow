@@ -1,6 +1,6 @@
-# Data and checkpoints
+# Data and Checkpoints
 
-## Shipped in the repository
+## Shipped in the Repository
 
 | path | content | size |
 |---|---|---|
@@ -16,7 +16,7 @@ The episode records are the paper's raw evaluation output, unmodified.
 Field paths inside them (for example `checkpoint`) refer to the layout of
 the machine where they were produced and stay untouched for provenance.
 
-## External artifacts
+## External Artifacts
 
 Demonstrations, checkpoints, and rollout videos exceed sensible Git sizes
 and live in the Hugging Face dataset repository
@@ -38,7 +38,7 @@ plain resolve URL. Every download is verified against the manifest
 sha256 and arrives at its manifest path under `outputs/`, where the
 drivers expect it.
 
-## Regenerating instead of downloading
+## Regenerating Instead of Downloading
 
 Everything external regenerates from the repository with Isaac Lab and a
 GPU, [REPRODUCING_THE_PAPER.md](REPRODUCING_THE_PAPER.md) lists the

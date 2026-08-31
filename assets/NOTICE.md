@@ -1,4 +1,4 @@
-# Asset attribution
+# Asset Attribution
 
 Verified 2026-08-25 by sha256 comparison against the upstream
 repositories, docs/ASSET_PROVENANCE.md holds the full provenance chain.

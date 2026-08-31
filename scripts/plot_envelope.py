@@ -1,11 +1,11 @@
-"""Task-success-curve figure and table from evaluation records.
+"""Plot task success across execution speeds from evaluation records.
 
 Runs without Isaac. Reads the per-condition summary records (JSONL, one row
-per actor and execution speed with success counts and Wilson intervals) and
-draws success fraction against the speedup factor r for every actor. With
+per policy and execution speed with success counts and Wilson intervals) and
+draws success fraction against the speedup factor r for every policy. With
 --gap the script also computes a paired bootstrap confidence interval for
-the success gap between two actors at one speed from the per-episode
-records, which share their evaluation draws across actors.
+the success difference between two policies at one speed from the per-episode
+records, which share their evaluation draws across policies.
 
 Run,
   python scripts/plot_envelope.py

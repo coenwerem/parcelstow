@@ -10,16 +10,15 @@ docs/REPRODUCING_THE_PAPER.md maps every reported quantity to its record
 and command.
 
 Targets,
-  envelope     task-success-curve numbers and plot, per-speed success with
+  envelope     task-success counts and plot across execution speeds, with
                Wilson intervals, and the 20000-resample paired bootstrap
                interval of the expert over ACT-A success gap at r=2
-  stages       per-stage completion against execution speed for every actor
+  stages       per-stage completion against execution speed for every policy
   certificate  realized-contact force-closure analysis of the acquisition
                diagnostic
   certificate-oos  held-out force-closure ranking and calibration
-  expert-ceiling  arm joint-velocity utilization and target-tracking
-               measurements behind the expert's success decrease at
-               higher execution speeds
+  expert-ceiling  arm joint-velocity utilization and target-tracking error
+               measured as the expert's success decreases at higher speeds
   all          every target above
 
 Run,

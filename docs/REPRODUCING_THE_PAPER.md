@@ -1,4 +1,4 @@
-# Reproducing the paper
+# Reproducing the Paper
 
 The release contract is numerical. The released episode records plus the
 analysis code in this repository reproduce the quantitative results the
@@ -11,7 +11,7 @@ the released episode records and needs only Python with numpy, scipy,
 and matplotlib. The simulation path regenerates the records themselves
 and needs Isaac Lab with a GPU.
 
-## From released records, no Isaac
+## From Released Records, No Isaac
 
 ```bash
 python scripts/reproduce.py all
@@ -21,28 +21,29 @@ Every reported quantity maps to a released record and a public command,
 
 | reported quantity | source record | command |
 |---|---|---|
-| per-speed success fractions and Wilson intervals, all four policies, incl. the upper bound at zero successes | `data/records/eval_summary.jsonl` | `reproduce.py envelope` |
+| task-success fractions and Wilson intervals at each speed, including the upper bound at zero successes | `data/records/eval_summary.jsonl` | `reproduce.py envelope` |
 | expert over ACT-A matched gap at r=2 (0.31) and its 20000-resample paired bootstrap 95% interval ([0.18, 0.44]) | `{expert,act}_episodes.jsonl.gz` | `reproduce.py envelope` (or `plot_envelope.py --gap expert act`) |
 | stage-completion and terminal-failure counts per policy and speed | `eval_summary.jsonl`, episode records | `reproduce.py stages`, fields per episode |
 | ACT-B/C replication cells and degradation r=1 to r=2 | `data/records/replication/summary_seed{1_rerun,2,3}.jsonl` and episode records | direct inspection, `summarize_act_multiseed.py` |
 | demonstration-scaling cells (n=50/100/297) | `data/records/replication/summary_n{50,100}.jsonl`, `eval_summary.jsonl` | direct inspection |
 | expert calibration counts, eleven candidate speeds 0.5 through 6.0 | `experiments/paper/results/expert_sweep_summary.jsonl` | direct inspection |
-| expert high-speed ceiling statistics, arm joint-velocity utilization, tracking error | `expert_episodes.jsonl.gz` | `reproduce.py expert-ceiling` |
+| expert arm joint-velocity utilization and target-tracking error at each speed | `expert_episodes.jsonl.gz` | `reproduce.py expert-ceiling` |
 | hand-object relative-motion summaries (slip per phase) | episode records, `eval_summary.jsonl` | fields per episode, `reproduce.py stages` inputs |
 | relative-motion handoff denominators and outcomes | `experiments/paper/results/relative_handoff_summary.jsonl` | direct inspection, `summarize_relative_handoff.py` |
 | force-closure counts and the one-sided acquisition result | episode records | `reproduce.py certificate` |
 | held-out force-closure ranking and calibration statistics | main plus replication episode records | `reproduce.py certificate-oos` |
 
-The learned-policy evaluation grid is the seven speeds {0.5, 1, 1.5, 2,
-2.25, 2.5, 3}. The expert-only calibration preceding it spans eleven
+The learned-policy evaluation grid contains the seven speedup factors
+`{0.5, 1, 1.5, 2, 2.25, 2.5, 3}`. The expert-only calibration preceding it spans eleven
 candidate speeds, 0.5 through 6.0, recorded in
 `expert_sweep_summary.jsonl` with 64 episodes per speed.
 
-Expected primary numbers, expert and ACT-A both 100/100 at r=1, expert
-84/100 and ACT-A 53/100 at r=2, matched gap 0.31 with the
-20000-resample paired bootstrap 95% interval [0.18, 0.44].
+The expected primary results are 100/100 successes for both the expert and
+ACT-A at `r=1`, followed by 84/100 for the expert and 53/100 for ACT-A at
+`r=2`. The matched difference is 0.31, with a 20,000-resample paired-bootstrap
+95% interval of `[0.18, 0.44]`.
 
-## Tested environment
+## Tested Environment
 
 The released records and every verification in this repository ran under
 the versions below. The simulation stack comes from an Isaac Lab
@@ -68,10 +69,10 @@ The tie is a numerical-version fact of the boundary, not an
 implementation difference, and rescoring for comparison against the
 released margins should pin SciPy 1.15.3.
 
-## Full simulation reproduction, Isaac plus GPU
+## Full Simulation Reproduction, Isaac Plus GPU
 
-Prerequisites, an Isaac Lab installation matching the tested versions
-above, the extension installed into its environment,
+Full simulation reproduction requires an Isaac Lab installation matching the
+tested versions above. Install the extension into that environment with
 
 ```bash
 uv pip install -p <isaaclab-venv>/bin/python -e source/parcelstow
@@ -91,16 +92,16 @@ Then, in dependency order,
 | handoff diagnostics | `scripts/manipulation/stow_relative_handoff.py` | about 1 h |
 | videos | `scripts/manipulation/record_stow_rollouts.py` | minutes |
 
-Costs are from a single RTX 5070 Ti with 32 simulator environments.
-`scripts/isaac_run.sh <logfile> <command...>` runs any of these with
-throttled cores and logging, set `ISAACLAB_VENV` to the Isaac Lab
-environment first.
+These costs were measured on a single RTX 5070 Ti with 32 simulator
+environments. `scripts/isaac_run.sh <logfile> <command...>` runs any command
+with CPU throttling and logging. Set `ISAACLAB_VENV` to the Isaac Lab
+environment before using it.
 
-Training seeds, demonstration subsets, and the evaluation seed law are
-frozen in the drivers' defaults, a rerun reproduces the released records
-up to simulator nondeterminism.
+The driver defaults fix the training seeds, demonstration subsets, and
+evaluation seed law. A rerun reproduces the released records up to simulator
+nondeterminism.
 
-## Anchors to the frozen protocol
+## Anchors to the Frozen Protocol
 
 - evaluation draws, seed 12345 + 1000 x speed-index, shared across policies
 - speedup grid, r in {0.5, 1.0, 1.5, 2.0, 2.25, 2.5, 3.0}

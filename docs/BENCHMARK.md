@@ -1,83 +1,78 @@
-# Benchmark specification
+# Benchmark Specification
 
-ParcelStow instantiates a matched expert-learner evaluation of temporal
-robustness in dexterous manipulation. It measures task-success probability
-as a function of task execution speed while everything else about the task
-stays fixed, and compares the expert to each learner at the same speeds.
+ParcelStow compares an imitation learner with the expert that generated its
+demonstrations as task execution speed changes. The expert and learner receive
+the same initial-condition draws, task geometry, success criteria, observation,
+and action interface at each tested speed. This matched evaluation measures
+whether the learner preserves the expert's task-success response to execution
+speed rather than whether the learner succeeds under nominal conditions alone.
 
-## The controlled variable
+## Execution-Speed Intervention
 
-The speedup factor r scales the duration of the manipulation phase
-schedule that runs after the parcel has been acquired. r = 1 reproduces
-the demonstrated cycle (14.1 s), r = 2 halves the manipulation-phase
-durations (10.2 s including the rate-fixed acquisition segment) and is
-the maximum demonstrated speed, the upper boundary of the demonstrated
-speed range. The acquisition timing, the grasp, the object, the geometry,
-the success predicates, and the observation and action interfaces do not
-change with r. Every policy observes r, so it always knows the speed
-demanded of it. [TASK_SPEC.md](TASK_SPEC.md) freezes every constant.
+The speedup factor `r` divides the nominal durations of the manipulation phases
+from lift through retreat. Acquisition and settling retain their nominal
+durations. Consequently, `r=1` gives the nominal phase schedule, whereas `r=2`
+halves the durations of the scaled phases. The complete cycle lasts 14.1 s at
+`r=1` and 10.2 s at `r=2` because the acquisition and settling durations remain
+fixed.
 
-## What stays fixed as r changes
+The demonstrations sample `r` uniformly from `[0.5, 2]`. Thus, `r=2` is the
+maximum demonstrated speed and the boundary of the training support; speeds
+above `r=2` test extrapolation beyond the demonstrated range. Every policy
+observes `r`. [TASK_SPEC.md](TASK_SPEC.md) records the frozen phase schedule and
+training distribution.
 
-- object, an 80 x 55 x 40 mm, 0.120 kg cuboid, friction 0.5
-- receptacle, an open-front receptacle with 10 mm entrance clearance per side
-- grasp, one five-contact grasp from the frozen bank
-- expert path, lift 80 mm, reorient 90 deg, translate, insert, release
-- start-pose law, x-y jitter of 10 mm about the frozen start, yaw fixed
-- evaluation draws, the same seeds and start poses for every policy
-- success, the physical predicate chain of TASK_SPEC section 8
+Changing `r` does not change the 80 x 55 x 40 mm parcel, its mass or friction,
+the five-contact acquisition grasp, the expert's geometric path, or the
+open-front receptacle. The receptacle provides 10 mm of clearance per side
+along its tight axis. Evaluation also retains the same 10 mm planar start-pose
+jitter and uses the same sampled start poses for the expert and each learner.
 
-## Success
+## Task Success
 
-An episode succeeds only if every stage predicate holds through settling,
-acquisition with force-bearing contacts, lift clear of the table,
-reorientation past the tolerance, insertion to depth inside the
-receptacle, release, and a settled final pose inside position and
-orientation tolerances (50 mm, 10 deg). The predicates read physical
-state only, no analytic grasp metric enters any predicate.
+An episode succeeds only when the parcel is acquired with force-bearing
+contacts, lifted clear of the table, reoriented, inserted to the required
+depth, released, and settled inside the final position and orientation
+tolerances. These predicates depend on simulated physical state. The
+Ferrari–Canny margin and the other grasp measurements are diagnostics and do
+not enter the success criterion.
 
-## Evaluation protocol
+## Evaluation Protocol
 
-- 100 episodes per policy per speed, batched over 32 environments
-- shared draws, seed 12345 + 1000 x speed-index, identical across policies
-- corruption off, jitter 10 mm
-- speedup grid of the paper, r in {0.5, 1.0, 1.5, 2.0, 2.25, 2.5, 3.0}
-- ACT training range, demonstrations span r in [0.5, 2.0], so r = 2.0
-  sits at the boundary of the demonstrated range and r > 2 extrapolates
-- reported intervals, Wilson 95% per condition, paired bootstrap for
-  matched expert-learner differences on the shared draws
+The released evaluation contains 100 episodes for each policy and speedup
+factor in `{0.5, 1.0, 1.5, 2.0, 2.25, 2.5, 3.0}`. It runs 32 environments per
+process with observation corruption disabled. The seed for speed index `i` is
+`12345 + 1000*i`; reusing that seed for every policy pairs their initial
+conditions. Reported task-success intervals are Wilson 95% intervals. The
+expert–learner difference at `r=2` uses a paired bootstrap over the shared
+initial-condition draws.
 
-## Expert and learners
+## Evaluated Policies
 
-| policy | construction | role in the measurement |
+| policy | construction | role in the evaluation |
 |---|---|---|
-| expert | model-derived scripted policy, IK-tracked object path with grasp-bank acquisition | supplies the demonstrations and the task-success curve every learner is compared against at matched speeds |
-| act | state-only ACT (Zhao et al., RSS 2023) trained on 297 expert demonstrations, seeds A/B/C | reaches nominal parity, 100/100 at r=1 for seed A, so its task-success curve is directly comparable to the expert's across the grid |
-| dp | state-based Diffusion Policy (ConditionalUnet1D) on the same demonstrations | a second architecture on the same demonstrations, 68/100 at r=1, below nominal parity |
-| dagger | MLP student distilled with DAgger | 3/100 at r=1 and below parity at every speed, the control for what the measurement cannot separate |
+| Expert | scripted policy following an inverse-kinematics trajectory after grasp-bank acquisition | generates the demonstrations and provides the matched reference at each speed |
+| ACT-A/B/C | state-based Action Chunking with Transformers policies trained on the same 297 expert demonstrations | test sensitivity to parameter initialization; ACT-A matches the expert's observed success at `r=1` |
+| Diffusion Policy | state-based `ConditionalUnet1D` policy trained on the same demonstrations | evaluates a second imitation-learning architecture that does not reach nominal expert success |
+| DAgger | multilayer-perceptron policy trained by dataset aggregation | illustrates why high-speed differences are not interpretable as temporal sensitivity when nominal success is already low |
 
-## Diagnostics beside the task-success curves
+The episode records also contain stage outcomes, hand–object relative motion,
+arm joint-velocity utilization, target-tracking error, and realized contact
+sets. [DIAGNOSTICS.md](DIAGNOSTICS.md) states what each measurement supports.
 
-The episode records carry stage outcomes, in-hand slip, hand-object
-relative motion, actuator utilization, realized contact sets with
-force-closure margins, and the tracking error against the commanded
-targets. [DIAGNOSTICS.md](DIAGNOSTICS.md) documents each field and the
-one-sided role of acquisition-time force closure.
+## Evaluating Another Policy
 
-## Using the benchmark on a new policy
-
-[POLICY_INTERFACE.md](POLICY_INTERFACE.md) defines the actor interface.
-The one command
+[POLICY_INTERFACE.md](POLICY_INTERFACE.md) defines the Python actor interface
+used by the evaluator. Run a compatible policy on the released speedup grid
+with
 
 ```bash
 python scripts/evaluate.py --actor your.module:YourPolicy \
     --rates 0.5 1.0 1.5 2.0 2.25 2.5 3.0 --episodes 100
 ```
 
-produces records in the released schema, and
+Then plot its task-success curve with
 
 ```bash
 python scripts/plot_envelope.py --summary outputs/eval/summary.jsonl
 ```
-
-draws the task-success curve next to the released expert and learners.

@@ -1,4 +1,4 @@
-# ParcelStow task specification (frozen scientific choices)
+# ParcelStow Task Specification (Frozen Scientific Choices)
 
 Status legend. FROZEN means the value is fixed and no learner result may
 change it. PENDING(Mk) means the value waits for the named milestone, whose
@@ -8,7 +8,7 @@ The freeze log at the end records every change with a date and a reason.
 Document created 2026-08-18 (M0). Learner training and evaluation start
 only after every PENDING entry reads FROZEN.
 
-## 1. Scientific question
+## 1. Scientific Question
 
 The benchmark asks whether temporal robustness persists through imitation
 of a dexterous behavior. A model-derived expert acquires a small
@@ -20,7 +20,7 @@ epsilon^(beta) on the realized contact set are diagnostics only. They enter
 no success predicate, no termination, no expert acceptance rule, no rate
 selection, and no action filter.
 
-## 2. Object (FROZEN, chosen by kinematic criteria only)
+## 2. Object (FROZEN, Chosen by Kinematic Criteria Only)
 
 - Shape, rigid cuboid, extents 80 x 55 x 40 mm (x, y, z in the object frame
   and in the world frame at the start pose, the object rests on its 80 x 55
@@ -38,13 +38,13 @@ selection, and no action filter.
   40 mm height gives the reorientation a visible change of the supporting
   face. No learner outcome informed these numbers.
 
-## 3. Table (FROZEN, unchanged from the cube tasks)
+## 3. Table (FROZEN, Unchanged from the Cube Tasks)
 
 Table center (0.55, 0.0, 0.68), size 0.81 x 1.092 x 0.04 m, top at
 z = 0.70 m. Pelvis fixed at (0, 0, 0.75), identity orientation, the robot
 faces +x, the right arm hangs at -y.
 
-## 4. Start pose (FROZEN)
+## 4. Start Pose (FROZEN)
 
 Parcel center at (0.35, 0.0, 0.721), 1 mm above the table top, yawed by
 +45 deg about the vertical (the 80 mm axis points forward-left as seen
@@ -57,7 +57,7 @@ probed yaws (outputs/paper/probe_r0g00b.json). Training and
 evaluation add planar start jitter (sections 12 and 13). No learner
 outcome informed these numbers.
 
-## 5. Grasp source (FROZEN, provenance in assets/gdf_bank_parcel.json)
+## 5. Grasp Source (FROZEN, Provenance in assets/gdf_bank_parcel.json)
 
 The synthesis record is
 assets/provenance/frogger_parcel/scene_lab_x0.35_riser0/parcel_80x55x40.json
@@ -78,7 +78,7 @@ procedure that built the cube bank. Yaw symmetry set of the resting
 cuboid, {0, 180} degrees (C2 about the vertical axis), never intermediate
 yaws.
 
-## 6. Receptacle and manipulation geometry (FROZEN by the kinematic probe)
+## 6. Receptacle and Manipulation Geometry (FROZEN by the Kinematic Probe)
 
 Family C of IMPLEMENTATION_LOG.md, the parcel tilts by 90 deg about its
 own width axis (Ry(-90) in the task frame, the task frame is the world
@@ -127,7 +127,7 @@ axis fits a slot of width w + 2 c_tight only while its yaw about the slot
 normal stays under about 2 c_tight / L = 0.2 rad = 11.5 deg. The final
 orientation tolerance is therefore 10 deg (section 8).
 
-## 7. Phase sequence and speedup factor (FROZEN, speedup grid frozen at M6)
+## 7. Phase Sequence and Speedup Factor (FROZEN, Speedup Grid Frozen at M6)
 
 Phases in order, with the nominal duration at unit rate,
 
@@ -169,7 +169,7 @@ actuator saturates. Cycle times, 21.9 s at 0.5, 14.1 s at 1.0, 10.2 s at
 2.0, 8.9 s at 3.0. Episode length 30 s (fallback), the per-environment
 task_complete termination ends the episode at the cycle time.
 
-## 8. Physical success (FROZEN)
+## 8. Physical Success (FROZEN)
 
 Stage markers, each latched at the first step its condition holds,
 
@@ -220,7 +220,7 @@ Failure reason, the first category that applies in the order below,
     timeout                      inserted and released, not settled
     other                        anything else
 
-## 9. Slip diagnostics (FROZEN, diagnostics only)
+## 9. Slip Diagnostics (FROZEN, Diagnostics Only)
 
 At the acquired step the recorder stores T_HO, the parcel pose in the hand
 root frame. Every later step reports the relative translation and rotation
@@ -229,7 +229,7 @@ against the stored transform. Logged per episode, the maximum translation
 at INSERT start, the drop event, the active distal contact count, and the
 contact force magnitudes. No slip threshold defines success.
 
-## 10. Observation and action interface (FROZEN)
+## 10. Observation and Action Interface (FROZEN)
 
 Actions, absolute joint position targets for the 16 joints of CHAIN_ACTUATED
 (waist yaw, roll, pitch, right shoulder pitch, roll, yaw, elbow, wrist roll,
@@ -246,7 +246,7 @@ the pelvis frame (15), distal contact force magnitudes clipped and scaled
 force-closure margin value. Corruption noise as in the distill task during
 demonstration collection, off during evaluation.
 
-## 11. Expert construction (FROZEN in method)
+## 11. Expert Construction (FROZEN in Method)
 
 Acquisition, pregrasp and grasp chain configurations from the parcel bank
 entry nearest to the parcel start pose (planar grid, section 11.1), hand
@@ -267,14 +267,14 @@ orientation errors, and the joint-limit margin. Between knots the expert
 interpolates joint targets. The object is never attached to the desired
 transform.
 
-### 11.1 Start-pose grid
+### 11.1 Start-Pose Grid
 
 The bank holds the acquisition knots re-solved on a planar grid of start
 offsets, dx and dy in {-15, -10, -5, 0, 5, 10, 15} mm, and the LIFT knot per
 entry. From REORIENT onward the joint path is the nominal one plus an offset
 that decays to zero over the REORIENT phase.
 
-## 12. Training distribution (FROZEN at M6)
+## 12. Training Distribution (FROZEN at M6)
 
 - Start jitter, uniform dx, dy in [-10, 10] mm, no yaw jitter.
 - Speedup factor, uniform over [0.5, 2.0], the range over which the expert
@@ -289,7 +289,7 @@ that decays to zero over the REORIENT phase.
   learner.
 - Observation corruption on during collection, as in the cube protocol.
 
-## 13. Evaluation distribution (FROZEN at M6)
+## 13. Evaluation Distribution (FROZEN at M6)
 
 - The same jitter law as training, seeds fixed per speed (12345 + 1000 x
   speed index) and identical across policies.
@@ -297,7 +297,7 @@ that decays to zero over the REORIENT phase.
   policy and speed in the final run, 32 environments per process.
 - Corruption off.
 
-## 14. Primary metrics (FROZEN)
+## 14. Primary Metrics (FROZEN)
 
 - P(task_success | rate) with Wilson 95 percent intervals, per actor.
 - Stage completion probabilities per rate (acquired, reoriented, inserted,
@@ -312,7 +312,7 @@ that decays to zero over the REORIENT phase.
   with outcome by Spearman rank and by success stratified on margin
   quantile.
 
-## 15. Freeze log
+## 15. Freeze Log
 
 - 2026-08-18 M0, sections 1 to 5, 7 (structure), 8, 9, 10, 11, 14 frozen.
   Section 6 receptacle geometry pending the probe. Sections 12 and 13

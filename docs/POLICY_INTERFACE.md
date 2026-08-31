@@ -1,4 +1,4 @@
-# Policy interface
+# Policy Interface
 
 ParcelStow evaluates any policy exposing a three-member actor interface.
 The released expert and learners (scripted expert, ACT, Diffusion Policy,
@@ -6,7 +6,7 @@ DAgger) use the same interface, defined in
 `scripts/manipulation/stow_runtime.py` and frozen by section 10 of
 [TASK_SPEC.md](TASK_SPEC.md).
 
-## The actor interface
+## The Actor Interface
 
 ```python
 class MyPolicy:
@@ -38,13 +38,14 @@ python scripts/evaluate.py --actor examples.custom_policy:HoldPosturePolicy \
     --rates 1.0 --episodes 5 --num_envs 8
 ```
 
-Any `module.path:ClassName` reachable on the Python path works the same
-way, `--custom_ckpt` passes a checkpoint path through to the constructor.
+Any `module.path:ClassName` reachable on the Python path works the same way.
+The `--custom_ckpt` option passes a checkpoint path to the constructor.
 
-## Observation, 147-D state vector
+## Observation, 147-D State Vector
 
-Slices in order, all quantities from the simulator state after the noise
-model of the evaluation protocol (corruption off during evaluation),
+The observation concatenates the following slices. All quantities come from
+simulator state after the evaluation noise model; corruption is disabled
+during evaluation.
 
 | slice | width | content |
 |---|---|---|
@@ -57,10 +58,9 @@ model of the evaluation protocol (corruption off during evaluation),
 | 145 | 1 | task phase, (k + f) / N_PHASES in [0, 1] |
 | 146 | 1 | speedup factor r |
 
-The speedup factor reaches the policy only through `obs[:, 146]`, a
-speed-aware policy reads it there.
+The policy receives the speedup factor only through `obs[:, 146]`.
 
-## Action, 16-D joint-position target
+## Action, 16-D Joint-Position Target
 
 The action commands the 16 actuated joints of the control chain (waist
 yaw, roll, pitch, right shoulder pitch, roll, yaw, elbow, wrist roll,
@@ -74,22 +74,22 @@ joint_target = 0.5 * action + q_default
 through implicit PD actuators at 50 Hz control (physics at 200 Hz,
 decimation 4). An action of zero holds the default posture.
 
-## Episode protocol
+## Episode Protocol
 
 - `reset(ids, obs)` runs for every environment at episode start, the
   evaluator batches 32 environments by default.
-- One episode spans one full manipulation cycle at the drawn rate plus
-  the settling window, `geometry.cycle_time(r)` maps rate to cycle
+- One episode spans one full manipulation cycle at the sampled speedup factor
+  plus the settling window. `geometry.cycle_time(r)` maps `r` to cycle
   seconds per the frozen phase schedule of the task specification.
-- The episode record stores the eight stage predicates (acquired,
-  lifted_clear, reoriented, preinsert_reached, inserted, released,
-  settled, task_success), the failure reason, slip and contact
-  diagnostics, and the configuration stamp,
-  [DIAGNOSTICS.md](DIAGNOSTICS.md) documents them.
-- Identical evaluation seeds produce identical start draws across actors,
+- The episode record stores the eight stage predicates (`acquired`,
+  `lifted_clear`, `reoriented`, `preinsert_reached`, `inserted`, `released`,
+  `settled`, and `task_success`), the failure reason, slip and contact
+  diagnostics, and the configuration stamp. [DIAGNOSTICS.md](DIAGNOSTICS.md)
+  documents these fields.
+- Identical evaluation seeds produce identical start draws across policies,
   so per-episode comparisons pair by the `episode` field.
 
-## Scientific constraints
+## Scientific Constraints
 
 The interface is part of the frozen benchmark definition. Comparisons
 against the released numbers require the 147-D observation, the 16-D

@@ -1,9 +1,10 @@
-"""Expert-ceiling attribution across the speedup grid (WRL workshop
-addition of 2026-08-21). Reads the expert rows of the final evaluation and
-reports, per execution speed, the quantities bearing on three candidate
-explanations of the expert's success decrease at r >= 2.5, actuator
-saturation, grasp failure, and target-tracking accuracy at the insertion
-interface.
+"""Analyze expert arm motion, grasp outcomes, and target tracking across speeds.
+
+This WRL workshop analysis (added 2026-08-21) reads the expert rows of the
+final evaluation. At each execution speed, it reports measurements relevant
+to three candidate explanations for the expert's success decrease at
+`r >= 2.5`: actuator saturation, grasp failure, and target-tracking error at
+the insertion interface.
 
 Reported per rate (median and p90 over 100 episodes),
 - max_arm_velocity_utilization, the arm-joint velocity fraction of the
@@ -76,7 +77,8 @@ def main():
 
     lines = []
     lines.append("=" * 118)
-    lines.append("Expert ceiling attribution, medians (p90) over 100 episodes per rate, frozen tolerances 10 deg and 50 mm")
+    lines.append("Expert measurements across execution speeds: median (p90), 100 episodes per speed")
+    lines.append("Frozen orientation and insertion thresholds: 10 deg and 50 mm")
     lines.append("=" * 118)
     lines.append(f"{'rate':>5s} {'succ':>5s} {'arm_util':>15s} {'slip_mm':>15s} {'slip_deg':>15s} "
                  f"{'orient_err_deg':>15s} {'depth_mm':>15s} {'recept_N':>15s}  failure reasons")

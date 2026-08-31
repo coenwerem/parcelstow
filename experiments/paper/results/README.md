@@ -1,4 +1,4 @@
-# Frozen derived analyses of the paper
+# Frozen Derived Analyses of the Paper
 
 Summary files behind the paper's tables, produced from the released
 episode records (data/records/) by the analysis scripts under

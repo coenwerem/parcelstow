@@ -61,7 +61,7 @@ which exceeds the 10 degree settling tolerance.
   </tr>
 </table>
 
-### Success Rate Vs. Execution Speed
+### Success Rate vs. Execution Speed
 The expert and ACT-A each succeed in 100 of 100 episodes at nominal speed.
 At `r=2`, the maximum demonstrated speed, the expert succeeds in 84 episodes
 and ACT-A succeeds in 53. Their success rates differ by 31 percentage points;
