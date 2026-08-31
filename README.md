@@ -35,7 +35,9 @@ evaluation protocol, and reference policies.
 
 - [Results Preview](#results-preview)
 - [Quick Start](#quick-start)
-- [Evaluating Your Own Policy](#evaluate-your-policy)
+- [Installation](#installation)
+- [Evaluate Your Own Policy](#evaluate-your-own-policy)
+- [Repository Map](#repository-map)
 - [Benchmark Specification](docs/BENCHMARK.md)
 - [Policy Interface](docs/POLICY_INTERFACE.md)
 - [Reproducing Our Paper's Results](docs/REPRODUCING_THE_PAPER.md)
