@@ -6,8 +6,8 @@ manipulation.
 
 <p align="justify">
 ParcelStow is an Isaac Lab benchmark for contact-rich parcel insertion.
-In the task provided with `v0.1.0`, a poly-articulated robot equipped with an anthropomorphic end-effector is charged with inserting a rigid parcel placed stably on a planar surface at a known initial pose in the robot's workspace into an open-front receptacle whose pose is also known. The parcel insertion task is further divided into several stages that comprise acquiring the rigid parcel (acquisition/grasping),
-reorienting the parcel by 90 degrees (reorientation), transporting the parcel to the receptacle (transport), inserting the parcel with 10 mm of clearance per side along the tight axis (insertion), and releasing the parcel (release). A successful episode requires the parcel to settle within the final position and orientation tolerances. The simulation tooling, policy training, and policy evaluation assets provided in `v0.1.0` utilize a fixed-base Unitree G1 humanoid with a RealHand L6 anthropomorphic right hand.
+In the task provided with $\texttt{v0.1.0}$, a poly-articulated robot equipped with an anthropomorphic end-effector is charged with inserting a rigid parcel placed stably on a planar surface at a known initial pose in the robot's workspace into an open-front receptacle whose pose is also known. The parcel insertion task is further divided into several stages that comprise acquiring the rigid parcel (acquisition/grasping),
+reorienting the parcel by 90 degrees (reorientation), transporting the parcel to the receptacle (transport), inserting the parcel with 10 mm of clearance per side along the tight axis (insertion), and releasing the parcel (release). A successful episode requires the parcel to settle within the final position and orientation tolerances. The simulation tooling, policy training, and policy evaluation assets provided in $\texttt{v0.1.0}$ utilize a fixed-base Unitree G1 humanoid with a RealHand L6 anthropomorphic right hand.
 </p>
 
 <p align="justify">
@@ -17,8 +17,7 @@ reorientation, transfer, insertion, release, and retreat after the parcel has
 been acquired. We also fix the acquisition timing, task geometry, success criteria,
 observation, and action, and include $r$ in each policy's
 observation vector. The demonstrations contain speeds in $r \in [0.5, 2]$; evaluations
-above `r=2` test extrapolation beyond the demonstrated range.
-[docs/BENCHMARK.md](docs/BENCHMARK.md) specifies the speed variation,
+above $r=2$ test extrapolation beyond the demonstrated range. The dedicated <a href="docs/BENCHMARK.md">BENCHMARK.md file</a> specifies the speed variation,
 evaluation protocol, and reference policies.
 </p>
 
@@ -27,7 +26,7 @@ evaluation protocol, and reference policies.
     <td align="center">
       <img src="media/task_rate_robustness.gif" alt="Expert and DAgger at r=2" width="80%">
       <br>
-      <sub><b>Illustrative Temporal-Sensitivity Demo. </b>At $r=2$, the maximum demonstrated speed, the expert completes the insertion task, while DAgger jerkily inserts the parcel in the wrong orientation, consequently failing the task.</sub>
+      <p align="justify"><sub><b>Illustrative Temporal-Sensitivity Demo. </b>At $r=2$, the maximum demonstrated speed, the expert completes the insertion task, while DAgger jerkily inserts the parcel in the wrong orientation, consequently failing the task.</sub></p>
     </td>
   </tr>
 </table>
@@ -46,7 +45,7 @@ evaluation protocol, and reference policies.
 
 ## Results Preview
 
-### Orientation Error at the Maximum Demonstrated Speed
+### A. Orientation Error at the Maximum Demonstrated Speed
 ACT-A succeeds in all 100 nominal-speed episodes. In the
 `r=2` episode shown below, ACT-A finishes with a 17.1 degree orientation error,
 which exceeds the 10 degree settling tolerance.
@@ -56,25 +55,25 @@ which exceeds the 10 degree settling tolerance.
     <td align="center">
       <img src="media/terminal_states_r2.png" alt="Terminal states at r=2 for the expert, ACT-A, and DAgger" width="85%">
       <br>
-      <sub><b>Comparing Expert-Learner Insertion Performance at the Maximum Demonstrated Speed. </b>Terminal states at $r=2$, with the receptacle interior magnified. Each subcaption reports the final parcel orientation error for the displayed episode; successful settling requires an error of at most 10 degrees. The panels show separate episodes, not outcomes from a shared initial condition.</sub>
+      <p align="justify"><sub><b>Comparing Expert-Learner Insertion Performance at the Maximum Demonstrated Speed. </b>Terminal states at $r=2$, with the receptacle interior magnified. Each subcaption reports the final parcel orientation error for the displayed episode; successful settling requires an error of at most 10 degrees. The panels show separate episodes, not outcomes from a shared initial condition.</sub></p>
     </td>
   </tr>
 </table>
 
-### Success Rate vs. Execution Speed
+### B. Success Rate vs. Execution Speed
 The expert and ACT-A each succeed in 100 of 100 episodes at nominal speed.
-At `r=2`, the maximum demonstrated speed, the expert succeeds in 84 episodes
+At $r=2$, the maximum demonstrated speed, the expert succeeds in 84 episodes
 and ACT-A succeeds in 53. Their success rates differ by 31 percentage points;
-a paired bootstrap gives a 95% confidence interval of `[0.18, 0.44]` for this
+a paired bootstrap gives a 95% confidence interval of $[0.18, 0.44]$ for this
 difference. ACT-B and ACT-C also lose more success than the expert between
-`r=1` and `r=2`, but neither matches the expert at nominal speed.
+$r=1$ and $r=2$, but neither matches the expert at nominal speed.
 
 <table align="center">
   <tr>
     <td align="center">
       <img src="media/operating_envelope.png" alt="Task success across execution speeds" width="65%">
       <br>
-      <sub><b>Per-Policy Success Rate versus Execution Speed. </b>Task success across execution speeds for the expert and learner policies. Each point contains 100 episodes and shows a Wilson 95% confidence interval; speeds above $r=2$ lie outside the demonstrated range. The paper reports the stage, relative-motion-handoff, and force-closure analyses; the corresponding measurements are documented in [docs/DIAGNOSTICS.md](docs/DIAGNOSTICS.md).</sub>
+      <p align="justify"><sub><b>Per-Policy Success Rate versus Execution Speed. </b>Task success across execution speeds for the expert and learner policies. Each point contains 100 episodes and shows a Wilson 95% confidence interval; speeds above $r=2$ lie outside the demonstrated range. The paper reports the stage, relative-motion-handoff, and force-closure analyses; the corresponding measurements are documented in <a href="docs/DIAGNOSTICS.md">docs/DIAGNOSTICS.md</a>.</sub></p>
     </td>
   </tr>
 </table>
