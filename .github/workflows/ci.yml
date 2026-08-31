@@ -14,7 +14,9 @@ jobs:
         with:
           python-version: "3.11"
       - name: Install analysis dependencies
-        run: pip install numpy matplotlib pytest ruff
+        run: |
+          pip install numpy matplotlib pytest ruff
+          pip install torch --index-url https://download.pytorch.org/whl/cpu
       - name: Lint
         run: ruff check scripts/plot_envelope.py scripts/reproduce.py scripts/evaluate.py scripts/run_task.py scripts/download_artifacts.py examples/custom_policy.py
       - name: Pure geometry tests
