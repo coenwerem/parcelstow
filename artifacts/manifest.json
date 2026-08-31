@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "note": "External release artifacts of the ParcelStow paper, hosted in the Hugging Face dataset repository named by hf_repo. scripts/download_artifacts.py fetches by hf_path (huggingface_hub when installed, the resolve url otherwise) and verifies sha256. Episode-level evaluation records ship inside the repository under data/records and are not listed here.",
+  "note": "External release artifacts of the ParcelStow paper, hosted in the Hugging Face dataset repository named by hf_repo. scripts/download_artifacts.py fetches by hf_path (huggingface_hub when installed, the resolve url otherwise) and verifies sha256. Episode-level evaluation records are provided with the repository under data/records and are not listed here.",
   "bundles": {
     "paper": [
       "act_a_checkpoint",

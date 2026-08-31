@@ -1,6 +1,6 @@
 """Merge the Unitree G1 29-DoF URDF with LinkerHand L6 hands on both wrists.
 
-The script follows the same procedure Isaac Lab documents for the shipped
+The script follows the same procedure Isaac Lab documents for the provided
 G1 plus Inspire hand asset, a URDF-level merge with fixed wrist joints,
 then a single URDF-to-USD conversion. The stock rubber-hand links that the
 Unitree URDF fixes to each wrist are removed first. Mount transforms come

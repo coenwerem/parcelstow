@@ -1,6 +1,6 @@
 # Data and Checkpoints
 
-## Shipped in the Repository
+## Released with the Main Modules in the Repository
 
 | path | content | size |
 |---|---|---|

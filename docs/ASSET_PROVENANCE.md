@@ -1,6 +1,6 @@
 # Asset Provenance
 
-Provenance of every frozen construction input shipped in `assets/`.
+Provenance of every frozen construction input provided in `assets/`.
 None of these files needs regeneration to run or evaluate ParcelStow,
 the benchmark treats them as frozen inputs. `assets/NOTICE.md` maps each
 family to its upstream license.
@@ -29,10 +29,10 @@ g1_29dof_rev_1_0.urdf + meshes       linkerhand_l6v3.1_{right,left}.urdf + meshe
          assets/g1_l6/usd_both/               (frozen USD, the runtime asset)
 ```
 
-Verification (2026-08-25), all 167 shipped G1 mesh files are
+Verification (2026-08-25), all 167 released G1 mesh files are
 byte-identical (sha256) to
 [unitreerobotics/unitree_ros](https://github.com/unitreerobotics/unitree_ros)
-`robots/g1_description/meshes` at commit `4ddbf6d`, and all shipped L6
+`robots/g1_description/meshes` at commit `4ddbf6d`, and all released L6
 URDFs and meshes are byte-identical to
 [linker-bot/linkerhand-urdf](https://github.com/linker-bot/linkerhand-urdf)
 `L6/right` and `L6/left` at commit `075cc7d`. The hand is the RealHand

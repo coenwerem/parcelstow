@@ -1,7 +1,7 @@
 """Reproduce the reported quantitative results from the released episode
 records, no Isaac.
 
-Every target reads the frozen episode records shipped in data/records/ (or
+Every target reads the frozen episode records provided in data/records/ (or
 the artifacts fetched by scripts/download_artifacts.py) and writes derived
 analyses to outputs/reproduce/. Principal evaluation plots regenerate to
 media/ as well. Nothing here reruns the simulator, and exact camera-ready
@@ -60,7 +60,7 @@ def _gunzip(src, dst):
 
 
 def ensure_records():
-    """Materialize the shipped records where the analyzers expect them."""
+    """Materialize the provided records where the analyzers expect them."""
     os.makedirs(EVAL_DIR, exist_ok=True)
     for a in ACTORS:
         _gunzip(os.path.join(RECORDS, a + "_episodes.jsonl.gz"),

@@ -3,7 +3,7 @@
 Summary files behind the paper's tables, produced from the released
 episode records (data/records/) by the analysis scripts under
 scripts/manipulation/. Per-episode records, videos, checkpoints, and
-demonstrations ship separately, see docs/DATA_AND_CHECKPOINTS.md.
+demonstrations are packaged separately, see docs/DATA_AND_CHECKPOINTS.md.
 
 - eval_summary.jsonl, one row per actor and rate of the final evaluation
   (100 episodes each, stage fractions with Wilson intervals, failure

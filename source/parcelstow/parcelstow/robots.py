@@ -1,8 +1,8 @@
 """Articulation configs for the G1 with the LinkerHand L6 right hand.
 
-G1_L6_CFG copies the shipped G1_29DOF_CFG actuator layout and swaps the
+G1_L6_CFG copies the provided G1_29DOF_CFG actuator layout and swaps the
 asset for the locally merged URDF conversion. The six actuated hand joints
-get grasp-oriented gains following the shipped Inspire-hand config. The
+get grasp-oriented gains following the provided Inspire-hand config. The
 five dip joints run at zero stiffness because the PhysxMimicJointAPI
 constraint drives them from their MCP or CMC reference joints.
 """
