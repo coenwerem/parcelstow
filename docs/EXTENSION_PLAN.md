@@ -462,4 +462,5 @@ frozen training range is r uniform in [0.75, 1.75]; the frozen
 evaluation grid is {0.5, 0.75, 1.0, 1.25, 1.5, 1.75, 2.0, 2.5} with
 r = 0.5 testing extrapolation below the demonstrated range and
 r >= 2.0 above it, 100 episodes per policy and speed, the v1 seed
-law, corruption off.
+law, corruption off. The frozen values are stated in
+[TASK_SPEC_UPRIGHT.md](TASK_SPEC_UPRIGHT.md).
