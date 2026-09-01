@@ -34,8 +34,8 @@ parser.add_argument("--num_envs", type=int, default=32)
 parser.add_argument("--episodes", type=int, default=20)
 parser.add_argument("--rate", type=float, default=0.5)
 parser.add_argument("--rates", type=float, nargs="*", default=[0.5, 0.75, 1.0, 1.25, 1.5, 2.0, 2.5, 3.0])
-parser.add_argument("--rate_lo", type=float, default=0.5)
-parser.add_argument("--rate_hi", type=float, default=2.0)
+parser.add_argument("--rate_lo", type=float, default=0.75)
+parser.add_argument("--rate_hi", type=float, default=1.75)
 parser.add_argument("--jitter", type=float, default=0.0)
 parser.add_argument("--seed", type=int, default=1)
 parser.add_argument("--corrupt", action="store_true")
@@ -59,56 +59,8 @@ from isaaclab_tasks.utils.hydra import hydra_task_config  # noqa: E402
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import stow_runtime as rt  # noqa: E402
-import upright_place_expert as upe  # noqa: E402
-from parcelstow.phase_schedule import PhaseSchedule  # noqa: E402
-from parcelstow.tasks.manager_based.parcel_stow.mdp import task_clock  # noqa: E402
-from parcelstow.tasks.manager_based.upright_place import geometry as U  # noqa: E402
 from parcelstow.tasks.manager_based.upright_place.mdp.monitor import STAGE_KEYS, UprightMonitor  # noqa: E402
-
-SCHED = PhaseSchedule(U.PHASES)
-
-
-class UprightExpertActor:
-    name = "expert"
-
-    def __init__(self, base, bank=None, trajectory=None, candidate=0):
-        self.base = base
-        self.robot = base.scene["robot"]
-        from parcelstow.tasks.manager_based.upright_place.upright_place_env_cfg import CHAIN_ACTUATED
-        self.jids, self.jnames = self.robot.find_joints(CHAIN_ACTUATED, preserve_order=True)
-        self.q_default = self.robot.data.default_joint_pos[:, self.jids]
-        self.expert = upe.UprightExpert(self.jnames, bank=bank, trajectory=trajectory,
-                                        device=base.device, candidate=candidate)
-        self.expert.allocate(base.num_envs)
-        self.start_xy = torch.tensor(U.START_POS[:2], device=base.device)
-
-    def reset(self, ids, obs=None):
-        ids = torch.as_tensor(list(ids), dtype=torch.long, device=self.base.device)
-        if len(ids) == 0:
-            return
-        off = self.base._stow_start_pos[ids, :2] - self.start_xy
-        self.expert.reset(ids, off)
-
-    @torch.no_grad()
-    def act(self, obs):
-        k, f, _, _ = task_clock.phase_state(self.base)
-        q_meas = self.robot.data.joint_pos[:, self.jids]
-        return self.expert.act(k, f, self.q_default, q_meas)
-
-
-def config_stamp(base):
-    return {
-        "git_sha": rt.git_sha(),
-        "task": args_cli.task,
-        "object_extents": list(U.OBJECT_EXTENTS), "object_mass": U.OBJECT_MASS,
-        "object_friction": U.OBJECT_FRICTION, "object_start": list(U.START_POS),
-        "target_center": list(U.TARGET_CENTER), "target_radius": U.TARGET_RADIUS,
-        "place_z": U.PLACE_Z, "final_tilt_tol_deg": U.FINAL_TILT_TOL_DEG,
-        "grasp_shift": U.GRASP_SHIFT,
-        "phases": [[n, d, s] for n, d, s in U.PHASES],
-        "control_dt": float(base.step_dt),
-        "date": time.strftime("%Y-%m-%dT%H:%M:%S"),
-    }
+from upright_runtime import SCHED, UprightExpertActor, config_stamp  # noqa: E402
 
 
 @hydra_task_config(args_cli.task, "rsl_rl_cfg_entry_point")
@@ -120,7 +72,7 @@ def main(env_cfg, agent_cfg):
     monitor = UprightMonitor(base, trace_envs=trace_envs)
     expert = UprightExpertActor(base)
     switches = rt.EnvSwitches(base, reset_term="reset_object")
-    stamp = config_stamp(base)
+    stamp = config_stamp(base, task_id=args_cli.task)
     out = args_cli.out
     tag = args_cli.tag or args_cli.mode
     t0 = time.time()

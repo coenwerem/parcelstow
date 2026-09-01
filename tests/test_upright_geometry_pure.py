@@ -20,6 +20,7 @@ def test_phase_schedule(upright_geometry, phase_schedule_mod):
     # settle window is extended to 1.0 s so tipping resolves in-episode.
     assert not sched.rate_scaled[:5].any()
     assert np.isclose(sched.nominal_durations[:5].sum(), 5.7)
+    assert np.isclose(sched.nominal_durations[sched.rate_scaled].sum(), 14.8)
     assert sched.rate_scaled[5:-1].all()
     assert not sched.rate_scaled[-1]
     assert sched.nominal_durations[-1] == 1.0

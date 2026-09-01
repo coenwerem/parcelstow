@@ -42,7 +42,7 @@ from ..parcel_stow.parcel_stow_env_cfg import CHAIN_ACTUATED, TABLE_POS, TABLE_S
 from . import geometry as U
 from . import mdp
 
-EPISODE_LENGTH_S = 30.0
+EPISODE_LENGTH_S = 45.0  # covers the 36.3 s cycle at r = 0.5 under the calibrated schedule
 START_QUAT = tuple(float(v) for v in U.quat_from_mat(U.R_START))
 
 

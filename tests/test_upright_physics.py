@@ -68,7 +68,7 @@ def test_schedule_bound_and_observation(sim):
     obs = _reset(ns, rate=1.7)
     assert obs.shape[1] == 147
     assert bool((abs(obs[:, -1] - 1.7) < 1e-5).all()), obs[:, -1].tolist()
-    assert abs(sched.cycle_time(2.0) - (5.7 + 7.4 / 2.0 + 1.0)) < 1e-9
+    assert abs(sched.cycle_time(2.0) - (5.7 + 14.8 / 2.0 + 1.0)) < 1e-9
     # No idle robot body may hang inside the placement workspace.
     torch = ns["torch"]
     robot = ns["base"].scene["robot"]

@@ -444,3 +444,22 @@ excludes the pinky. At the frozen configuration the probe margin is
 0.085, and the scripted expert validates 20 of 20 at r = 0.5 with
 final tilt 0.0 deg and base offsets of 7 to 19 mm inside the 30 mm
 target.
+
+The eighth increment runs the Gate B expert-only calibration and
+freezes the speed protocol. A first sweep found the expert's
+placement bias (the in-hand pitch accumulated under the gravity
+moment of the end-shifted grasp) crossing the 30 mm target radius
+from r = 1, with the object standing at tilt 0.0 but 32 to 42 mm off
+target, so the provisional nominal durations were re-anchored by
+doubling the scaled phases (the phase table records the calibration),
+the v1 procedure for setting the rate protocol from expert-only
+evidence. The frozen sweep (64 episodes per speed, 10 mm jitter)
+reads 55, 59, 62, 61, 63, 58, 26, 0, 0 of 64 at r in {0.5, 0.75,
+1.0, 1.25, 1.5, 1.75, 2.0, 2.5, 3.0}: a plateau of 0.91 to 0.98 over
+[0.75, 1.75], a collapse above r = 1.75, and a dip at r = 0.5 where
+the slow cycle gives the in-hand pivot more time to creep. The
+frozen training range is r uniform in [0.75, 1.75]; the frozen
+evaluation grid is {0.5, 0.75, 1.0, 1.25, 1.5, 1.75, 2.0, 2.5} with
+r = 0.5 testing extrapolation below the demonstrated range and
+r >= 2.0 above it, 100 episodes per policy and speed, the v1 seed
+law, corruption off.

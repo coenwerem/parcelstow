@@ -75,7 +75,13 @@ LIFT_DZ = 0.18
 # inside the idle hand's zone); transport 0.180 m at margin 0.108.
 TARGET_CENTER = (0.527, 0.035)
 TARGET_RADIUS = 0.030
-PLACE_DROP = 0.005  # release height of the base above the table
+# The commanded place pose seats the base at its rest height: the object
+# arrives pitched a few degrees in the grasp (in-hand pivot grows with the
+# speedup factor), and seating presses the leading base edge onto the
+# table, which rights the object while it is still held; releasing from a
+# positive drop instead plants the tilted base off-center (measured, 36 to
+# 38 mm offsets at r 1.25 against the 30 mm target radius).
+PLACE_DROP = 0.000
 PLACE_Z = TABLE_TOP + OBJECT_HALF_HEIGHT + PLACE_DROP
 RETREAT_DISTANCE = 0.10  # hand withdrawal along -d after release, the v1 value
 # Frozen grasp-region offset along the shaft toward the future top end (a
@@ -96,20 +102,26 @@ SETTLE_ANG = 0.2  # rad/s
 # phase schedule, (name, nominal seconds, rate scaled)
 # ----------------------------------------------------------------------------
 # Acquisition keeps the v1 timings and stays fixed; the settle window is
-# extended to 1.0 s so tipping resolves inside the episode.
+# extended to 1.0 s so tipping resolves inside the episode. The scaled
+# nominal durations were set by the Gate B expert-only calibration of
+# 2026-09-01: at half these durations the expert's placement bias (the
+# in-hand pitch accumulated under the gravity moment of the end-shifted
+# grasp) exceeds the 30 mm target radius from r = 1, so the nominal
+# anchors where the expert holds at least 0.9 success over a usable
+# demonstrated range, the v1 procedure for the rate grid.
 PHASES = [
     ("PARK", 0.5, False),
     ("APPROACH", 2.5, False),
     ("PREGRASP_DWELL", 0.6, False),
     ("CLOSE", 1.5, False),
     ("GRASP_DWELL", 0.6, False),
-    ("LIFT", 1.2, True),
-    ("REORIENT", 1.6, True),
-    ("TRANSFER", 1.6, True),
-    ("LOWER", 1.0, True),
-    ("PLACE_DWELL", 0.4, True),
-    ("RELEASE", 0.6, True),
-    ("RETREAT", 1.0, True),
+    ("LIFT", 2.4, True),
+    ("REORIENT", 3.2, True),
+    ("TRANSFER", 3.2, True),
+    ("LOWER", 2.0, True),
+    ("PLACE_DWELL", 0.8, True),
+    ("RELEASE", 1.2, True),
+    ("RETREAT", 2.0, True),
     ("SETTLE", 1.0, False),
 ]
 PHASE_INDEX = {name: i for i, (name, _, _) in enumerate(PHASES)}
