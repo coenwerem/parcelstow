@@ -464,3 +464,28 @@ r = 0.5 testing extrapolation below the demonstrated range and
 r >= 2.0 above it, 100 episodes per policy and speed, the v1 seed
 law, corruption off. The frozen values are stated in
 [TASK_SPEC_UPRIGHT.md](TASK_SPEC_UPRIGHT.md).
+
+The ninth increment runs the frozen protocol end to end and releases
+the records. Demonstrations: 315 of 330 expert episodes admitted by
+physical task success (r uniform in [0.75, 1.75], 10 mm jitter,
+corruption on). One ACT policy trained with the v1 configuration
+(2000 epochs, final loss 0.034). The matched evaluation (100 episodes
+per policy and speed, paired draws under the v1 seed law) reads, at
+r in {0.5, 0.75, 1.0, 1.25, 1.5, 1.75, 2.0, 2.5}, expert 86, 93, 92,
+97, 96, 90, 43, 3 and ACT 25, 11, 39, 53, 66, 74, 8, 0 of 100. The
+ACT pilot does not reach nominal expert parity (0.39 against 0.92 at
+r = 1), so under the Gate C rule this condition is a secondary
+architecture result and supports no central matched claim; within
+that scope, the paired differences are 0.82 [0.73, 0.90] at r = 0.75,
+0.53 [0.42, 0.63] at r = 1, and 0.16 [0.05, 0.27] at r = 1.75, and
+the ACT curve rises with speed inside the demonstrated range (drops
+and placement misses dominate its slow-speed failures), the opposite
+direction of the v1 ACT-A. The released records live under
+`data/records/upright/` (evaluation summary and episode records,
+expert calibration sweep, demonstration summary), the figure at
+`media/upright_operating_envelope.*` regenerates with
+`python scripts/plot_envelope.py --summary
+data/records/upright/eval_summary.jsonl --actors expert act`, and the
+checkpoint and demonstrations are inventoried in
+`artifacts/manifest.json` (bundle `upright`, hosting pending like the
+v1 flow).

@@ -1,136 +1,160 @@
 {
-  "version": 1,
-  "note": "External release artifacts of the ParcelStow paper, hosted in the Hugging Face dataset repository named by hf_repo. scripts/download_artifacts.py fetches by hf_path (huggingface_hub when installed, the resolve url otherwise) and verifies sha256. Episode-level evaluation records are provided with the repository under data/records and are not listed here.",
-  "bundles": {
-    "paper": [
-      "act_a_checkpoint",
-      "dp_checkpoint",
-      "dagger_checkpoint",
-      "expert_demonstrations",
-      "act_seed2_checkpoint",
-      "act_seed3_checkpoint",
-      "act_n50_checkpoint",
-      "act_n100_checkpoint",
-      "demos_n50",
-      "demos_n100"
-    ],
-    "demo": [
-      "act_a_checkpoint",
-      "videos"
-    ]
+ "version": 1,
+ "note": "External release artifacts of the ParcelStow paper, hosted in the Hugging Face dataset repository named by hf_repo. scripts/download_artifacts.py fetches by hf_path (huggingface_hub when installed, the resolve url otherwise) and verifies sha256. Episode-level evaluation records are provided with the repository under data/records and are not listed here.",
+ "bundles": {
+  "paper": [
+   "act_a_checkpoint",
+   "dp_checkpoint",
+   "dagger_checkpoint",
+   "expert_demonstrations",
+   "act_seed2_checkpoint",
+   "act_seed3_checkpoint",
+   "act_n50_checkpoint",
+   "act_n100_checkpoint",
+   "demos_n50",
+   "demos_n100"
+  ],
+  "demo": [
+   "act_a_checkpoint",
+   "videos"
+  ],
+  "upright": [
+   "upright_act_checkpoint",
+   "upright_expert_demonstrations"
+  ]
+ },
+ "artifacts": {
+  "act_a_checkpoint": {
+   "description": "ACT-A (seed 1) state-only ACT policy trained on the 297 expert demonstrations, rates 0.5 to 2.0",
+   "path": "outputs/paper/act/act_stow.pt",
+   "bytes": 290831567,
+   "sha256": "0d9400462d8ff4d3d99614d48a1d6c365de3e3df8faa9bf88f91677130a0d4af",
+   "produced_by": "scripts/manipulation/run_stow_act.py",
+   "read_by": "scripts/evaluate.py --actor act",
+   "url": "https://huggingface.co/datasets/cenwerem/parcelstow/resolve/main/checkpoints/act_stow.pt",
+   "hf_path": "checkpoints/act_stow.pt"
   },
-  "artifacts": {
-    "act_a_checkpoint": {
-      "description": "ACT-A (seed 1) state-only ACT policy trained on the 297 expert demonstrations, rates 0.5 to 2.0",
-      "path": "outputs/paper/act/act_stow.pt",
-      "bytes": 290831567,
-      "sha256": "0d9400462d8ff4d3d99614d48a1d6c365de3e3df8faa9bf88f91677130a0d4af",
-      "produced_by": "scripts/manipulation/run_stow_act.py",
-      "read_by": "scripts/evaluate.py --actor act",
-      "url": "https://huggingface.co/datasets/cenwerem/parcelstow/resolve/main/checkpoints/act_stow.pt",
-      "hf_path": "checkpoints/act_stow.pt"
-    },
-    "dp_checkpoint": {
-      "description": "Diffusion Policy (state-based, ConditionalUnet1D) trained on the same demonstrations",
-      "path": "outputs/paper/dp/dp_stow.pt",
-      "bytes": 555721895,
-      "sha256": "e0c456d7b856d7f21bf502707ec295b25baa89c06f56d2ed76392a5376550f27",
-      "produced_by": "scripts/manipulation/run_stow_diffusion_policy.py",
-      "read_by": "scripts/evaluate.py --actor dp",
-      "url": "https://huggingface.co/datasets/cenwerem/parcelstow/resolve/main/checkpoints/dp_stow.pt",
-      "hf_path": "checkpoints/dp_stow.pt"
-    },
-    "dagger_checkpoint": {
-      "description": "DAgger MLP student baseline",
-      "path": "outputs/paper/dagger/student_final.pt",
-      "bytes": 973797,
-      "sha256": "710aae85ff1889d573732f455012fc28cc68571938de7bb686143a3bca9efff8",
-      "produced_by": "scripts/manipulation/run_stow_distill.py",
-      "read_by": "scripts/evaluate.py --actor dagger",
-      "url": "https://huggingface.co/datasets/cenwerem/parcelstow/resolve/main/checkpoints/student_final.pt",
-      "hf_path": "checkpoints/student_final.pt"
-    },
-    "expert_demonstrations": {
-      "description": "297 scripted-expert demonstration episodes over the training-rate range, observations and expert actions",
-      "path": "outputs/paper/demos/expert_episodes.pt",
-      "bytes": 128983707,
-      "sha256": "5c443c62d21471897edad0132dbc46bc24f19ea63d77fd2b8f9c6e53bd605fa2",
-      "produced_by": "scripts/manipulation/run_stow_expert.py --record",
-      "read_by": "scripts/manipulation/run_stow_act.py, run_stow_diffusion_policy.py",
-      "url": "https://huggingface.co/datasets/cenwerem/parcelstow/resolve/main/demonstrations/expert_episodes.pt",
-      "hf_path": "demonstrations/expert_episodes.pt"
-    },
-    "act_seed2_checkpoint": {
-      "description": "ACT-B, seed replication of ACT-A",
-      "path": "outputs/paper/act_multiseed/act_seed2/act_seed2.pt",
-      "bytes": 290831819,
-      "sha256": "062e0d175e498f287a1e47487347e2f4ca68699765acfb366785f874e4105c25",
-      "produced_by": "scripts/manipulation/run_stow_act.py --seed 2",
-      "read_by": "scripts/evaluate.py --actor act --act_ckpt <path>",
-      "url": "https://huggingface.co/datasets/cenwerem/parcelstow/resolve/main/checkpoints/act_seed2.pt",
-      "hf_path": "checkpoints/act_seed2.pt"
-    },
-    "act_seed3_checkpoint": {
-      "description": "ACT-C, seed replication of ACT-A",
-      "path": "outputs/paper/act_multiseed/act_seed3/act_seed3.pt",
-      "bytes": 290831819,
-      "sha256": "8dfcc8afc622ba09b52ab4d4360be17c89325115e7dd5b6df16267be6127b593",
-      "produced_by": "scripts/manipulation/run_stow_act.py --seed 3",
-      "read_by": "scripts/evaluate.py --actor act --act_ckpt <path>",
-      "url": "https://huggingface.co/datasets/cenwerem/parcelstow/resolve/main/checkpoints/act_seed3.pt",
-      "hf_path": "checkpoints/act_seed3.pt"
-    },
-    "act_n50_checkpoint": {
-      "description": "ACT trained on the rate-stratified 50-demonstration subset",
-      "path": "outputs/paper/act_demoscale/act_n50/act_n50.pt",
-      "bytes": 290830739,
-      "sha256": "63e28243b6eb764d014a981abadfdb4d123c769ac421e48dd06330ae77cedb12",
-      "produced_by": "scripts/manipulation/run_stow_act.py after subsample_stow_demos.py",
-      "read_by": "scripts/evaluate.py --actor act --act_ckpt <path>",
-      "url": "https://huggingface.co/datasets/cenwerem/parcelstow/resolve/main/checkpoints/act_n50.pt",
-      "hf_path": "checkpoints/act_n50.pt"
-    },
-    "act_n100_checkpoint": {
-      "description": "ACT trained on the rate-stratified 100-demonstration subset",
-      "path": "outputs/paper/act_demoscale/act_n100/act_n100.pt",
-      "bytes": 290831567,
-      "sha256": "1d1e770441ee7b449d424b068fc6c8b6ffa8873daaa9ed4b2521a7e513328de3",
-      "produced_by": "scripts/manipulation/run_stow_act.py after subsample_stow_demos.py",
-      "read_by": "scripts/evaluate.py --actor act --act_ckpt <path>",
-      "url": "https://huggingface.co/datasets/cenwerem/parcelstow/resolve/main/checkpoints/act_n100.pt",
-      "hf_path": "checkpoints/act_n100.pt"
-    },
-    "demos_n50": {
-      "description": "Rate-stratified 50-episode demonstration subset",
-      "path": "outputs/paper/act_demoscale/demos_n50.pt",
-      "bytes": 21747851,
-      "sha256": "b9568372c4460961513917ac324f2cc8473c3aa80dd366a4f7a24f68591ab8e0",
-      "produced_by": "scripts/manipulation/subsample_stow_demos.py",
-      "read_by": "scripts/manipulation/run_stow_act.py",
-      "url": "https://huggingface.co/datasets/cenwerem/parcelstow/resolve/main/demonstrations/subsets/demos_n50.pt",
-      "hf_path": "demonstrations/subsets/demos_n50.pt"
-    },
-    "demos_n100": {
-      "description": "Rate-stratified 100-episode demonstration subset",
-      "path": "outputs/paper/act_demoscale/demos_n100.pt",
-      "bytes": 43417049,
-      "sha256": "1223b95dbe671b1d1eb9a0692e15453816cf1f97047c2ec089e60d3825a04ea6",
-      "produced_by": "scripts/manipulation/subsample_stow_demos.py",
-      "read_by": "scripts/manipulation/run_stow_act.py",
-      "url": "https://huggingface.co/datasets/cenwerem/parcelstow/resolve/main/demonstrations/subsets/demos_n100.pt",
-      "hf_path": "demonstrations/subsets/demos_n100.pt"
-    },
-    "videos": {
-      "description": "Rollout videos, expert and learner episodes across rates, includes the expert r=2 success and ACT-A r=2 failure clips",
-      "path": "outputs/release/parcelstow_videos.tar.gz",
-      "bytes": 72838797,
-      "sha256": "41651f32751c8598935634222de49b0879f2861c41cb9cec6c7311fef0ac6638",
-      "produced_by": "scripts/manipulation/record_stow_rollouts.py",
-      "read_by": "documentation and project page",
-      "url": "https://huggingface.co/datasets/cenwerem/parcelstow/resolve/main/videos/parcelstow_videos.tar.gz",
-      "hf_path": "videos/parcelstow_videos.tar.gz"
-    }
+  "dp_checkpoint": {
+   "description": "Diffusion Policy (state-based, ConditionalUnet1D) trained on the same demonstrations",
+   "path": "outputs/paper/dp/dp_stow.pt",
+   "bytes": 555721895,
+   "sha256": "e0c456d7b856d7f21bf502707ec295b25baa89c06f56d2ed76392a5376550f27",
+   "produced_by": "scripts/manipulation/run_stow_diffusion_policy.py",
+   "read_by": "scripts/evaluate.py --actor dp",
+   "url": "https://huggingface.co/datasets/cenwerem/parcelstow/resolve/main/checkpoints/dp_stow.pt",
+   "hf_path": "checkpoints/dp_stow.pt"
   },
-  "hf_repo": "cenwerem/parcelstow",
-  "hf_repo_type": "dataset"
+  "dagger_checkpoint": {
+   "description": "DAgger MLP student baseline",
+   "path": "outputs/paper/dagger/student_final.pt",
+   "bytes": 973797,
+   "sha256": "710aae85ff1889d573732f455012fc28cc68571938de7bb686143a3bca9efff8",
+   "produced_by": "scripts/manipulation/run_stow_distill.py",
+   "read_by": "scripts/evaluate.py --actor dagger",
+   "url": "https://huggingface.co/datasets/cenwerem/parcelstow/resolve/main/checkpoints/student_final.pt",
+   "hf_path": "checkpoints/student_final.pt"
+  },
+  "expert_demonstrations": {
+   "description": "297 scripted-expert demonstration episodes over the training-rate range, observations and expert actions",
+   "path": "outputs/paper/demos/expert_episodes.pt",
+   "bytes": 128983707,
+   "sha256": "5c443c62d21471897edad0132dbc46bc24f19ea63d77fd2b8f9c6e53bd605fa2",
+   "produced_by": "scripts/manipulation/run_stow_expert.py --record",
+   "read_by": "scripts/manipulation/run_stow_act.py, run_stow_diffusion_policy.py",
+   "url": "https://huggingface.co/datasets/cenwerem/parcelstow/resolve/main/demonstrations/expert_episodes.pt",
+   "hf_path": "demonstrations/expert_episodes.pt"
+  },
+  "act_seed2_checkpoint": {
+   "description": "ACT-B, seed replication of ACT-A",
+   "path": "outputs/paper/act_multiseed/act_seed2/act_seed2.pt",
+   "bytes": 290831819,
+   "sha256": "062e0d175e498f287a1e47487347e2f4ca68699765acfb366785f874e4105c25",
+   "produced_by": "scripts/manipulation/run_stow_act.py --seed 2",
+   "read_by": "scripts/evaluate.py --actor act --act_ckpt <path>",
+   "url": "https://huggingface.co/datasets/cenwerem/parcelstow/resolve/main/checkpoints/act_seed2.pt",
+   "hf_path": "checkpoints/act_seed2.pt"
+  },
+  "act_seed3_checkpoint": {
+   "description": "ACT-C, seed replication of ACT-A",
+   "path": "outputs/paper/act_multiseed/act_seed3/act_seed3.pt",
+   "bytes": 290831819,
+   "sha256": "8dfcc8afc622ba09b52ab4d4360be17c89325115e7dd5b6df16267be6127b593",
+   "produced_by": "scripts/manipulation/run_stow_act.py --seed 3",
+   "read_by": "scripts/evaluate.py --actor act --act_ckpt <path>",
+   "url": "https://huggingface.co/datasets/cenwerem/parcelstow/resolve/main/checkpoints/act_seed3.pt",
+   "hf_path": "checkpoints/act_seed3.pt"
+  },
+  "act_n50_checkpoint": {
+   "description": "ACT trained on the rate-stratified 50-demonstration subset",
+   "path": "outputs/paper/act_demoscale/act_n50/act_n50.pt",
+   "bytes": 290830739,
+   "sha256": "63e28243b6eb764d014a981abadfdb4d123c769ac421e48dd06330ae77cedb12",
+   "produced_by": "scripts/manipulation/run_stow_act.py after subsample_stow_demos.py",
+   "read_by": "scripts/evaluate.py --actor act --act_ckpt <path>",
+   "url": "https://huggingface.co/datasets/cenwerem/parcelstow/resolve/main/checkpoints/act_n50.pt",
+   "hf_path": "checkpoints/act_n50.pt"
+  },
+  "act_n100_checkpoint": {
+   "description": "ACT trained on the rate-stratified 100-demonstration subset",
+   "path": "outputs/paper/act_demoscale/act_n100/act_n100.pt",
+   "bytes": 290831567,
+   "sha256": "1d1e770441ee7b449d424b068fc6c8b6ffa8873daaa9ed4b2521a7e513328de3",
+   "produced_by": "scripts/manipulation/run_stow_act.py after subsample_stow_demos.py",
+   "read_by": "scripts/evaluate.py --actor act --act_ckpt <path>",
+   "url": "https://huggingface.co/datasets/cenwerem/parcelstow/resolve/main/checkpoints/act_n100.pt",
+   "hf_path": "checkpoints/act_n100.pt"
+  },
+  "demos_n50": {
+   "description": "Rate-stratified 50-episode demonstration subset",
+   "path": "outputs/paper/act_demoscale/demos_n50.pt",
+   "bytes": 21747851,
+   "sha256": "b9568372c4460961513917ac324f2cc8473c3aa80dd366a4f7a24f68591ab8e0",
+   "produced_by": "scripts/manipulation/subsample_stow_demos.py",
+   "read_by": "scripts/manipulation/run_stow_act.py",
+   "url": "https://huggingface.co/datasets/cenwerem/parcelstow/resolve/main/demonstrations/subsets/demos_n50.pt",
+   "hf_path": "demonstrations/subsets/demos_n50.pt"
+  },
+  "demos_n100": {
+   "description": "Rate-stratified 100-episode demonstration subset",
+   "path": "outputs/paper/act_demoscale/demos_n100.pt",
+   "bytes": 43417049,
+   "sha256": "1223b95dbe671b1d1eb9a0692e15453816cf1f97047c2ec089e60d3825a04ea6",
+   "produced_by": "scripts/manipulation/subsample_stow_demos.py",
+   "read_by": "scripts/manipulation/run_stow_act.py",
+   "url": "https://huggingface.co/datasets/cenwerem/parcelstow/resolve/main/demonstrations/subsets/demos_n100.pt",
+   "hf_path": "demonstrations/subsets/demos_n100.pt"
+  },
+  "videos": {
+   "description": "Rollout videos, expert and learner episodes across rates, includes the expert r=2 success and ACT-A r=2 failure clips",
+   "path": "outputs/release/parcelstow_videos.tar.gz",
+   "bytes": 72838797,
+   "sha256": "41651f32751c8598935634222de49b0879f2861c41cb9cec6c7311fef0ac6638",
+   "produced_by": "scripts/manipulation/record_stow_rollouts.py",
+   "read_by": "documentation and project page",
+   "url": "https://huggingface.co/datasets/cenwerem/parcelstow/resolve/main/videos/parcelstow_videos.tar.gz",
+   "hf_path": "videos/parcelstow_videos.tar.gz"
+  },
+  "upright_act_checkpoint": {
+   "description": "ACT pilot checkpoint of the upright placement task (secondary architecture result)",
+   "path": "outputs/upright/act/act_upright.pt",
+   "produced_by": "scripts/manipulation/run_upright_act.py",
+   "read_by": "scripts/manipulation/eval_upright_policies.py --actors act",
+   "bytes": 290832323,
+   "sha256": "23792507a4a9e03b11682b28de929485211fb662c464bea10a3ed770caafbbc3",
+   "url": null,
+   "hf_path": null
+  },
+  "upright_expert_demonstrations": {
+   "description": "315 successful upright placement expert episodes, r uniform in [0.75, 1.75]",
+   "path": "outputs/upright/demos/expert_episodes.pt",
+   "produced_by": "scripts/manipulation/run_upright_expert.py --mode demos",
+   "read_by": "scripts/manipulation/run_upright_act.py",
+   "bytes": 194929139,
+   "sha256": "2959a476b294bbd63fe76a4a7ab4e64e1a87dfadd7e146b132559b953acfbb07",
+   "url": null,
+   "hf_path": null
+  }
+ },
+ "hf_repo": "cenwerem/parcelstow",
+ "hf_repo_type": "dataset"
 }
