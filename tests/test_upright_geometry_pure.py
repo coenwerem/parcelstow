@@ -95,3 +95,70 @@ def test_stage_and_failure_vocabulary(upright_geometry):
     assert U.FAILURE_REASONS == ["acquisition_failure", "dropped_during_transport",
                                  "placement_miss", "tipped_after_release",
                                  "timeout", "other"]
+
+
+def test_path_frames_parameterization(upright_geometry):
+    U = upright_geometry
+    fr = U.path_frames()
+    # Defaults reproduce the module constants.
+    assert np.allclose(fr["p_start"], U.START_POS)
+    assert np.allclose(fr["R_start"], U.R_START)
+    assert np.allclose(fr["R_upright"], U.R_UPRIGHT)
+    p, r = U.object_pose(U.PHASE_INDEX["LOWER"], 1.0, frames=fr)
+    p0, r0 = U.object_pose(U.PHASE_INDEX["LOWER"], 1.0)
+    assert np.array_equal(p, p0) and np.array_equal(r, r0)
+    # A candidate with a different yaw, target, and lift height moves the
+    # endpoints accordingly (the probe grid).
+    fr2 = U.path_frames(start_yaw_deg=0.0, target_center=(0.55, 0.0), lift_dz=0.10)
+    p, r = U.object_pose(U.PHASE_INDEX["REORIENT"], 1.0, frames=fr2)
+    assert U.tilt_deg(r) < 1e-9
+    assert np.allclose(p, np.asarray(U.START_POS) + [0, 0, 0.10])
+    p, r = U.object_pose(U.PHASE_INDEX["LOWER"], 1.0, frames=fr2)
+    assert np.allclose(p, [0.55, 0.0, U.PLACE_Z])
+
+
+def test_grasp_transform_roundtrip(upright_geometry):
+    U = upright_geometry
+    T_WO = U.make_tf(U.R_START, U.START_POS)
+    X_OH = U.make_tf(U.rotz(0.3), [0.05, -0.02, 0.11])
+    T_WH = U.hand_pose_from_object(T_WO, X_OH)
+    assert np.allclose(U.grasp_in_object_frame(T_WO, T_WH), X_OH)
+    assert np.allclose(U.inv_tf(T_WO) @ T_WO, np.eye(4))
+
+
+def test_retreat_hand_pose(upright_geometry):
+    U = upright_geometry
+    X_OH = U.make_tf(U.rotz(0.3), [0.05, -0.02, 0.11])
+    fr = U.path_frames()
+    T_place = U.hand_pose_from_object(U.make_tf(fr["R_upright"], fr["p_place"]), X_OH)
+    T0 = U.retreat_hand_pose(X_OH, 0.0, frames=fr)
+    T1 = U.retreat_hand_pose(X_OH, 1.0, frames=fr)
+    assert np.allclose(T0, T_place)
+    dp = T1[:3, 3] - T_place[:3, 3]
+    assert np.isclose(np.linalg.norm(dp), U.RETREAT_DISTANCE)
+    assert np.isclose(dp[2], 0.0)  # horizontal withdrawal
+    assert np.dot(dp[:2], fr["d"][:2]) < 0  # back along -d, away from the object
+    assert np.allclose(T1[:3, :3], T_place[:3, :3])
+
+
+def test_knot_list(upright_geometry):
+    U = upright_geometry
+    knots = U.knot_list()
+    names = {U.PHASES[k][0] for k, _ in knots}
+    assert names == {"LIFT", "REORIENT", "TRANSFER", "LOWER",
+                     "PLACE_DWELL", "RELEASE", "RETREAT"}
+    ks = [k for k, _ in knots]
+    assert ks == sorted(ks)
+    assert all(0.0 <= f <= 1.0 for _, f in knots)
+
+
+def test_goal_yaw_offset(upright_geometry):
+    U = upright_geometry
+    fr = U.path_frames(goal_yaw_deg=U.START_YAW_DEG - 90.0)
+    # The goal stays upright; only its yaw about the vertical changes.
+    p, r = U.object_pose(U.PHASE_INDEX["REORIENT"], 1.0, frames=fr)
+    assert U.tilt_deg(r) < 1e-9
+    assert np.allclose(r, U.rotz(math.radians(U.START_YAW_DEG - 90.0)))
+    # The default goal yaw equals the start yaw.
+    fr0 = U.path_frames()
+    assert np.allclose(fr0["R_upright"], U.R_UPRIGHT)

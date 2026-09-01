@@ -376,6 +376,26 @@ The third increment adds the upright placement skeleton,
 `tasks/manager_based/upright_place/geometry.py`: the phase table, the
 deterministic object path, the stage and failure vocabulary, and the
 success predicates, covered by `tests/test_upright_geometry_pure.py`
-through the shared `PhaseSchedule`. Its numeric constants stay
-provisional until the kinematic probe, and no environment, scripted
-expert, or gym registration exists yet.
+through the shared `PhaseSchedule`. No environment, scripted expert,
+or gym registration exists yet.
+
+The fourth increment adds the kinematic probe,
+`scripts/manipulation/probe_upright_geometry.py`, the upright analog
+of the v1 geometry probe: DLS IK over the manipulation knot list with
+the `ChainIK` solver, ranked by joint-limit margin, with the grasp
+hypothesis derived from the frozen v1 acquisition hand pose. Four
+probe passes on 2026-09-01 (reports under `outputs/probe/`) found
+that a shaft-centered grasp saturates the waist roll while lowering
+(one feasible candidate in 132, minimum margin 0.001), that goal-yaw
+offsets drive the wrist yaw to its limit during reorientation, and
+that moving the grasp point 50 mm toward the future top end of the
+shaft resolves both. The frozen candidate (start yaw +45 deg, goal
+yaw equal to the start yaw, target (0.457, 0.107), lift 0.12 m,
+transport 0.151 m) solves all 38 knots within 3.7 mm and 1.3 deg
+with minimum joint-limit margin 0.118, grasp margin 0.236, at least
+52 mm of hand-table clearance after lift, and 16 mm of hand-object
+clearance during retreat. The geometry constants are frozen at these
+values; the FRoGGeR bank, synthesized over the recorded
+`GRASP_SHIFT` region, replaces the grasp hypothesis before any
+expert or learner runs, and phase durations await the Gate B
+expert-only calibration.
