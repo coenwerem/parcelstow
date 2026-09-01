@@ -12,6 +12,7 @@ REPO = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 GEOMETRY_PY = os.path.join(REPO, "source", "parcelstow", "parcelstow", "tasks", "manager_based",
                            "parcel_stow", "geometry.py")
 EXPERT_PY = os.path.join(REPO, "scripts", "manipulation", "parcel_stow_expert.py")
+PHASE_SCHEDULE_PY = os.path.join(REPO, "source", "parcelstow", "parcelstow", "phase_schedule.py")
 
 
 def load_module(name, path):
@@ -30,6 +31,11 @@ def geometry():
 @pytest.fixture(scope="session")
 def expert_mod():
     return load_module("stow_expert_under_test", EXPERT_PY)
+
+
+@pytest.fixture(scope="session")
+def phase_schedule_mod():
+    return load_module("phase_schedule_under_test", PHASE_SCHEDULE_PY)
 
 
 def pytest_addoption(parser):

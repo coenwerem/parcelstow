@@ -363,9 +363,11 @@ in newly generated records, plus tests that pin the released schemas.
 
 Every v1 command, output, record file, frozen constant, and media
 name is preserved. No demonstration collection, no task skeleton, and
-no bimanual work happens in this increment. The next increment, after
-this note is reviewed, separates the task-schedule input of
-`mdp/task_clock.py` from the ParcelStow geometry import behind an
-adapter that leaves the ParcelStow environment unchanged; a shared
-framework beyond that adapter waits until two concrete tasks exist to
-support it.
+no bimanual work happens in these increments. The second increment,
+implemented after this note was reviewed, separates the task-schedule
+input of `mdp/task_clock.py` from the ParcelStow geometry import:
+`parcelstow/phase_schedule.py` defines a task-level `PhaseSchedule`,
+and the ParcelStow mdp package binds its frozen `geometry.PHASES` to
+`task_clock.SCHEDULE` at import time, leaving the environment's
+behavior unchanged. A shared framework beyond that adapter waits
+until two concrete tasks exist to support it.
