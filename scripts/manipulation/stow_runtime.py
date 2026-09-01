@@ -267,9 +267,9 @@ def load_actor(name, ckpt, base, n):
 # environment switches
 # ----------------------------------------------------------------------------
 class EnvSwitches:
-    def __init__(self, base):
+    def __init__(self, base, reset_term="reset_parcel"):
         self.base = base
-        self.reset_parcel_cfg = base.event_manager.get_term_cfg("reset_parcel")
+        self.reset_parcel_cfg = base.event_manager.get_term_cfg(reset_term)
         self.obs_term_cfgs = base.observation_manager._group_obs_term_cfgs["policy"]
         self.saved_noise = [c.noise for c in self.obs_term_cfgs]
 
@@ -291,7 +291,8 @@ class EnvSwitches:
 def run_episodes(env, base, actor, monitor, n_episodes, rate_spec, jitter, seed, switches,
                  expert=None, record_data=False, corrupt=False, action_noise=0.0, noise_half=False,
                  stamp=None, tag="", trace_dir=None, extra=None, verbose=True, max_steps=None,
-                 step_hook=None, after_step_hook=None, record_hook=None):
+                 step_hook=None, after_step_hook=None, record_hook=None,
+                 task_id=None, cycle_time=None):
     """Roll the actor until n_episodes complete episodes are recorded.
 
     expert, an ExpertActor whose act() runs every step (its integrator
@@ -308,6 +309,8 @@ def run_episodes(env, base, actor, monitor, n_episodes, rate_spec, jitter, seed,
     """
     n = base.num_envs
     device = base.device
+    task_id = TASK if task_id is None else task_id
+    cycle_time = G.cycle_time if cycle_time is None else cycle_time
     switches.set_rate(rate_spec)
     switches.set_jitter(jitter)
     switches.set_corruption(corrupt)
@@ -362,9 +365,9 @@ def run_episodes(env, base, actor, monitor, n_episodes, rate_spec, jitter, seed,
                 rec = monitor.episode_record(i)
                 r = float(rate_at_reset[i])
                 rec.update({
-                    "task": TASK,
+                    "task": task_id,
                     "policy": actor.name, "tag": tag, "seed": int(seed), "episode": counter,
-                    "env": i, "task_rate": r, "task_duration_s": G.cycle_time(r),
+                    "env": i, "task_rate": r, "task_duration_s": cycle_time(r),
                     "jitter": jitter, "corrupt": bool(corrupt), "action_noise": action_noise,
                 })
                 if stamp is not None:
@@ -401,11 +404,18 @@ def run_episodes(env, base, actor, monitor, n_episodes, rate_spec, jitter, seed,
     return records, episodes
 
 
-def summarize(records):
-    """Success and stage rates with Wilson intervals over a record list."""
+V1_STAGE_KEYS = ["acquired", "lifted_clear", "reoriented", "preinsert_reached",
+                 "inserted", "released", "settled"]
+
+
+def summarize(records, stage_keys=None):
+    """Success and stage rates with Wilson intervals over a record list.
+    stage_keys defaults to the ParcelStow stages; a second task passes its
+    own stage names."""
     n = len(records)
     if n == 0:
         return {"episodes": 0}
+    stage_keys = V1_STAGE_KEYS if stage_keys is None else list(stage_keys)
     def frac(key):
         k = sum(1 for r in records if r.get(key))
         lo, hi = G.wilson(k, n)
@@ -422,9 +432,10 @@ def summarize(records):
     out = {
         "episodes": n,
         "task_success": frac("task_success"),
-        "acquired": frac("acquired"), "lifted_clear": frac("lifted_clear"), "reoriented": frac("reoriented"),
-        "preinsert_reached": frac("preinsert_reached"), "inserted": frac("inserted"),
-        "released": frac("released"), "settled": frac("settled"),
+    }
+    for key in stage_keys:
+        out[key] = frac(key)
+    out.update({
         "failure_reasons": reasons,
         "max_hand_object_translation_m": dist("max_hand_object_translation_m"),
         "max_hand_object_rotation_deg": dist("max_hand_object_rotation_deg"),
@@ -435,7 +446,7 @@ def summarize(records):
         "max_target_tracking_error_rad": dist("max_target_tracking_error_rad"),
         "max_receptacle_force": dist("max_receptacle_force"),
         "epsilon_lift": dist("epsilon_lift"), "epsilon_beta_lift": dist("epsilon_beta_lift"),
-    }
+    })
     if "task" in records[0]:
         out["task"] = records[0]["task"]
     return out

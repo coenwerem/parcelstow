@@ -60,5 +60,9 @@ def test_new_records_carry_task_identifier():
     with open(RUNTIME_PY) as fh:
         src = fh.read()
     assert 'TASK = "ParcelStow-L6-Distill-Play-v0"' in src
-    assert '"task": TASK,' in src  # run_episodes stamps every new record
+    # run_episodes stamps every new record with a task id defaulting to the
+    # ParcelStow gym id, so a second task passes its own without changing
+    # the released schema.
+    assert '"task": task_id,' in src
+    assert "task_id = TASK if task_id is None else task_id" in src
     assert 'out["task"] = records[0]["task"]' in src  # summarize propagates it
