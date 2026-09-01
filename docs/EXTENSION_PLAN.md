@@ -344,7 +344,7 @@ Demonstrated speed ranges, speedup grids, and episode counts are
 fixed at Gates B and D per task, never shared across tasks by
 default.
 
-## First Infrastructure Increment
+## Infrastructure Increments
 
 The smallest shared change the audit justifies is a task identifier
 in newly generated records, plus tests that pin the released schemas.
@@ -371,3 +371,11 @@ and the ParcelStow mdp package binds its frozen `geometry.PHASES` to
 `task_clock.SCHEDULE` at import time, leaving the environment's
 behavior unchanged. A shared framework beyond that adapter waits
 until two concrete tasks exist to support it.
+
+The third increment adds the upright placement skeleton,
+`tasks/manager_based/upright_place/geometry.py`: the phase table, the
+deterministic object path, the stage and failure vocabulary, and the
+success predicates, covered by `tests/test_upright_geometry_pure.py`
+through the shared `PhaseSchedule`. Its numeric constants stay
+provisional until the kinematic probe, and no environment, scripted
+expert, or gym registration exists yet.

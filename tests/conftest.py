@@ -13,6 +13,8 @@ GEOMETRY_PY = os.path.join(REPO, "source", "parcelstow", "parcelstow", "tasks", 
                            "parcel_stow", "geometry.py")
 EXPERT_PY = os.path.join(REPO, "scripts", "manipulation", "parcel_stow_expert.py")
 PHASE_SCHEDULE_PY = os.path.join(REPO, "source", "parcelstow", "parcelstow", "phase_schedule.py")
+UPRIGHT_GEOMETRY_PY = os.path.join(REPO, "source", "parcelstow", "parcelstow", "tasks", "manager_based",
+                                   "upright_place", "geometry.py")
 
 
 def load_module(name, path):
@@ -36,6 +38,11 @@ def expert_mod():
 @pytest.fixture(scope="session")
 def phase_schedule_mod():
     return load_module("phase_schedule_under_test", PHASE_SCHEDULE_PY)
+
+
+@pytest.fixture(scope="session")
+def upright_geometry():
+    return load_module("upright_geometry_under_test", UPRIGHT_GEOMETRY_PY)
 
 
 def pytest_addoption(parser):
