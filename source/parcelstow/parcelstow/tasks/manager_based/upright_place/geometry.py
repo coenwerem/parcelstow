@@ -7,33 +7,42 @@ at most FINAL_TILT_TOL_DEG with the base center inside the target
 region, rather than the geometric containment of ParcelStow
 (docs/EXTENSION_PLAN.md).
 
-Geometry frozen by the kinematic probe of 2026-09-01
-(scripts/manipulation/probe_upright_geometry.py, report
-outputs/probe/upright_probe_final.json), following the v1 freeze
-protocol of docs/TASK_SPEC.md: kinematic criteria only, no learner
-outcome. At the frozen candidate (start yaw +45 deg, goal yaw equal to
-the start yaw, target (0.457, 0.107), lift 0.12 m, grasp shift
-+0.05 m) all 38 IK knots solve within 3.7 mm and 1.3 deg, the minimum
-joint-limit margin over the manipulation is 0.118 (worst at
-mid-retreat, wrist yaw), the grasp margin is 0.236, the hand stays at
-least 52 mm above the table after lift, and the retreat clears the
-placed object by 16 mm. The probe found the goal yaw must equal the
-start yaw (goal-yaw offsets drive the wrist yaw to its limit during
-reorientation) and that the grasp point must sit 50 mm toward the
-future top end of the shaft (a centered grasp saturates the waist roll
-while lowering, minimum margin 0.001). The grasp transform itself is a
-probe hypothesis derived from the frozen v1 grasp; the FRoGGeR bank,
-synthesized over the GRASP_SHIFT region, replaces it before any expert
-or learner runs. Phase durations await the Gate B expert-only
-calibration. The module is self-contained (numpy only) so the pure
-tests load it by file path, the convention of the ParcelStow geometry
-module.
+Geometry frozen by the kinematic probes and expert-only validation of
+2026-09-01 (scripts/manipulation/probe_upright_geometry.py, reports
+under outputs/probe/), following the v1 freeze protocol of
+docs/TASK_SPEC.md: kinematic and expert-only criteria, no learner
+outcome. The hypothesis probes over 141 candidates found that a
+shaft-centered grasp saturates the waist roll while lowering (one
+feasible candidate, minimum margin 0.001) and that goal-yaw offsets
+drive the wrist yaw to its limit during reorientation; FRoGGeR
+synthesis on the 55 x 55 x 180 mm cuboid placed the five-contact
+grasp at +46 to +91 mm along the shaft (centroid +72 mm) on its own.
+Simulation validation then measured three further mechanisms and set
+the remaining values. The idle left hand at the arm-zero default
+occupies the left-side placement zone (and any static re-park of the
+left arm shifts the torso sag enough to break the millimeter-margin
+open-loop acquisition), so the target sits on the robot's right of
+the transport axis, 0.207 m clear of the idle fingers. An object that
+pivots in the grasp hangs 142 mm below the grasp point, so the lift
+rises to 0.18 m and the hanging end clears the table by 46 mm. The
+synthesized grasp's pinky contact at +91 mm sits on the shaft's end
+edge and ejects the object axially under squeeze, so the bank slides
+the grasp 20 mm toward the center of mass along the constant
+cross-section (contact centroid +52 mm, every fingertip on the
+shaft). At the frozen configuration the probe solves all 38 knots
+within 3.6 mm and 0.9 deg at minimum joint-limit margin 0.085 (worst
+at the end of LOWER, waist pitch), the trajectory's 63 knots solve
+within 2.0 mm at margin 0.110, and the scripted expert validates
+20 of 20 at r = 0.5 with final tilt 0.0 deg and base offsets of 7 to
+19 mm. Phase durations await the Gate B expert-only calibration. The
+module is self-contained (numpy only) so the pure tests load it by
+file path, the convention of the ParcelStow geometry module.
 
 The tilt tolerance derivation mirrors the v1 derived tolerances: the
 resting cuboid tips when the center of mass leaves the base, at
-atan(half width / half height) = atan(20 / 70) = 15.9 degrees, so the
-5 degree tolerance is stricter than the tipping angle and was fixed
-before any expert or learner ran.
+atan(half width / half height) = atan(27.5 / 90) = 17.0 degrees, so
+the 5 degree tolerance is stricter than the tipping angle and was
+fixed before any expert or learner ran.
 """
 
 import math
@@ -43,24 +52,37 @@ import numpy as np
 # ----------------------------------------------------------------------------
 # object, table, and target (frozen by the kinematic probe, see docstring)
 # ----------------------------------------------------------------------------
-OBJECT_EXTENTS = (0.040, 0.040, 0.140)  # x, y, z in the object frame
+OBJECT_EXTENTS = (0.055, 0.055, 0.180)  # x, y, z in the object frame
 OBJECT_HALF_HEIGHT = OBJECT_EXTENTS[2] / 2
-OBJECT_MASS = 0.150
+OBJECT_MASS = 0.120  # the v1 parcel mass, holding object mass fixed across tasks
 OBJECT_FRICTION = 0.5  # the v1 physics material
 TABLE_TOP = 0.70  # the v1 table
 START_YAW_DEG = 45.0
-# Lying on a 40 x 140 face, center 1 mm above rest height, the v1 start
-# convention.
+# Lying on a 55 x 180 face, center 1 mm above rest height, the v1 start
+# convention. The 55 mm width is the aperture floor the synthesis
+# established: FRoGGeR returned no seated force-closed grasp at 40 or
+# 50 mm and three at 55 mm, the width the v1 parcel already proved. The
+# 180 mm length admits the probed +50 mm grasp shift with the contact
+# span ending 10 mm inside the shaft.
 START_POS = (0.35, 0.0, TABLE_TOP + OBJECT_EXTENTS[0] / 2 + 0.001)
-LIFT_DZ = 0.12  # the reorientation clears the table by half height plus margin
-TARGET_CENTER = (0.457, 0.107)  # probe-chosen, transport 0.151 m at margin 0.118
+# The lift height covers the in-hand pivot worst case: an object that
+# pivots to hang from the end-shifted grasp extends 162 mm below the
+# grasp point, and at 0.18 m of lift its hanging end still clears the
+# table by 46 mm at the start of the reorientation.
+LIFT_DZ = 0.18
+# Probe-chosen on the robot's right of the transport axis, 0.207 m clear
+# of the idle left hand (the left-side candidates put the placement
+# inside the idle hand's zone); transport 0.180 m at margin 0.108.
+TARGET_CENTER = (0.527, 0.035)
 TARGET_RADIUS = 0.030
 PLACE_DROP = 0.005  # release height of the base above the table
 PLACE_Z = TABLE_TOP + OBJECT_HALF_HEIGHT + PLACE_DROP
 RETREAT_DISTANCE = 0.10  # hand withdrawal along -d after release, the v1 value
-# Grasp point offset along the object long axis toward the future top end,
-# an input to the bank synthesis; a centered grasp saturates the waist roll
-# while lowering (probe, minimum margin 0.001 vs 0.118 at +0.05).
+# Frozen grasp-region offset along the shaft toward the future top end (a
+# centered grasp saturates the waist roll while lowering, margin 0.001);
+# the bank realizes a +0.052 m contact centroid, the synthesized +0.072 m
+# grasp slid 20 mm toward the center of mass so every fingertip lands on
+# the shaft.
 GRASP_SHIFT = 0.050
 
 # ----------------------------------------------------------------------------
@@ -140,6 +162,26 @@ def slerp(R_a, R_b, s):
 def smoothstep(f):
     f = np.clip(f, 0.0, 1.0)
     return 0.5 * (1.0 - np.cos(math.pi * f))
+
+
+def quat_from_mat(m):
+    """wxyz quaternion of a rotation matrix, the Isaac Lab convention."""
+    m = np.asarray(m, dtype=np.float64)
+    t = np.trace(m)
+    if t > 0:
+        s = math.sqrt(t + 1.0) * 2
+        w, x, y, z = 0.25 * s, (m[2, 1] - m[1, 2]) / s, (m[0, 2] - m[2, 0]) / s, (m[1, 0] - m[0, 1]) / s
+    elif m[0, 0] > m[1, 1] and m[0, 0] > m[2, 2]:
+        s = math.sqrt(1.0 + m[0, 0] - m[1, 1] - m[2, 2]) * 2
+        w, x, y, z = (m[2, 1] - m[1, 2]) / s, 0.25 * s, (m[0, 1] + m[1, 0]) / s, (m[0, 2] + m[2, 0]) / s
+    elif m[1, 1] > m[2, 2]:
+        s = math.sqrt(1.0 + m[1, 1] - m[0, 0] - m[2, 2]) * 2
+        w, x, y, z = (m[0, 2] - m[2, 0]) / s, (m[0, 1] + m[1, 0]) / s, 0.25 * s, (m[1, 2] + m[2, 1]) / s
+    else:
+        s = math.sqrt(1.0 + m[2, 2] - m[0, 0] - m[1, 1]) * 2
+        w, x, y, z = (m[1, 0] - m[0, 1]) / s, (m[0, 2] + m[2, 0]) / s, (m[1, 2] + m[2, 1]) / s, 0.25 * s
+    q = np.array([w, x, y, z])
+    return q / np.linalg.norm(q)
 
 
 # Lying start orientation (long axis horizontal along the yawed x axis)
