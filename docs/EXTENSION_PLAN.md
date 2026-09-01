@@ -14,7 +14,7 @@ task execution speeds observed in ParcelStow also occurs in
 manipulation tasks with different physical demands. The manuscript
 scopes its v1 claim to one task and states that other tasks,
 architectures, observation modalities, and physical systems remain to
-be evaluated; the extension supplies the task and hardware evidence.
+be evaluated; the extension supplies the task evidence, in simulation.
 
 ## Frozen v1 Artifacts
 
@@ -138,7 +138,10 @@ embodiment the repository already supports, so that task demands vary
 while the embodiment, observation grammar, and control interface stay
 fixed. Demonstrated speed ranges follow the v1 procedure: an
 expert-only calibration sweep fixes the range where the expert
-succeeds in at least 0.9 of episodes, before any learner runs.
+succeeds in at least 0.9 of episodes, before any learner runs. Grasp
+banks for the new objects are synthesized with the local FRoGGeR
+checkout and ship as frozen construction inputs with provenance
+records, following the v1 protocol in `docs/ASSET_PROVENANCE.md`.
 
 ### Parcel Reorientation and Receptacle Insertion (Retained)
 
@@ -298,19 +301,12 @@ gate turnaround), then keyed-peg insertion, then drawer opening.
 Task count beyond these three requires a regime the suite does not
 already cover, not more instances of a covered regime.
 
-Hardware: one initial task on the 7-DoF xArm7 with the right RealHand
-L6, the only embodiment with existing description files, environments,
-and a hardware driver. The initial hardware task is upright placement,
-because it needs no fixture beyond the object and a marked pad, its
-success predicate is measurable from an object pose track, and it
-carries the lowest contact risk at elevated speeds. A second hardware
-task (keyed-peg insertion, reusing the same rig plus the machined
-fixture) is added only after the first is operational. The hardware
-task must first pass its gates in an xArm7 simulation twin, which
-requires converting the xArm7-plus-L6 description to USD through the
-Isaac Lab URDF converter, the same pipeline that produced the G1-L6
-runtime asset. Running hardware-twin tasks in a second simulator
-instead would split the evaluation machinery and is not recommended.
+Hardware is out of scope for arXiv-v2; the evaluation is
+simulation-only on the G1-L6 embodiment. The per-candidate xArm7
+notes record that each recommended task transfers to the 7-DoF xArm7
+with the right RealHand L6 without redesign, so a later revision can
+add hardware; no hardware work, asset conversion, or instrumentation
+enters the v2 plan.
 
 ## Experimental Gates
 
@@ -344,6 +340,10 @@ A task enters full learner training only after passing, in order:
   and Wilson intervals are produced from released records by public
   commands.
 
+Demonstrated speed ranges, speedup grids, and episode counts are
+fixed at Gates B and D per task, never shared across tasks by
+default.
+
 ## First Infrastructure Increment
 
 The smallest shared change the audit justifies is a task identifier
@@ -369,23 +369,3 @@ this note is reviewed, separates the task-schedule input of
 adapter that leaves the ParcelStow environment unchanged; a shared
 framework beyond that adapter waits until two concrete tasks exist to
 support it.
-
-## Open Decisions
-
-- xArm7 simulation route: the recommended Isaac Lab USD conversion
-  of the xArm7-plus-L6 description needs a one-time merge and
-  conversion pass (the parameterized merge script pattern exists at
-  `scripts/assets/merge_g1_l6_urdf.py`) and author sign-off.
-- Grasp banks for the new objects: synthesis uses the local FRoGGeR
-  checkout, which is private; each new bank ships as a frozen
-  construction input with a provenance record, following the v1
-  protocol in `docs/ASSET_PROVENANCE.md`.
-- Hardware schedule and tactile observation: the tactile touch-grid
-  sensors exist in the standalone hand MJCF descriptions but not in
-  the combined arm-hand scenes or in any Isaac asset; whether the
-  hardware observation vector includes per-finger contact force
-  magnitudes, as the v1 observation does in simulation, is an open
-  instrumentation decision.
-- Demonstrated speed ranges, speedup grids, and episode counts for
-  the new tasks are fixed at Gates B and D per task, never shared
-  across tasks by default.
