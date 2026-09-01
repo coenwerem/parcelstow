@@ -362,6 +362,7 @@ def run_episodes(env, base, actor, monitor, n_episodes, rate_spec, jitter, seed,
                 rec = monitor.episode_record(i)
                 r = float(rate_at_reset[i])
                 rec.update({
+                    "task": TASK,
                     "policy": actor.name, "tag": tag, "seed": int(seed), "episode": counter,
                     "env": i, "task_rate": r, "task_duration_s": G.cycle_time(r),
                     "jitter": jitter, "corrupt": bool(corrupt), "action_noise": action_noise,
@@ -418,7 +419,7 @@ def summarize(records):
             return None
         return {"median": float(np.median(v)), "p90": float(np.percentile(v, 90)), "max": float(v.max()),
                 "mean": float(v.mean())}
-    return {
+    out = {
         "episodes": n,
         "task_success": frac("task_success"),
         "acquired": frac("acquired"), "lifted_clear": frac("lifted_clear"), "reoriented": frac("reoriented"),
@@ -435,6 +436,9 @@ def summarize(records):
         "max_receptacle_force": dist("max_receptacle_force"),
         "epsilon_lift": dist("epsilon_lift"), "epsilon_beta_lift": dist("epsilon_beta_lift"),
     }
+    if "task" in records[0]:
+        out["task"] = records[0]["task"]
+    return out
 
 
 def write_jsonl(path, rows, mode="a"):
