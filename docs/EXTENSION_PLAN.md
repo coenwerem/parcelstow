@@ -200,9 +200,12 @@ separations are compared.
 
 ### Upright Placement
 
-- Object: a tall rigid cuboid, approximately 40 x 40 x 140 mm and
-  0.15 kg, starting on its side; a marked circular target region on
-  the table. No receptacle.
+- Object: a tall rigid cuboid, 55 x 55 x 180 mm at the v1 parcel mass
+  of 0.120 kg, starting on its side; a marked circular target region
+  on the table. No receptacle. The 55 mm width is the aperture floor
+  the grasp synthesis established (no seated force-closed grasp at 40
+  or 50 mm), and the 180 mm length admits the end-shifted grasp the
+  kinematic probe requires.
 - Contact sequence: grasp the shaft, lift, reorient 90 degrees to
   vertical, transport, lower to the surface, release, settle with
   tipping possible.
@@ -379,6 +382,10 @@ success predicates, covered by `tests/test_upright_geometry_pure.py`
 through the shared `PhaseSchedule`. No environment, scripted expert,
 or gym registration exists yet.
 
+The fourth and later increments add the kinematic probe and the full
+upright placement implementation; the paragraphs below record each
+with its measured evidence.
+
 The fourth increment adds the kinematic probe,
 `scripts/manipulation/probe_upright_geometry.py`, the upright analog
 of the v1 geometry probe: DLS IK over the manipulation knot list with
@@ -389,13 +396,51 @@ that a shaft-centered grasp saturates the waist roll while lowering
 (one feasible candidate in 132, minimum margin 0.001), that goal-yaw
 offsets drive the wrist yaw to its limit during reorientation, and
 that moving the grasp point 50 mm toward the future top end of the
-shaft resolves both. The frozen candidate (start yaw +45 deg, goal
-yaw equal to the start yaw, target (0.457, 0.107), lift 0.12 m,
-transport 0.151 m) solves all 38 knots within 3.7 mm and 1.3 deg
-with minimum joint-limit margin 0.118, grasp margin 0.236, at least
-52 mm of hand-table clearance after lift, and 16 mm of hand-object
-clearance during retreat. The geometry constants are frozen at these
-values; the FRoGGeR bank, synthesized over the recorded
-`GRASP_SHIFT` region, replaces the grasp hypothesis before any
-expert or learner runs, and phase durations await the Gate B
-expert-only calibration.
+shaft resolves both.
+
+The fifth increment carries the geometry through grasp synthesis.
+FRoGGeR (the local checkout at the v1 provenance commit, the v1
+scene arguments) returned no seated force-closed grasp for a cuboid
+of 40 or 50 mm width and three grasps at the v1-proven 55 mm, so the
+object extents revised to 55 x 55 x 180 mm on kinematic criteria
+alone, the 180 mm length admitting the end-shifted grasp region; the
+synthesis on the exact 180 mm mesh then placed the five-contact
+grasp at +46 to +91 mm along the shaft (centroid +72 mm) on its own,
+with l_star 0.0034 against the v1 parcel's 0.0036. The provenance
+ships under `assets/provenance/frogger_upright/`, and the bank
+(`assets/upright_place_bank.json`, all 49 jitter-grid entries
+feasible) and IK trajectory (`assets/upright_place_trajectory.json`,
+63 knots, worst 2.0 mm, margin 0.110) follow the v1 builders.
+
+The sixth increment implements the task: the environment
+(`upright_place_env_cfg.py`, gym id `UprightPlace-L6-Play-v0`, the
+v1 scene minus the receptacle plus a visual target disk), the
+physical monitor (`upright_place/mdp/monitor.py`, the StowMonitor
+pattern with the upright stage markers and failure cascade), the
+scripted expert (`scripts/manipulation/upright_place_expert.py`) and
+its driver (`run_upright_expert.py`), and backward-compatible
+generalizations of the shared runtime (a task id and cycle-time
+input to `run_episodes`, a reset-term name for `EnvSwitches`, stage
+keys for `summarize`), pinned by the record-schema tests. The
+upright simulator tests run in their own process
+(`pytest tests/test_upright_physics.py --isaac-upright`), one Isaac
+environment per process.
+
+The seventh increment validates the expert end to end and freezes
+the remaining geometry from what the simulation measured, kinematic
+and expert-only criteria throughout. Three mechanisms invisible to
+the kinematic probe appeared in validation traces: the idle left
+hand at the arm-zero default occupies the left-side placement zone
+(and any static re-park of the left arm shifts the torso sag enough
+to break the millimeter-margin open-loop acquisition), so the target
+moved to the robot's right of the transport axis at (0.527, 0.035),
+0.207 m clear of the idle fingers; an object that pivots in the
+grasp hangs below the grasp point and its end struck the table, so
+the lift rose to 0.18 m; and the synthesized pinky contact at
++91 mm sat on the shaft's end edge and ejected the object axially
+under squeeze, so the bank slides the grasp 20 mm toward the center
+of mass (contact centroid +52 mm) and the expert's squeeze overdrive
+excludes the pinky. At the frozen configuration the probe margin is
+0.085, and the scripted expert validates 20 of 20 at r = 0.5 with
+final tilt 0.0 deg and base offsets of 7 to 19 mm inside the 30 mm
+target.
