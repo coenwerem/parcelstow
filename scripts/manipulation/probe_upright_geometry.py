@@ -35,6 +35,9 @@ from isaaclab.app import AppLauncher
 parser = argparse.ArgumentParser(description=__doc__)
 parser.add_argument("--geometry", type=str, default="assets/parcel_stow_geometry.json",
                     help="frozen v1 geometry supplying the grasp hypothesis")
+parser.add_argument("--bank", type=str, default=None,
+                    help="probe the X_OH, hand shapes, and grasp seed of a built bank "
+                         "instead of the v1-derived hypothesis")
 parser.add_argument("--out", type=str, default="outputs/probe/upright_probe.json")
 parser.add_argument("--start_yaws", type=float, nargs="*",
                     default=[0.0, 45.0, 90.0, 135.0, 180.0, -45.0, -90.0, -135.0])
@@ -87,23 +90,32 @@ def object_clearance(p_world, frames, radius):
 
 
 def main():
-    with open(args.geometry) as fh:
-        gd = json.load(fh)
-    X_OH_parcel = np.array(gd["X_OH"], dtype=np.float64)
-    T_WH_v1 = ug.make_tf(np.array(gd["R_start"]), np.array(gd["p_start"])) @ X_OH_parcel
-    fr_nominal = ug.path_frames(start_yaw_deg=float(gd["start_yaw_deg"]))
-    T_WO_up = ug.make_tf(fr_nominal["R_start"], fr_nominal["p_start"])
-    X_OH = ug.grasp_in_object_frame(T_WO_up, T_WH_v1)
-
-    hand_grasp = {n: float(v) for n, v in gd["hand_grasp"].items()}
-    hand_open = {n: float(v) for n, v in gd["hand_open"].items()}
-    q_seed = np.array([gd["kinematic_summary"]["grasp_q"][n] for n in CHAIN_NAMES])
+    if args.bank:
+        with open(args.bank) as fh:
+            bank = json.load(fh)
+        X_OH = np.array(bank["X_OH"], dtype=np.float64)
+        hand_grasp = {n: float(v) for n, v in bank["hand_grasp"].items()}
+        hand_open = {n: float(v) for n, v in bank["hand_pregrasp"].items()}
+        q_seed = np.array([bank["candidates"][0]["q_chain_grasp"][n] for n in CHAIN_NAMES])
+        hypothesis = f"bank X_OH from {args.bank}"
+    else:
+        with open(args.geometry) as fh:
+            gd = json.load(fh)
+        X_OH_parcel = np.array(gd["X_OH"], dtype=np.float64)
+        T_WH_v1 = ug.make_tf(np.array(gd["R_start"]), np.array(gd["p_start"])) @ X_OH_parcel
+        fr_nominal = ug.path_frames(start_yaw_deg=float(gd["start_yaw_deg"]))
+        T_WO_up = ug.make_tf(fr_nominal["R_start"], fr_nominal["p_start"])
+        X_OH = ug.grasp_in_object_frame(T_WO_up, T_WH_v1)
+        hand_grasp = {n: float(v) for n, v in gd["hand_grasp"].items()}
+        hand_open = {n: float(v) for n, v in gd["hand_open"].items()}
+        q_seed = np.array([gd["kinematic_summary"]["grasp_q"][n] for n in CHAIN_NAMES])
+        hypothesis = "v1 acquisition hand pose in the upright object frame"
 
     solver = ChainIK(pelvis_pos=sc.PELVIS_POS, iters=args.iters, null_gain=args.null_gain)
     q_default = solver.robot.data.default_joint_pos[0, solver.chain_ids].cpu().numpy()
     knots = ug.knot_list()
-    report = {"geometry": args.geometry, "X_OH_provisional": X_OH.tolist(),
-              "grasp_hypothesis": "v1 acquisition hand pose in the upright object frame",
+    report = {"geometry": args.geometry, "bank": args.bank, "X_OH_provisional": X_OH.tolist(),
+              "grasp_hypothesis": hypothesis,
               "hand_grasp": hand_grasp, "hand_open": hand_open, "starts": {}, "candidates": []}
     t0 = time.time()
 
