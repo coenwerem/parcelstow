@@ -46,7 +46,7 @@ def test_path_continuity_and_endpoints(peg_geometry):
     # INSERT ends seated on the pocket floor.
     p, r = P.object_pose(idx["INSERT"], 1.0)
     assert np.allclose(p, [*P.POCKET_CENTER, P.SEAT_Z])
-    assert abs((P.SEAT_Z - P.OBJECT_HALF_HEIGHT) - P.POCKET_FLOOR_Z) < 1e-12
+    assert abs((P.SEAT_Z - P.OBJECT_HALF_HEIGHT) - (P.POCKET_FLOOR_Z + P.RELEASE_DROP)) < 1e-12
 
 
 def test_containment_predicates(peg_geometry):
@@ -72,7 +72,8 @@ def test_containment_predicates(peg_geometry):
 def test_pocket_slabs(peg_geometry):
     P = peg_geometry
     slabs = P.pocket_slabs()
-    assert set(slabs) == {"floor", "wall_a", "wall_b", "wall_c", "wall_d"}
+    assert set(slabs) == {"floor", "wall_a", "wall_b", "wall_c", "wall_d",
+                          "lead_a", "lead_b", "lead_c", "lead_d"}
     for s in slabs.values():
         assert len(s["size"]) == 3 and len(s["center"]) == 3 and len(s["quat_wxyz"]) == 4
     # The floor top sits at the pocket floor height.

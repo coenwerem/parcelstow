@@ -107,6 +107,8 @@ class PegExpert:
         self.hand_hold = self.hand_grasp + overdrive
         cand = bank["candidates"][candidate]
         self.q_pre_nom = torch.tensor(_named_vector(chain, cand["q_chain"]), dtype=torch.float32, device=device)
+        via = cand.get("q_chain_via", cand["q_chain"])
+        self.q_via = torch.tensor(_named_vector(chain, via), dtype=torch.float32, device=device)
         self.q_grasp_nom = torch.tensor(_named_vector(chain, cand["q_chain_grasp"]), dtype=torch.float32, device=device)
         entries = [e for e in bank["grid"]["entries"] if e["ok"]]
         self.grid_xy = torch.tensor([[e["dx"], e["dy"]] for e in entries], **kw)
@@ -174,8 +176,13 @@ class PegExpert:
         hand_default = q_default[:, self.hand_idx]
         arm = torch.where((k == PH["PARK"]).unsqueeze(1), arm_default, arm)
         hand = torch.where((k == PH["PARK"]).unsqueeze(1), hand_default, hand)
+        # two-segment approach through the raised via, clearing the pocket
         m = (k == PH["APPROACH"]).unsqueeze(1)
-        arm = torch.where(m, arm_default + s * (self.q_pre - arm_default), arm)
+        f1 = _ease((f / 0.6).clamp(0.0, 1.0)).unsqueeze(1)
+        f2 = _ease(((f - 0.6) / 0.4).clamp(0.0, 1.0)).unsqueeze(1)
+        via = self.q_via.unsqueeze(0)
+        appr = arm_default + f1 * (via - arm_default) + f2 * (self.q_pre - via)
+        arm = torch.where(m, appr, arm)
         hand = torch.where(m, hand_default + s * (self.hand_open - hand_default), hand)
         m = (k == PH["PREGRASP_DWELL"]).unsqueeze(1)
         arm = torch.where(m, self.q_pre, arm)

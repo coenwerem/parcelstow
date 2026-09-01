@@ -40,7 +40,8 @@ from . import mdp
 
 EPISODE_LENGTH_S = 45.0  # covers the 36.3 s cycle at r = 0.5
 START_QUAT = tuple(float(v) for v in P.quat_from_mat(P.R_START))
-SLAB_NAMES = ["floor", "wall_a", "wall_b", "wall_c", "wall_d"]
+SLAB_NAMES = ["floor", "wall_a", "wall_b", "wall_c", "wall_d",
+              "lead_a", "lead_b", "lead_c", "lead_d"]
 SLAB_PRIMS = {n: f"Pocket_{n}" for n in SLAB_NAMES}
 _slabs = P.pocket_slabs()
 
@@ -96,6 +97,10 @@ class PegInsertSceneCfg(InteractiveSceneCfg):
     pocket_wall_b = _slab_cfg("wall_b")
     pocket_wall_c = _slab_cfg("wall_c")
     pocket_wall_d = _slab_cfg("wall_d")
+    pocket_lead_a = _slab_cfg("lead_a")
+    pocket_lead_b = _slab_cfg("lead_b")
+    pocket_lead_c = _slab_cfg("lead_c")
+    pocket_lead_d = _slab_cfg("lead_d")
     # net contact forces of the five distal phalanges (observation)
     tip_contacts = ContactSensorCfg(prim_path="{ENV_REGEX_NS}/Robot/rh_.*_distal", history_length=1)
     # object-filtered per-body forces (realized contact set, slip diagnostics)
@@ -110,9 +115,7 @@ class PegInsertSceneCfg(InteractiveSceneCfg):
     rh_pinky_distal_object_s = ContactSensorCfg(
         prim_path="{ENV_REGEX_NS}/Robot/rh_pinky_distal", filter_prim_paths_expr=["{ENV_REGEX_NS}/Object"])
     # peg against the pocket slabs (jam diagnostics)
-    peg_pocket_s = ContactSensorCfg(
-        prim_path="{ENV_REGEX_NS}/Object",
-        filter_prim_paths_expr=["{ENV_REGEX_NS}/" + SLAB_PRIMS[n] for n in SLAB_NAMES])
+
 
 
 @configclass

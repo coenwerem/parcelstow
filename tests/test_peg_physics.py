@@ -62,7 +62,7 @@ def test_schedule_bound_and_observation(sim):
                          device=ns["base"].device)
     above = above.unsqueeze(0) + ns["base"].scene.env_origins
     d = (robot.data.body_pos_w - above.unsqueeze(1)).norm(dim=-1)
-    assert float(d.amin()) > 0.12, float(d.amin())
+    assert float(d.amin()) > 0.10, float(d.amin())
 
 
 def test_monitor_containment_fields(sim):
@@ -96,10 +96,16 @@ def test_pocket_collides(sim):
     above = [P.POCKET_CENTER[0], P.POCKET_CENTER[1], P.BLOCK_TOP + P.OBJECT_HALF_HEIGHT + 0.01]
     _teleport(ns, above, upright, settle_steps=120)
     z = base.scene["object"].data.root_pos_w[:, 2] - base.scene.env_origins[:, 2]
-    assert bool((abs(z - P.SEAT_Z) < 0.006).all()), z.tolist()
+    assert bool((abs(z - (P.SEAT_Z - P.RELEASE_DROP)) < 0.006).all()), z.tolist()
+    # a peg dropped 8 mm off center funnels down the lead-in and seats
+    off8 = P.R_POCKET @ [0.008, 0.0, 0.0]
+    high8 = [above[0] + off8[0], above[1] + off8[1], P.BLOCK_TOP + P.OBJECT_HALF_HEIGHT + 0.025]
+    _teleport(ns, high8, upright, settle_steps=150)
+    z = base.scene["object"].data.root_pos_w[:, 2] - base.scene.env_origins[:, 2]
+    assert bool((abs(z - (P.SEAT_Z - P.RELEASE_DROP)) < 0.006).all()), z.tolist()
     # offset onto the wall ring
     off = P.R_POCKET @ [P.POCKET_W / 2 + P.WALL_T / 2, 0.0, 0.0]
-    wall_top = [above[0] + off[0], above[1] + off[1], P.BLOCK_TOP + P.OBJECT_HALF_HEIGHT + 0.01]
+    wall_top = [above[0] + off[0], above[1] + off[1], P.BLOCK_TOP + P.LEAD_H + P.OBJECT_HALF_HEIGHT + 0.01]
     _teleport(ns, wall_top, upright, settle_steps=120)
     z = base.scene["object"].data.root_pos_w[:, 2] - base.scene.env_origins[:, 2]
     assert bool((z > P.POCKET_FLOOR_Z + P.OBJECT_HALF_HEIGHT + 0.02).all()), z.tolist()

@@ -1,15 +1,16 @@
 """Keyed-peg insertion task geometry.
 
-A 55 x 55 x 120 mm cuboid peg starts lying on its side at the proven
-upright-placement start; the task stands it up and inserts it into a
+The upright task's 55 x 55 x 180 mm cuboid, one object across both
+new tasks, starts lying on its side at the proven start; the task stands it up and inserts it into a
 square pocket with 3 mm of clearance per side, the tight-clearance
 containment regime of the arXiv-v2 suite (docs/EXTENSION_PLAN.md).
 The 55 mm width is the RealHand L6 aperture floor the grasp synthesis
 established for the upright task; the pocket sits at the probed
 right-side location, clear of the idle left hand, and the pocket top
-at 70 mm above the table keeps the hand in the higher workspace the
-v1 receptacle already proved. The peg seats on the pocket floor
-before release, the upright-placement lesson. Derived tolerance: a
+at 120 mm above the table keeps the hand in the higher workspace
+the v1 receptacle already proved. The descent releases the peg 10 mm
+above the pocket floor inside the guided cavity, the v1 receptacle's
+release convention. Derived tolerance: a
 square peg of side a in a square pocket with clearance c admits a yaw
 of about 2 c / a = 6.2 degrees, so the 5 degree final tilt tolerance
 is stricter and was fixed before any expert or learner ran.
@@ -25,30 +26,39 @@ import numpy as np
 # ----------------------------------------------------------------------------
 # object, table, and pocket
 # ----------------------------------------------------------------------------
-OBJECT_EXTENTS = (0.055, 0.055, 0.120)  # x, y, z in the object frame
+OBJECT_EXTENTS = (0.055, 0.055, 0.180)  # the upright task object, shared
 OBJECT_HALF_HEIGHT = OBJECT_EXTENTS[2] / 2
 OBJECT_MASS = 0.120  # the v1 parcel mass, fixed across the task suite
 OBJECT_FRICTION = 0.5
 TABLE_TOP = 0.70
 START_YAW_DEG = 45.0
 START_POS = (0.35, 0.0, TABLE_TOP + OBJECT_EXTENTS[0] / 2 + 0.001)
-LIFT_DZ = 0.18  # covers the pivot-to-hang worst case, the upright value
+LIFT_DZ = 0.22  # pivot-to-hang clearance over the raised pocket block
 POCKET_CENTER = (0.527, 0.035)  # the probed right-side location of the suite
 CLEARANCE = 0.003
 POCKET_W = OBJECT_EXTENTS[0] + 2 * CLEARANCE  # 61 mm across the cavity
 POCKET_DEPTH = 0.060
 WALL_T = 0.030
 FLOOR_T = 0.010
-BLOCK_TOP = TABLE_TOP + 0.070
+# The pocket top sits 120 mm above the table so the hand works at the
+# heights the v1 receptacle proved; at 70 mm the waist roll saturates at
+# the bottom of the descent (trajectory margin 0.000, the recurring
+# low-reach bind of this arm).
+BLOCK_TOP = TABLE_TOP + 0.120
 POCKET_FLOOR_Z = BLOCK_TOP - POCKET_DEPTH
-SEAT_Z = POCKET_FLOOR_Z + OBJECT_HALF_HEIGHT
+# The descent ends with the base 10 mm above the pocket floor and the
+# release drops the peg inside the guided cavity, the v1 receptacle's
+# release convention; commanding a full seat instead lowers the hand
+# onto the mouth hardware (measured, fingertip-fixture jams).
+RELEASE_DROP = 0.010
+SEAT_Z = POCKET_FLOOR_Z + RELEASE_DROP + OBJECT_HALF_HEIGHT
 INSERTED_MIN_DEPTH = 0.040  # base at least 40 mm below the pocket top
 RETREAT_DISTANCE = 0.10
-# Frozen grasp-region offset along the shaft toward the future top end;
-# the synthesized centroid sits at +0.025 m and the bank slides it 10 mm
-# toward the center of mass so the top contact keeps 13 mm of shaft
-# (the upright end-edge ejection lesson).
-GRASP_SHIFT = 0.015
+# Frozen grasp-region offset along the shaft toward the future top end,
+# the upright task's grasp on the shared object (synthesized centroid
+# +0.072 m slid 20 mm toward the center of mass); at the release height
+# the fingertips clear the lead-in hardware by about 50 mm.
+GRASP_SHIFT = 0.050
 
 FINAL_TILT_TOL_DEG = 5.0
 SETTLE_LIN = 0.02
@@ -174,9 +184,20 @@ def inside_pocket(p, R):
     return True
 
 
+# Entry lead-in: at 3 mm of clearance an open-loop insertion catches the
+# rim (measured, sustained 45 N wedging with a 1 mm, 1 deg arrival), so
+# the mouth carries the chamfer every engineered fixture has, four
+# slanted slabs widening the entry by LEAD_H tan(LEAD_ANGLE) = 14 mm per
+# side and funneling the peg into the tight containment.
+LEAD_ANGLE_DEG = 35.0
+LEAD_H = 0.020
+LEAD_T = 0.008
+
+
 def pocket_slabs():
     """Kinematic slab definitions of the pocket block, the v1 receptacle
-    pattern: a floor and four walls, yaw-aligned with the goal."""
+    pattern: a floor, four walls, and four lead-in slabs, yaw-aligned
+    with the goal."""
     q = [float(v) for v in quat_from_mat(R_POCKET)]
     cx, cy = POCKET_CENTER
     outer = POCKET_W + 2 * WALL_T
@@ -187,7 +208,7 @@ def pocket_slabs():
         return [cx + float(d[0]), cy + float(d[1]), z]
 
     wall_zc = POCKET_FLOOR_Z + POCKET_DEPTH / 2
-    return {
+    slabs = {
         "floor": {"size": [outer, outer, FLOOR_T],
                   "center": [cx, cy, POCKET_FLOOR_Z - FLOOR_T / 2], "quat_wxyz": q},
         "wall_a": {"size": [outer, WALL_T, POCKET_DEPTH],
@@ -199,6 +220,39 @@ def pocket_slabs():
         "wall_d": {"size": [WALL_T, POCKET_W, POCKET_DEPTH],
                    "center": center(-wall_off, 0.0, wall_zc), "quat_wxyz": q},
     }
+    # Lead-in slabs: the inner-lower edge of each slanted face sits on the
+    # pocket rim; the face rises outward at LEAD_ANGLE from the vertical.
+    A = math.radians(LEAD_ANGLE_DEG)
+    L = LEAD_H / math.cos(A)  # slab length along the slanted face
+    rim = POCKET_W / 2
+    # surface direction up-outward and inward-facing normal, in the (u, z)
+    # plane of the pocket frame where u points outward across the rim
+    d_u, d_z = math.sin(A), math.cos(A)
+    n_u, n_z = -math.cos(A), math.sin(A)
+    # face midpoint plus half the thickness behind the face (away from the peg)
+    u_c = rim + (L / 2) * d_u - (LEAD_T / 2) * n_u
+    z_c = BLOCK_TOP + 0.001 + (L / 2) * d_z - (LEAD_T / 2) * n_z
+    # The leads cover only the straight mouth edges and sit 1 mm above
+    # the wall tops: overlapping kinematic slab pairs (mitred corners,
+    # face-on-face rim contact) disturb the GPU contact pipeline enough
+    # to break the arm's contact behavior at the start (measured by scene
+    # bisection); the corner regions stay backed by the flat wall tops.
+    lead_len = POCKET_W
+    for name, R_side in (("lead_a", rotz(0.0)), ("lead_b", rotz(math.pi)),
+                         ("lead_c", rotz(math.pi / 2)), ("lead_d", rotz(-math.pi / 2))):
+        # R_side maps the +y wall's lead into each side; tilt about the
+        # slab's local x by -A so the top leans outward
+        R_slab = R_POCKET @ R_side @ rotx_local(-A)
+        off = R_POCKET @ R_side @ np.array([0.0, u_c, 0.0])
+        slabs[name] = {"size": [lead_len, LEAD_T, L],
+                       "center": [cx + float(off[0]), cy + float(off[1]), z_c],
+                       "quat_wxyz": [float(v) for v in quat_from_mat(R_slab)]}
+    return slabs
+
+
+def rotx_local(a):
+    c, s = math.cos(a), math.sin(a)
+    return np.array([[1, 0, 0], [0, c, -s], [0, s, c]], dtype=np.float64)
 
 
 # ----------------------------------------------------------------------------

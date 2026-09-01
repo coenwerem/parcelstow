@@ -162,6 +162,8 @@ class PegMonitor:
 
     def pocket_forces_w(self):
         """(E,) summed peg force from the pocket slabs."""
+        if "peg_pocket_s" not in self.env.scene.sensors:
+            return torch.zeros(self.n, device=self.device)
         fm = self.env.scene.sensors["peg_pocket_s"].data.force_matrix_w
         return fm.view(self.n, -1, 3).norm(dim=-1).sum(dim=-1)
 

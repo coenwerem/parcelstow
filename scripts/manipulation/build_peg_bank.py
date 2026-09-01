@@ -109,8 +109,19 @@ def main():
           f"margin {solver.limit_margin(r_g['q'])[0]:.3f} admitted {ok}", flush=True)
     if not ok:
         raise SystemExit("grasp candidate not admitted")
+    # Raised approach via: the pregrasp pose lifted 0.15 m with the hand
+    # open, so the approach clears the pocket block (the open fingertips
+    # sweep through the fixture's airspace on the direct blend, measured).
+    T_via = ug.hand_pose_from_object(T_WO0, X_OH).copy()
+    ray0 = T_via[:3, 3] - np.asarray(ug.START_POS)
+    T_via[:3, 3] = T_via[:3, 3] + args.standoff * (ray0 / np.linalg.norm(ray0)) + np.array([0.0, 0.0, 0.15])
+    solver.set_hand(hand_open)
+    r_v = solver.solve_multi(T_via, [r_p["q"], q_default], n_random=8)
+    print(f"[via] ok {r_v['ok']} ({r_v['pos_err']*1e3:.1f} mm) margin {solver.limit_margin(r_v['q'])[0]:.3f}",
+          flush=True)
     candidates = [{
         "yaw_deg": 0.0, "q_chain": named(r_p["q"]), "q_chain_grasp": named(r_g["q"]),
+        "q_chain_via": named(r_v["q"]),
         "pre_pos_error_m": r_p["pos_err"], "grasp_pos_error_m": r_g["pos_err"],
         "pre_ori_error_deg": r_p["ori_err_deg"], "grasp_ori_error_deg": r_g["ori_err_deg"],
         "limit_margin_grasp": solver.limit_margin(r_g["q"])[0],
