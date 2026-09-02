@@ -3,6 +3,9 @@
 An Isaac Lab benchmark for expert-learner evaluation across task
 execution speeds.
 
+[![Dataset on HF](https://img.shields.io/badge/%F0%9F%A4%97-Dataset-lightgrey)](https://huggingface.co/datasets/cenwerem/parcelstow)
+[![Paper (arXiv)](https://img.shields.io/badge/arXiv-2609.01453-b31b1b)](https://arxiv.org/abs/2609.01453)
+
 
 <p align="justify">
 ParcelStow is an Isaac Lab benchmark for contact-rich parcel insertion.
