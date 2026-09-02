@@ -92,6 +92,23 @@ class PegInsertSceneCfg(InteractiveSceneCfg):
         ),
         init_state=RigidObjectCfg.InitialStateCfg(pos=P.START_POS, rot=START_QUAT),
     )
+    # Visual pedestal completing the table-mounted block below the
+    # functional slabs (the kinematic shell starts at the floor slab,
+    # 50 mm above the table, and reads as floating on camera). No
+    # collider: the slabs carry all the physics and nothing reaches
+    # under the block, so validation is untouched.
+    pocket_pedestal = AssetBaseCfg(
+        prim_path="{ENV_REGEX_NS}/Pocket_pedestal",
+        spawn=sim_utils.CuboidCfg(
+            size=(P.POCKET_W + 2 * P.WALL_T, P.POCKET_W + 2 * P.WALL_T,
+                  P.POCKET_FLOOR_Z - P.FLOOR_T - P.TABLE_TOP),
+            visual_material=sim_utils.PreviewSurfaceCfg(diffuse_color=(0.45, 0.45, 0.50)),
+        ),
+        init_state=AssetBaseCfg.InitialStateCfg(
+            pos=(P.POCKET_CENTER[0], P.POCKET_CENTER[1],
+                 (P.TABLE_TOP + P.POCKET_FLOOR_Z - P.FLOOR_T) / 2),
+            rot=tuple(float(v) for v in P.quat_from_mat(P.R_POCKET))),
+    )
     pocket_floor = _slab_cfg("floor")
     pocket_wall_a = _slab_cfg("wall_a")
     pocket_wall_b = _slab_cfg("wall_b")
