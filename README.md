@@ -82,6 +82,46 @@ $r=1$ and $r=2$, but neither matches the expert at nominal speed.
   </tr>
 </table>
 
+## arXiv-v2 Extension Tasks
+
+<p align="justify">
+The arXiv-v2 extension carries the matched expert-learner evaluation to two
+further tasks on the same embodiment, observation grammar, and control
+interface: upright placement (terminal quasi-static stability on a marked
+target region) and keyed-peg insertion (tight-clearance containment, 3 mm
+per side, through a lead-in funnel). Frozen specifications live in
+<a href="docs/TASK_SPEC_UPRIGHT.md">TASK_SPEC_UPRIGHT.md</a> and
+<a href="docs/TASK_SPEC_PEG.md">TASK_SPEC_PEG.md</a>, the released records
+under <code>data/records/upright/</code> and <code>data/records/peg/</code>,
+and the increment-by-increment evidence in
+<a href="docs/EXTENSION_PLAN.md">EXTENSION_PLAN.md</a>.
+</p>
+
+<table align="center">
+  <tr>
+    <td align="center">
+      <img src="media/upright_expert_r1.gif" alt="Expert upright placement at r=1" width="97%">
+      <br>
+      <p align="justify"><sub><b>Upright Placement. </b>The scripted expert stands the 180 mm cuboid on the marked target region at $r=1$; the expert succeeds in 92 of 100 evaluation episodes at this speed.</sub></p>
+    </td>
+    <td align="center">
+      <img src="media/peg_expert_r1.gif" alt="Expert keyed-peg insertion at r=1" width="97%">
+      <br>
+      <p align="justify"><sub><b>Keyed-Peg Insertion. </b>The scripted expert inserts the same cuboid into a square pocket with 3 mm of clearance per side at $r=1$; the expert succeeds in 94 of 100 evaluation episodes at this speed.</sub></p>
+    </td>
+  </tr>
+</table>
+
+<table align="center">
+  <tr>
+    <td align="center">
+      <img src="media/peg_expert_vs_act_r1.gif" alt="Expert and ACT peg insertion at r=1" width="80%">
+      <br>
+      <p align="justify"><sub><b>Expert-Learner Contrast at Nominal Speed. </b>At $r=1$ the expert (left) threads the funnel while the ACT pilot (right) drops the peg during transport; the paired evaluation reads 94 against 76 of 100, and the ACT pilot loses acquisition entirely at $r \geq 1.5$, above its demonstrated range.</sub></p>
+    </td>
+  </tr>
+</table>
+
 ## Quick Start
 **Tier 0, no Isaac Lab, no GPU**
 
