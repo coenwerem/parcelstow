@@ -140,7 +140,7 @@ def main():
     rich0 = json.load(open(os.path.join(rec_dir, riches[0]))) if riches else {}
     out = {
         "object": "parcel_80x55x40",
-        "source_record": os.path.abspath(args.record),
+        "source_record": os.path.relpath(args.record),
         "source_record_sha256": sha256(args.record),
         "source_rich_records": [os.path.abspath(os.path.join(rec_dir, f)) for f in riches],
         "source_mesh": os.path.abspath(os.path.join(rec_dir, "..", "parcel_80x55x40.obj")),

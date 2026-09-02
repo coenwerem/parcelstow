@@ -139,7 +139,7 @@ def main():
                   f"pre {r_pi['pos_err']*1e3:.1f} mm lift {r_l['pos_err']*1e3:.1f} mm", flush=True)
     out = {
         "object": rec.get("object"),
-        "source_record": os.path.abspath(args.record),
+        "source_record": os.path.relpath(args.record),
         "source_record_sha256": sha256(args.record),
         "synthesis": {
             "tool": "frogger scripts/g1_l6_runner.py (local checkout)",

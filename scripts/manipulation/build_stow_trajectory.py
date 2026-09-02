@@ -92,7 +92,7 @@ def main():
             print(f"[{name:16s} f {f:.3f}] ok {r['ok']} pos {r['pos_err']*1e3:.2f} mm ori {r['ori_err_deg']:.2f} deg "
                   f"margin {margin:.3f} ({knots[-1]['binding_joint']})", flush=True)
     out = {
-        "geometry_file": os.path.abspath(args.geometry), "bank_file": os.path.abspath(args.bank),
+        "geometry_file": os.path.relpath(args.geometry), "bank_file": os.path.relpath(args.bank),
         "X_OH": X_OH.tolist(), "hand_grasp": hand_grasp, "hand_open": hand_open,
         "chain_joint_names": CHAIN_NAMES, "pos_tol_m": args.pos_tol, "ori_tol_deg": args.ori_tol_deg,
         "worst_pos_err_m": worst["pos"], "worst_ori_err_deg": worst["ori"], "min_limit_margin": min_margin,
