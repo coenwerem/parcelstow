@@ -590,5 +590,5 @@ regenerates with `python scripts/plot_envelope.py --summary
 data/records/peg/eval_summary.jsonl --actors expert act --out
 media/peg_operating_envelope`, and the
 checkpoint and demonstrations are inventoried in
-`artifacts/manifest.json` (bundle `peg`, hosted in the parcelstow-v2
-dataset repository).
+`artifacts/manifest.json` (bundle `peg`, hosted with the v1
+artifacts in the parcelstow dataset repository).
