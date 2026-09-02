@@ -558,3 +558,35 @@ range froze at [0.5, 1.0] by the 0.9 rule, lower and narrower than
 the upright's [0.75, 1.75]; the evaluation grid keeps the eight
 upright speeds so the matched evaluation measures the full
 non-monotonic envelope.
+
+The twelfth increment runs the frozen peg protocol end to end and
+releases the records. Demonstrations: 325 of 330 expert episodes
+admitted by physical task success (r uniform in [0.5, 1.0], 10 mm
+jitter, corruption on). One ACT policy trained with the v1
+configuration (2000 epochs, final loss 0.031). The matched evaluation
+(100 episodes per policy and speed, paired draws under the v1 seed
+law) reads, at r in {0.5, 0.75, 1.0, 1.25, 1.5, 1.75, 2.0, 2.5},
+expert 100, 99, 94, 76, 72, 74, 86, 85 and ACT 68, 87, 76, 73, 0, 0,
+0, 0 of 100. The expert's valley-and-recovery envelope from the Gate B
+sweep reproduces at the evaluation scale (0.72 to 0.76 over
+[1.25, 1.75], 0.85 to 0.86 at r >= 2). The ACT pilot does not reach
+nominal expert parity (0.76 against 0.94 at r = 1), so under the
+Gate C rule this condition is a secondary architecture result and
+supports no central matched claim; within that scope the paired
+differences are 0.32 [0.23, 0.41] at r = 0.5, 0.12 [0.06, 0.19] at
+r = 0.75, 0.18 [0.08, 0.28] at r = 1, and 0.03 [-0.10, 0.16] at
+r = 1.25, where the expert's own valley closes the gap. Two learner
+signatures stand apart from the expert's jam-only failures: transport
+drops inside the demonstrated range (6 to 14 of 100, heaviest at
+r = 0.5, where the slow cycle lengthens the hold), and a total
+acquisition collapse at r >= 1.5 (100 of 100 acquisition failures)
+although the acquisition phases are rate-unscaled, so the collapse is
+driven by the out-of-range rate input alone rather than by faster
+motion. The released records live under `data/records/peg/`
+(evaluation summary and episode records, expert calibration sweep,
+demonstration summary), the figure at `media/peg_operating_envelope.*`
+regenerates with `python scripts/plot_envelope.py --summary
+data/records/peg/eval_summary.jsonl --actors expert act`, and the
+checkpoint and demonstrations are inventoried in
+`artifacts/manifest.json` (bundle `peg`, hosted in the parcelstow-v2
+dataset repository).
