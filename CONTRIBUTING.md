@@ -1,4 +1,4 @@
-# Contributing To ParcelStow
+# Contributing to ParcelStow
 
 ParcelStow accepts software fixes, documentation corrections, policy integrations, policy results, and candidate benchmark tasks. The immutable `v1.0.0` release and its records define the parcel-insertion study reported in arXiv:2609.01453. Do not modify released task definitions or records in place.
 
@@ -33,7 +33,7 @@ python scripts/download_artifacts.py --task upright
 python scripts/download_artifacts.py --task peg
 ```
 
-## Formatting And Pure Tests
+## Formatting and Pure Tests
 
 Run formatting checks on every supported Python file changed by the pull request. The repository uses Ruff settings from `pyproject.toml`.
 
@@ -59,7 +59,7 @@ Policy or task changes must also include short simulator evaluations through `sc
 
 ## Record Requirements
 
-Evaluation records are append-only JSON Lines. Every episode must identify the task or frozen configuration, policy, speedup factor, seed, episode, initial condition, task-specific stage outcomes, terminal failure reason, and physical success result. Preserve task-specific fields: do not rename parcel fields or force unrelated tasks into parcel stage names. Summary rows must report integer successes and episodes for every evaluated policy-speed pair.
+Evaluation records are append-only JSON Lines. Every episode must identify the task or frozen configuration, policy, speedup factor, seed, logical episode, `initial_condition_id`, initial object pose, task-specific stage outcomes, terminal failure reason, and physical success result. The expert and learner records for a policy-speed comparison must contain the same `initial_condition_id` values and exact initial poses. Preserve task-specific fields: do not rename parcel fields or force unrelated tasks into parcel stage names. Summary rows must report integer successes and episodes for every evaluated policy-speed pair. Custom-policy episode and summary records store the policy object's canonical name in `policy` and its import specification in `actor_spec`.
 
 Do not rewrite, regenerate, truncate, normalize, or replace files under `data/records/` that belong to a release. Add new records under a task- and contribution-specific path. Derived tables and figures belong in an output directory, never beside the frozen source records.
 
@@ -78,6 +78,6 @@ A scientific change must include:
 
 Videos are supporting evidence, not numerical or physical validation. Reviewers must be able to reproduce every reported count from submitted records without Isaac Lab.
 
-## Review And Release Boundaries
+## Review and Release Boundaries
 
 Maintainers review software compatibility and scientific validity separately. Acceptance of a pull request does not make a candidate task part of a stable release. A release requires an explicit versioned software and record boundary. Current development on `main` is not a released v2 package.

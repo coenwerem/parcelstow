@@ -97,7 +97,7 @@ configuration, all 38 knots within 3.6 mm and 0.9 deg, minimum
 joint-limit margin 0.085 (worst at the end of LOWER, waist pitch);
 trajectory evidence, 63 knots within 2.0 mm at margin 0.110.
 
-## 7. Phase Sequence And Speedup Factor (Frozen After Expert-Only Calibration)
+## 7. Phase Sequence and Speedup Factor (Frozen after Expert-Only Calibration)
 
 Phases in order, with the nominal duration at unit rate,
 

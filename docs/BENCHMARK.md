@@ -21,7 +21,7 @@ success at nominal speed.
 
 The speedup factor `r` divides the nominal duration of phases marked as scaled
 in the selected task specification. Acquisition and settling retain fixed
-durations in all three released tasks. Consequently, `r=1` gives a task's
+durations in all three tasks. Consequently, `r=1` gives a task's
 nominal phase schedule, whereas `r=2` halves only that task's scaled phases.
 For parcel insertion, the complete cycle lasts 14.1 s at `r=1` and 10.2 s at
 `r=2`.
@@ -45,11 +45,16 @@ requires insertion and settling inside the square pocket.
 
 ## Evaluation Protocol
 
-The released evaluation contains 100 episodes for each policy and speedup
+Each recorded evaluation contains 100 episodes for each policy and speedup
 factor in the task-specific grids above. It runs 32 environments per process
-with observation corruption disabled. The seed for speed index `i` is
-`12345 + 1000*i`; reusing that seed for every policy pairs their initial
-conditions. Reported task-success intervals are Wilson 95% intervals. The
+with observation corruption disabled. The 32-environment batch width is part
+of the evaluation configuration; results from another batch width are not
+benchmark-comparable. The seed for speed index `i` is
+`12345 + 1000*i`. The evaluator uses that seed to construct an
+initial-condition bank indexed by logical episode, then assigns every actor
+the same indexed robot and object state. This assignment does not depend on
+the order in which parallel environments terminate. Reported task-success
+intervals are Wilson 95% intervals. The
 expert–learner difference at `r=2` uses a paired bootstrap over the shared
 initial-condition draws.
 

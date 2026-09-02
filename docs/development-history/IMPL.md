@@ -316,7 +316,7 @@ built). Total external about 2.2 GB. Classified as disposable and
 excluded, DAgger training intermediates, traces, probe dumps, logs, and
 regenerable figure outputs.
 
-## 9. Reproducible Without Isaac
+## 9. Reproducible without Isaac
 
 Operating-envelope figure and table, the paired-bootstrap gap interval,
 the stage-versus-rate figure, the force-closure certificate analysis,

@@ -13,16 +13,11 @@ only after every entry below was frozen.
 
 ## 1. Scientific Question
 
-The task extends the matched expert-learner evaluation across task
-execution speeds to the tight-clearance containment regime: the
-upright task's cuboid reoriented to an upright pose and inserted into a square pocket with
-3 mm of clearance per side, where failure is jam-mediated and the
-terminal predicate is geometric containment. Faster execution raises
-the in-hand pivot that arrival alignment depends on and the descent
-excitation that wedging depends on; the two clocks run in opposite
-directions with the cycle time, and the operating envelope measures
-their competition. The endpoint is task success as a function of the
-speedup factor r.
+The task evaluates a learned policy and scripted expert as execution speed
+changes during keyed peg insertion. The robot reorients the upright task's
+cuboid and inserts it into a square pocket with 3 mm of clearance per side.
+Success requires geometric containment after release and settling. The
+evaluation measures task success as a function of the speedup factor r.
 
 ## 2. Object (Frozen, Shared with the Upright Task)
 
@@ -105,7 +100,7 @@ episodes, spread +-3 mm). Trajectory evidence at the frozen
 configuration: 63 knots, all IK-verified within 2.0 mm and 0.7 deg,
 minimum joint-limit margin 0.049 (the LIFT apex, waist roll).
 
-## 7. Phase Sequence And Speedup Factor (Frozen After Expert-Only Calibration)
+## 7. Phase Sequence and Speedup Factor (Frozen after Expert-Only Calibration)
 
 Phases in order, with the nominal duration at unit rate,
 
@@ -226,8 +221,9 @@ never attached to anything.
 
 ## 13. Evaluation Distribution (Frozen Before Learner Evaluation)
 
-- The same jitter law as training, seeds fixed per speed
-  (12345 + 1000 x speed index) and identical across policies.
+- The same jitter law as training. The seed for each speed
+  (12345 + 1000 x speed index) generates a fixed initial-condition bank
+  indexed by logical episode and shared by every policy.
 - Speedup grid {0.5, 0.75, 1.0, 1.25, 1.5, 1.75, 2.0, 2.5}, the
   upright grid, with r >= 1.25 above the demonstrated range so the
   matched evaluation measures the full non-monotonic envelope, 100

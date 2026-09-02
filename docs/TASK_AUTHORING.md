@@ -31,7 +31,7 @@ The proposal must specify all of the following before learner evaluation begins.
 
 Submit the task definition, expert calibration record, demonstration summary, policy checkpoints or download manifest entries, episode records, exact-count tests, physical-integrity tests, reproduction command, simulator commands, environment versions, and limitations. The review must be able to trace each number to a source record and each physical predicate to executable code.
 
-## Rejected Task Designs And Procedures
+## Rejected Task Designs and Procedures
 
 ParcelStow rejects a candidate when any of the following applies:
 

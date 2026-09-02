@@ -1,33 +1,32 @@
-# Reproducing The Released Results
+# Reproducing the Results
 
-The release contract is numerical. The released episode records plus the
-analysis code in this repository reproduce the quantitative results the
-paper reports. Principal evaluation plots can also be regenerated from
-the released data. Exact camera-ready figure generation (layout, fonts,
-TikZ assembly) is not part of the release contract.
+The stable v1.0.0 release and arXiv v1 cover parcel insertion. Its frozen
+episode records and analysis code reproduce the parcel results reported in
+the paper. The active development branch also contains evaluation records
+for upright placement and keyed peg insertion. Those two tasks are not part
+of v1.0.0 or arXiv v1.
 
-Two paths exist. The record path recomputes the released quantities from
-the released episode records and needs only Python with numpy, scipy,
-and matplotlib. The simulation path regenerates the records themselves
-and needs Isaac Lab with a GPU.
+Two paths exist. The record path recomputes the v1 parcel quantities and the
+current three-task development results from the provided episode records; it
+needs only Python with NumPy, SciPy, and Matplotlib. The simulation path
+regenerates the records themselves and needs Isaac Lab with a GPU.
 
-## From Released Records, No Isaac
+## CPU-Only Reproduction from Records
 
 ```bash
 python scripts/reproduce.py all-tasks
 python scripts/reproduce.py all
 ```
 
-`all-tasks` prints the source path and demonstrated-range boundaries for
-parcel insertion, upright placement, and keyed peg insertion. It writes one
-task-explicit success table and figure per task. `all` preserves the original
-parcel-paper analysis targets.
+`all-tasks` prints the source path and demonstrated-range boundaries for the
+three current tasks. It writes one task-specific success table and figure per
+task. `all` reproduces the parcel analyses associated with arXiv v1.
 
-Every reported quantity maps to a released record and a public command,
+Every quantity below maps to a record and a public command:
 
 | reported quantity | source record | command |
 |---|---|---|
-| all three task-success tables and curves | `data/records/{,upright/,peg/}{expert,act}_episodes.jsonl.gz` | `reproduce.py all-tasks` |
+| current three-task success tables and curves | `data/records/{,upright/,peg/}{expert,act}_episodes.jsonl.gz` | `reproduce.py all-tasks` |
 | task-success fractions and Wilson intervals at each speed, including the upper bound at zero successes | `data/records/eval_summary.jsonl` | `reproduce.py envelope` |
 | expert over ACT-A matched gap at r=2 (0.31) and its 20000-resample paired bootstrap 95% interval ([0.18, 0.44]) | `{expert,act}_episodes.jsonl.gz` | `reproduce.py envelope` (or `plot_envelope.py --gap expert act`) |
 | stage-completion and terminal-failure counts per policy and speed | `eval_summary.jsonl`, episode records | `reproduce.py stages`, fields per episode |
@@ -52,7 +51,7 @@ ACT-A at `r=1`, followed by 84/100 for the expert and 53/100 for ACT-A at
 
 ## Tested Environment
 
-The released records and every verification in this repository ran under
+The provided records and every verification in this repository ran under
 the versions below. The simulation stack comes from an Isaac Lab
 installation, the analysis tier needs only the three Python packages.
 
@@ -114,7 +113,7 @@ with CPU throttling and logging. Set `ISAACLAB_VENV` to the Isaac Lab
 environment before using it.
 
 The driver defaults fix the training seeds, demonstration subsets, and
-evaluation seed law. A rerun reproduces the released records up to simulator
+evaluation seed law. A rerun targets the provided records up to simulator
 nondeterminism.
 
 ## Anchors to the Frozen Protocol

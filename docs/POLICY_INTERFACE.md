@@ -5,7 +5,7 @@ three tasks use the same tensor dimensions and normalized joint-position
 action semantics. The object-pose term, task phase, stage outcomes, and failure
 reasons retain task-specific meanings.
 
-## The Actor Interface
+## Actor Interface
 
 ```python
 class MyPolicy:
@@ -96,8 +96,13 @@ decimation 4). An action of zero holds the default posture.
   reason. Parcel retains `preinsert_reached`; upright retains `placed`; peg
   retains `aligned`. [Diagnostics](DIAGNOSTICS.md) and the task specifications
   document these fields.
-- Identical evaluation seeds produce identical start draws across policies,
-  so per-episode comparisons pair by the `episode` field.
+- The evaluator samples a fixed initial-condition bank for each speed. Every
+  actor receives the bank entry indexed by `initial_condition_id`, independent
+  of asynchronous environment completion. Records pair by speed and
+  `initial_condition_id`.
+- `policy` contains the actor object's canonical `name`. For a custom policy,
+  `actor_spec` stores the `module.path:ClassName` import specification in the
+  episode and summary records.
 
 ## Scientific Constraints
 
