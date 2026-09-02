@@ -1,6 +1,6 @@
 {
  "object": "cuboid_180x55x55",
- "source_record": "/home/drce/ResearchProjects/parcelstow/assets/provenance/frogger_upright/scene_lab_x0.35_riser0/cuboid_180x55x55.json",
+ "source_record": "assets/provenance/frogger_upright/scene_lab_x0.35_riser0/cuboid_180x55x55.json",
  "source_record_sha256": "63919eccb1f86fa3b721af5ac6d5107dc530c02b298869e288d114f2c0ac0295",
  "synthesis": {
   "tool": "frogger scripts/g1_l6_runner.py (local checkout)",
