@@ -1,4 +1,4 @@
-"""Pure-Python registry for the released ParcelStow benchmark tasks."""
+"""Pure-Python registry for the public ParcelStow benchmark tasks."""
 
 from __future__ import annotations
 
@@ -17,6 +17,9 @@ class TaskSpec:
     default_rates: tuple[float, ...]
     default_output_dir: str
     default_checkpoint: str
+    record_subdir: str
+    demonstrated_range: tuple[float, float]
+    learner_label: str
     demonstration_artifact: str
     checkpoint_artifact: str
     stage_keys: tuple[str, ...]
@@ -45,8 +48,9 @@ TASKS = {
     "parcel": TaskSpec(
         "parcel", "Parcel Insertion", "ParcelStow-L6-Distill-Play-v0",
         "scripts/manipulation/eval_stow_policies.py",
-        (0.5, 0.75, 1.0, 1.25, 1.5, 2.0, 2.5), "outputs/eval/parcel",
-        "outputs/paper/act/act_stow.pt", "expert_demonstrations", "act_a_checkpoint",
+        (0.5, 1.0, 1.5, 2.0, 2.25, 2.5, 3.0), "outputs/eval/parcel",
+        "outputs/paper/act/act_stow.pt", "", (0.5, 2.0), "ACT-A",
+        "expert_demonstrations", "act_a_checkpoint",
         ("acquired", "lifted_clear", "reoriented", "preinsert_reached", "inserted", "released", "settled"),
         "parcelstow.tasks.manager_based.parcel_stow.mdp.metrics:StowMonitor",
         "scripts.manipulation.stow_runtime:ExpertActor",
@@ -60,7 +64,8 @@ TASKS = {
         "upright", "Upright Placement", "UprightPlace-L6-Play-v0",
         "scripts/manipulation/eval_upright_policies.py",
         (0.5, 0.75, 1.0, 1.25, 1.5, 1.75, 2.0, 2.5), "outputs/eval/upright",
-        "outputs/upright/act/act_upright.pt", "upright_expert_demonstrations", "upright_act_checkpoint",
+        "outputs/upright/act/act_upright.pt", "upright", (0.75, 1.75), "ACT",
+        "upright_expert_demonstrations", "upright_act_checkpoint",
         ("acquired", "lifted_clear", "reoriented_upright", "placed", "released", "settled"),
         "parcelstow.tasks.manager_based.upright_place.mdp.monitor:UprightMonitor",
         "scripts.manipulation.upright_runtime:UprightExpertActor",
@@ -74,7 +79,8 @@ TASKS = {
         "peg", "Keyed Peg Insertion", "PegInsert-L6-Play-v0",
         "scripts/manipulation/eval_peg_policies.py",
         (0.5, 0.75, 1.0, 1.25, 1.5, 1.75, 2.0, 2.5), "outputs/eval/peg",
-        "outputs/peg/act/act_peg.pt", "peg_expert_demonstrations", "peg_act_checkpoint",
+        "outputs/peg/act/act_peg.pt", "peg", (0.5, 1.0), "ACT",
+        "peg_expert_demonstrations", "peg_act_checkpoint",
         ("acquired", "lifted_clear", "reoriented_upright", "aligned", "inserted", "released", "settled"),
         "parcelstow.tasks.manager_based.peg_insert.mdp.monitor:PegMonitor",
         "scripts.manipulation.peg_runtime:PegExpertActor",

@@ -1,6 +1,6 @@
 """Matched expert-learner evaluation of the keyed-peg insertion task
-across execution speeds, the eval_stow_policies.py protocol: the same
-per-speed seed for every policy pairs their initial-condition draws,
+across execution speeds, the eval_stow_policies.py protocol: an indexed
+initial-condition bank pairs each policy's robot and object reset state,
 episode records go to <out_dir>/<actor><tag>.jsonl and one summary row
 per (policy, rate) to <out_dir>/summary<tag>.jsonl.
 
@@ -53,6 +53,7 @@ from peg_runtime import SCHED, PegExpertActor, config_stamp  # noqa: E402
 
 @hydra_task_config(args_cli.task, "rsl_rl_cfg_entry_point")
 def main(env_cfg, agent_cfg):
+    env_cfg.seed = args_cli.eval_seed
     env_cfg.scene.num_envs = args_cli.num_envs
     env = gym.make(args_cli.task, cfg=env_cfg)
     base = env.unwrapped
@@ -75,10 +76,14 @@ def main(env_cfg, agent_cfg):
             recs, _ = rt.run_episodes(env, base, actor, monitor, args_cli.episodes,
                                       {"mode": "fixed", "value": r}, args_cli.jitter, seed, switches,
                                       expert=expert, corrupt=False, stamp=stamp, tag=f"{name}_r{r:g}",
-                                      task_id=args_cli.task, cycle_time=SCHED.cycle_time)
+                                      task_id=args_cli.task, cycle_time=SCHED.cycle_time,
+                                      indexed_initial_conditions=True,
+                                      extra={"actor_spec": name, "num_envs": args_cli.num_envs})
             rt.write_jsonl(ep_path, recs)
             row = rt.summarize(recs, stage_keys=STAGE_KEYS)
-            row.update({"policy": name, "rate": r, "cycle_time_s": SCHED.cycle_time(r), "seed": seed,
+            row.update({"policy": actor.name, "actor_spec": name, "rate": r,
+                        "cycle_time_s": SCHED.cycle_time(r), "seed": seed,
+                        "num_envs": args_cli.num_envs,
                         "jitter": args_cli.jitter, "episodes_requested": args_cli.episodes,
                         "checkpoint": ckpts.get(name, args_cli.custom_ckpt) if name != "expert" else None,
                         "time": time.strftime("%Y-%m-%dT%H:%M:%S")})
@@ -89,5 +94,4 @@ def main(env_cfg, agent_cfg):
 
 
 if __name__ == "__main__":
-    main()
-    simulation_app.close()
+    rt.run_simulation_main(main, simulation_app)

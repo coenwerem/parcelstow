@@ -69,11 +69,23 @@ def test_schedule_bound_and_observation(sim):
     assert obs.shape[1] == 147
     assert bool((abs(obs[:, -1] - 1.7) < 1e-5).all()), obs[:, -1].tolist()
     assert abs(sched.cycle_time(2.0) - (5.7 + 14.8 / 2.0 + 1.0)) < 1e-9
+
+
+def test_nominal_robot_clearance(sim):
+    """Check the placement workspace from the defined nominal configuration."""
+    ns = sim
+    _reset(ns)
+    base, torch, U = ns["base"], ns["torch"], ns["U"]
+    robot = base.scene["robot"]
+    ids = torch.arange(base.num_envs, device=base.device)
+    robot.write_joint_state_to_sim(
+        robot.data.default_joint_pos.clone(), robot.data.default_joint_vel.clone(), env_ids=ids
+    )
+    base.sim.forward()
+    base.scene.update(dt=0.0)
     # No idle robot body may hang inside the placement workspace.
-    torch = ns["torch"]
-    robot = ns["base"].scene["robot"]
-    place = torch.tensor([U.TARGET_CENTER[0], U.TARGET_CENTER[1], U.PLACE_Z], device=ns["base"].device)
-    place = place.unsqueeze(0) + ns["base"].scene.env_origins
+    place = torch.tensor([U.TARGET_CENTER[0], U.TARGET_CENTER[1], U.PLACE_Z], device=base.device)
+    place = place.unsqueeze(0) + base.scene.env_origins
     d = (robot.data.body_pos_w - place.unsqueeze(1)).norm(dim=-1)
     j = int(d.amin(dim=1).argmin())
     assert float(d.amin()) > 0.12, (float(d.amin()), robot.body_names[int(d[j].argmin())])
