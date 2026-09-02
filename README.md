@@ -36,6 +36,7 @@ evaluation protocol, and reference policies.
 ## Outline
 
 - [Results Preview](#results-preview)
+- [arXiv-v2 Extension Tasks](#arxiv-v2-extension-tasks)
 - [Quick Start](#quick-start)
 - [Installation](#installation)
 - [Evaluate Your Own Policy](#evaluate-your-own-policy)
