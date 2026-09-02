@@ -60,7 +60,7 @@ def check(name, art):
 def fetch(name, art, manifest):
     path = os.path.join(REPO, art["path"])
     os.makedirs(os.path.dirname(path), exist_ok=True)
-    repo_id = manifest.get("hf_repo")
+    repo_id = art.get("hf_repo") or manifest.get("hf_repo")
     hf_path = art.get("hf_path")
     if repo_id and hf_path:
         try:

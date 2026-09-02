@@ -145,8 +145,9 @@
    "read_by": "scripts/manipulation/eval_upright_policies.py --actors act",
    "bytes": 290832323,
    "sha256": "23792507a4a9e03b11682b28de929485211fb662c464bea10a3ed770caafbbc3",
-   "url": "https://huggingface.co/datasets/cenwerem/parcelstow/resolve/main/checkpoints/act_upright.pt",
-   "hf_path": "checkpoints/act_upright.pt"
+   "url": "https://huggingface.co/datasets/cenwerem/parcelstow-v2/resolve/main/checkpoints/act_upright.pt",
+   "hf_path": "checkpoints/act_upright.pt",
+   "hf_repo": "cenwerem/parcelstow-v2"
   },
   "upright_expert_demonstrations": {
    "description": "315 successful upright placement expert episodes, r uniform in [0.75, 1.75]",
@@ -155,8 +156,9 @@
    "read_by": "scripts/manipulation/run_upright_act.py",
    "bytes": 194929139,
    "sha256": "2959a476b294bbd63fe76a4a7ab4e64e1a87dfadd7e146b132559b953acfbb07",
-   "url": "https://huggingface.co/datasets/cenwerem/parcelstow/resolve/main/demonstrations/upright_expert_episodes.pt",
-   "hf_path": "demonstrations/upright_expert_episodes.pt"
+   "url": "https://huggingface.co/datasets/cenwerem/parcelstow-v2/resolve/main/demonstrations/upright_expert_episodes.pt",
+   "hf_path": "demonstrations/upright_expert_episodes.pt",
+   "hf_repo": "cenwerem/parcelstow-v2"
   },
   "peg_act_checkpoint": {
    "description": "ACT pilot checkpoint of the keyed-peg insertion task",
@@ -165,8 +167,9 @@
    "read_by": "scripts/manipulation/eval_peg_policies.py --actors act",
    "bytes": 290830675,
    "sha256": "207132aaed13d16bcdabe674c0df7450214997cc7c0dbcc6d50e7a3a0a1a1747",
-   "url": "https://huggingface.co/datasets/cenwerem/parcelstow/resolve/main/checkpoints/act_peg.pt",
-   "hf_path": "checkpoints/act_peg.pt"
+   "url": "https://huggingface.co/datasets/cenwerem/parcelstow-v2/resolve/main/checkpoints/act_peg.pt",
+   "hf_path": "checkpoints/act_peg.pt",
+   "hf_repo": "cenwerem/parcelstow-v2"
   },
   "peg_expert_demonstrations": {
    "description": "325 successful keyed-peg insertion expert episodes, r uniform in [0.5, 1.0]",
@@ -175,8 +178,9 @@
    "read_by": "scripts/manipulation/run_peg_act.py",
    "bytes": 310866091,
    "sha256": "4512ae3a7b0b651faa380351ff727cdabe85ec1b132fdec0ac5f3ec0c0fff17d",
-   "url": "https://huggingface.co/datasets/cenwerem/parcelstow/resolve/main/demonstrations/peg_expert_episodes.pt",
-   "hf_path": "demonstrations/peg_expert_episodes.pt"
+   "url": "https://huggingface.co/datasets/cenwerem/parcelstow-v2/resolve/main/demonstrations/peg_expert_episodes.pt",
+   "hf_path": "demonstrations/peg_expert_episodes.pt",
+   "hf_repo": "cenwerem/parcelstow-v2"
   }
  },
  "hf_repo": "cenwerem/parcelstow",
