@@ -220,11 +220,20 @@ class PegExpert:
     def act(self, k, f, q_default, q_measured):
         """Action (E, 16) with the v1 integral sag correction of the dwell
         segments (arm and hand in the pregrasp and grasp dwells, arm only
-        afterward, hand correction zeroed at RELEASE)."""
+        afterward, hand correction zeroed at RELEASE). The arm also
+        accumulates through TRANSFER: the gravity droop of the loaded arm
+        at the far-reach posture carries the peg about 40 mm short of the
+        pocket center along the reach (measured, 14/20 deterministic
+        near-lead wedges at 52 deg with 2 mm of in-hand slip), and the
+        dwell-frozen correction from the grasp posture is stale there.
+        Closing the droop in free air recenters the descent; the
+        correction then holds fixed through the contact-rich INSERT so
+        the integral never winds up against the funnel."""
         q_t = self.target(k, f, q_default)
         dwell = torch.zeros_like(k, dtype=torch.bool)
         for name in DWELL_PHASES:
             dwell |= k == PH[name]
+        dwell |= k == PH["TRANSFER"]
         early = (k == PH["PREGRASP_DWELL"]) | (k == PH["GRASP_DWELL"])
         upd = self.ki * (q_t - q_measured)
         new_corr = self.corr.clone()
