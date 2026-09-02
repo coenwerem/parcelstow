@@ -136,6 +136,15 @@ def main():
             p = p0 + np.array([dx_mm * 1e-3, dy_mm * 1e-3, 0.0])
             T_WO = ug.make_tf(ug.R_START, p)
             r_gi, r_pi, hz_gi, hz_pi = solve_pair(T_WO, q_g0)
+            # A DLS solve can return its seed unmoved and still pass the
+            # admission tolerance (the (0, -5) entry solved at 3.49 mm
+            # against 0.3 to 0.9 mm for every neighbor, with the joint
+            # vector identical to the nominal candidate; every validation
+            # episode drawing that entry closed from the biased pose,
+            # seated badly, and pivoted in the grasp). Retry outliers
+            # with the multi-seed solve.
+            if r_gi["pos_err"] > 0.0025:
+                r_gi, r_pi, hz_gi, hz_pi = solve_pair(T_WO, q_g0, multi=True)
             solver.set_hand(hand_grasp)
             T_lift = ug.hand_pose_from_object(ug.make_tf(ug.R_START, p + [0.0, 0.0, ug.LIFT_DZ]), X_OH)
             r_l = solver.solve(T_lift, r_gi["q"])
