@@ -46,17 +46,17 @@ and statistical reporting used for the original parcel insertion study.
 
 <table align="center">
   <tr>
-    <td align="center" width="33%">
+    <td align="center" valign="top" width="33%">
       <img src="media/parcel_expert_r2.gif?v=8x" alt="Expert parcel insertion at r=2" width="100%">
       <br>
       <sub><b>Parcel Insertion.</b> Acquire and reorient a parcel, then insert it into a receptacle.</sub>
     </td>
-    <td align="center" width="33%">
+    <td align="center" valign="top" width="33%">
       <img src="media/upright_expert_r1.gif?v=8x" alt="Expert upright placement at r=1" width="100%">
       <br>
       <sub><b>Upright Placement.</b> Reorient a cuboid to an upright pose and release it at a target region.</sub>
     </td>
-    <td align="center" width="33%">
+    <td align="center" valign="top" width="33%">
       <img src="media/peg_expert_r1.gif?v=8x" alt="Expert keyed peg insertion at r=1" width="100%">
       <br>
       <sub><b>Keyed Peg Insertion.</b> Reorient and insert a cuboid into a tight container with a 3 mm per-side clearance.</sub>
