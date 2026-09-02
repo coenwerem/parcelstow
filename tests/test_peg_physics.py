@@ -88,26 +88,33 @@ def test_monitor_containment_fields(sim):
 
 def test_pocket_collides(sim):
     """A peg dropped centered above the pocket rests on the pocket floor;
-    a peg above the wall ring rests on the block top, not inside."""
+    a peg above the wall ring never ends contained in the cavity."""
     ns = sim
-    base, P, torch = ns["base"], ns["P"], ns["torch"]
+    base, P = ns["base"], ns["P"]
     _reset(ns, rate=1.0)
     upright = P.rotz(math.radians(P.START_YAW_DEG))
     above = [P.POCKET_CENTER[0], P.POCKET_CENTER[1], P.BLOCK_TOP + P.OBJECT_HALF_HEIGHT + 0.01]
     _teleport(ns, above, upright, settle_steps=120)
     z = base.scene["object"].data.root_pos_w[:, 2] - base.scene.env_origins[:, 2]
     assert bool((abs(z - (P.SEAT_Z - P.RELEASE_DROP)) < 0.006).all()), z.tolist()
+    # the slab-filtered contact sensor resolves the floor contact of the
+    # resting peg (the jam-diagnostics channel of the monitor)
+    forces = ns["pmon"].PegMonitor(base).pocket_forces_w()
+    assert float(forces.max()) > 0.0
     # a peg dropped 8 mm off center funnels down the lead-in and seats
     off8 = P.R_POCKET @ [0.008, 0.0, 0.0]
     high8 = [above[0] + off8[0], above[1] + off8[1], P.BLOCK_TOP + P.OBJECT_HALF_HEIGHT + 0.025]
     _teleport(ns, high8, upright, settle_steps=150)
     z = base.scene["object"].data.root_pos_w[:, 2] - base.scene.env_origins[:, 2]
     assert bool((abs(z - (P.SEAT_Z - P.RELEASE_DROP)) < 0.006).all()), z.tolist()
-    # offset onto the wall ring
+    # offset onto the wall ring: the ring is solid, and the 180 mm peg
+    # has no stable rest on the 30 mm wall with the slanted lead face
+    # under its inner edge (it topples off the block, measured); the
+    # containment claim is that it never ends inside the cavity
     off = P.R_POCKET @ [P.POCKET_W / 2 + P.WALL_T / 2, 0.0, 0.0]
     wall_top = [above[0] + off[0], above[1] + off[1], P.BLOCK_TOP + P.LEAD_H + P.OBJECT_HALF_HEIGHT + 0.01]
     _teleport(ns, wall_top, upright, settle_steps=120)
-    z = base.scene["object"].data.root_pos_w[:, 2] - base.scene.env_origins[:, 2]
-    assert bool((z > P.POCKET_FLOOR_Z + P.OBJECT_HALF_HEIGHT + 0.02).all()), z.tolist()
-    forces = ns["pmon"].PegMonitor(base).pocket_forces_w()
-    assert float(forces.max()) > 0.0
+    mon = ns["pmon"].PegMonitor(base)
+    mon.reset(range(base.num_envs))
+    mon.step()
+    assert not bool(mon.last_inside.any()), mon.last_p.tolist()
