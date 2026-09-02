@@ -48,7 +48,7 @@ Parcel ACT-A was trained on 297 successful demonstrations over `r` in
 upright ACT checkpoint was trained on 315 successful demonstrations over
 `[0.75, 1.75]`; it succeeds in 39/100 nominal episodes versus 92/100 for the
 expert. The peg ACT checkpoint was trained on 325 successful demonstrations
-over `[0.5, 1.0]`; it succeeds in 76/100 nominal episodes versus 94/100 for the
+over `[0.5, 1.0]`; it succeeds in 75/100 nominal episodes versus 93/100 for the
 expert and has 0/100 acquisitions at every evaluated `r >= 1.5`. The upright
 and peg ACT results are not primary matched comparisons.
 

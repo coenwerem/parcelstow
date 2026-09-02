@@ -1,7 +1,7 @@
 """Reproduce the reported quantitative results from the released episode
 records, no Isaac.
 
-Every target reads the frozen episode records provided in data/records/ (or
+Every target reads the episode records provided in data/records/ (or
 the artifacts fetched by scripts/download_artifacts.py) and writes derived
 analyses to outputs/reproduce/. Principal evaluation plots regenerate to
 media/ as well. Nothing here reruns the simulator, and exact camera-ready
@@ -11,8 +11,8 @@ and command.
 
 Targets,
   all-tasks   success tables and success-versus-speed figures for parcel,
-              upright, and peg from released episode records
-  parcel | upright | peg  one released task success table and figure
+              upright, and peg from the provided episode records
+  parcel | upright | peg  one task success table and figure
   envelope     task-success counts and plot across execution speeds, with
                Wilson intervals, and the 20000-resample paired bootstrap
                interval of the expert over ACT-A success gap at r=2
@@ -39,6 +39,9 @@ import shutil
 import subprocess
 import sys
 from collections import defaultdict
+from pathlib import Path
+
+from task_registry import TASKS
 
 REPO = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 RECORDS = os.path.join(REPO, "data", "records")
@@ -46,9 +49,7 @@ EVAL_DIR = os.path.join(REPO, "outputs", "paper", "eval")
 ACTORS = ["expert", "act", "dagger", "dp"]
 
 TASK_RECORDS = {
-    "parcel": (os.path.join(RECORDS), (0.5, 2.0), "ACT-A"),
-    "upright": (os.path.join(RECORDS, "upright"), (0.75, 1.75), "ACT"),
-    "peg": (os.path.join(RECORDS, "peg"), (0.5, 1.0), "ACT"),
+    alias: os.path.join(RECORDS, task.record_subdir) for alias, task in TASKS.items()
 }
 
 
@@ -90,7 +91,7 @@ def run(cmd):
 
 def released_success_counts(task):
     """Return validated success counts from one task's frozen records."""
-    record_dir, _, _ = TASK_RECORDS[task]
+    record_dir = TASK_RECORDS[task]
     counts = {}
     for actor in ("expert", "act"):
         path = os.path.join(record_dir, f"{actor}_episodes.jsonl.gz")
@@ -120,10 +121,13 @@ def released_success_counts(task):
 def reproduce_task(task, output_dir):
     import matplotlib
     matplotlib.use("Agg")
+    import matplotlib.font_manager as fm
     import matplotlib.pyplot as plt
 
     counts = released_success_counts(task)
-    _, demonstrated, learner_label = TASK_RECORDS[task]
+    task_spec = TASKS[task]
+    demonstrated = task_spec.demonstrated_range
+    learner_label = task_spec.learner_label
     print(f"[{task}] demonstrated speed range r=[{demonstrated[0]:g}, {demonstrated[1]:g}]")
     rows = []
     for actor in ("expert", "act"):
@@ -140,24 +144,66 @@ def reproduce_task(task, output_dir):
                   stream, indent=2)
         stream.write("\n")
 
-    fig, ax = plt.subplots(figsize=(5.4, 3.6))
+    cmu_fonts = (
+        Path.home() / "Library" / "Fonts" / "cmunss.ttf",
+        Path.home() / "Library" / "Fonts" / "cmunsx.ttf",
+        Path("/usr/share/fonts/truetype/cmu/cmunss.ttf"),
+        Path("/usr/share/fonts/truetype/cmu/cmunsx.ttf"),
+    )
+    for font_path in cmu_fonts:
+        if font_path.exists():
+            fm.fontManager.addfont(font_path)
+    plt.rcParams.update({
+        "font.family": "sans-serif",
+        "font.sans-serif": ["CMU Sans Serif", "DejaVu Sans", "Arial"],
+        "font.size": 13,
+        "axes.labelsize": 18,
+        "axes.titlesize": 20,
+        "axes.titleweight": "bold",
+        "axes.linewidth": 1,
+        "legend.fontsize": 12,
+        "xtick.labelsize": 14,
+        "ytick.labelsize": 14,
+        "figure.dpi": 600,
+        "grid.alpha": 0.12,
+        "grid.linewidth": 0.3,
+        "text.usetex": False,
+        "axes.unicode_minus": False,
+    })
+    fig, ax = plt.subplots(figsize=(6.0, 4.0))
     for actor, marker in (("expert", "o"), ("act", "s")):
         values = counts[actor]
         rates = list(values)
         fractions = [values[rate][0] / values[rate][1] for rate in rates]
-        ax.plot(rates, fractions, marker=marker,
-                label="Expert" if actor == "expert" else learner_label)
+        intervals = [_wilson(*values[rate]) for rate in rates]
+        lower = [fraction - interval[0] for fraction, interval in zip(fractions, intervals)]
+        upper = [interval[1] - fraction for fraction, interval in zip(fractions, intervals)]
+        ax.errorbar(rates, fractions, yerr=[lower, upper], marker=marker, ms=4,
+                    lw=1.6, capsize=2,
+                    label="Expert" if actor == "expert" else learner_label)
     ax.axvspan(*demonstrated, color="0.9", label="Demonstrated range", zorder=0)
-    ax.set(xlabel="Speedup factor r", ylabel="Task success", ylim=(-0.03, 1.03),
-           title=f"{task.title()} Success Versus Speed")
-    ax.grid(alpha=0.2)
+    ax.set(xlabel="speedup factor r", ylabel="success fraction", ylim=(-0.03, 1.05),
+           title=task_spec.name)
+    ax.grid(True)
     ax.legend(frameon=False)
     figure_path = os.path.join(output_dir, f"{task}_expert_act_success_vs_speed.png")
-    fig.savefig(figure_path, dpi=200, bbox_inches="tight", facecolor="white")
+    fig.savefig(figure_path, dpi=600, bbox_inches="tight", facecolor="white",
+                pad_inches=0.02)
     plt.close(fig)
     print(f"[{task}] wrote {table_path}")
     print(f"[{task}] wrote {figure_path}")
     return counts
+
+
+def _wilson(successes, episodes, z=1.959963984540054):
+    fraction = successes / episodes
+    denominator = 1.0 + z * z / episodes
+    center = (fraction + z * z / (2.0 * episodes)) / denominator
+    half_width = z * ((fraction * (1.0 - fraction) / episodes
+                       + z * z / (4.0 * episodes * episodes)) ** 0.5) / denominator
+    lower = 0.0 if successes == 0 else center - half_width
+    upper = 1.0 if successes == episodes else center + half_width
+    return lower, upper
 
 
 def target_envelope():
