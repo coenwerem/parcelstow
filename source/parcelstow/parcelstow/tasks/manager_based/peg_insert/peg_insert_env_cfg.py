@@ -1,10 +1,10 @@
 """Keyed-peg insertion task, standing a cuboid peg into a square
 pocket with 3 mm of clearance per side (docs/EXTENSION_PLAN.md).
 
-Fixed-pelvis G1 with the RealHand L6, the v1 tabletop, a rigid
-55 x 55 x 120 mm peg lying on its side, and a pocket block of five
-kinematic slabs at the probed right-side location, the v1 receptacle
-pattern. The control interface is the v1 one; the policy observes the
+Fixed-pelvis G1 with the RealHand L6, the v1 tabletop, the shared
+55 x 55 x 180 mm cuboid lying on its side, and a pocket block of nine
+kinematic slabs (floor, four walls, four lead-in slabs) on the robot's
+right of the transport axis, the v1 receptacle pattern. The control interface is the v1 one; the policy observes the
 147-D state vector with the peg pose in the object slice. Task success
 is decided by the physical monitor (mdp/monitor.py) in the drivers.
 
@@ -38,7 +38,7 @@ from ..parcel_stow.parcel_stow_env_cfg import CHAIN_ACTUATED, TABLE_POS, TABLE_S
 from . import geometry as P
 from . import mdp
 
-EPISODE_LENGTH_S = 45.0  # covers the 36.3 s cycle at r = 0.5
+EPISODE_LENGTH_S = 45.0  # covers the 39.3 s cycle at r = 0.5
 START_QUAT = tuple(float(v) for v in P.quat_from_mat(P.R_START))
 SLAB_NAMES = ["floor", "wall_a", "wall_b", "wall_c", "wall_d",
               "lead_a", "lead_b", "lead_c", "lead_d"]
@@ -115,7 +115,9 @@ class PegInsertSceneCfg(InteractiveSceneCfg):
     rh_pinky_distal_object_s = ContactSensorCfg(
         prim_path="{ENV_REGEX_NS}/Robot/rh_pinky_distal", filter_prim_paths_expr=["{ENV_REGEX_NS}/Object"])
     # peg against the pocket slabs (jam diagnostics)
-
+    peg_pocket_s = ContactSensorCfg(
+        prim_path="{ENV_REGEX_NS}/Object",
+        filter_prim_paths_expr=["{ENV_REGEX_NS}/" + SLAB_PRIMS[n] for n in SLAB_NAMES])
 
 
 @configclass
