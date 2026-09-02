@@ -6,8 +6,8 @@ manipulation.
 
 <p align="justify">
 ParcelStow is an Isaac Lab benchmark for contact-rich parcel insertion.
-In the task provided with $\texttt{v0.1.0}$, a poly-articulated robot equipped with an anthropomorphic end-effector is charged with inserting a rigid parcel placed stably on a planar surface at a known initial pose in the robot's workspace into an open-front receptacle whose pose is also known. The parcel insertion task is further divided into several stages that comprise acquiring the rigid parcel (acquisition/grasping),
-reorienting the parcel by 90 degrees (reorientation), transporting the parcel to the receptacle (transport), inserting the parcel with 10 mm of clearance per side along the tight axis (insertion), and releasing the parcel (release). A successful episode requires the parcel to settle within the final position and orientation tolerances. The simulation tooling, policy training, and policy evaluation assets provided in $\texttt{v0.1.0}$ utilize a fixed-base Unitree G1 humanoid with a RealHand L6 anthropomorphic right hand.
+In the task provided with $\texttt{v1.0.0}$, a poly-articulated robot equipped with an anthropomorphic end-effector is charged with inserting a rigid parcel placed stably on a planar surface at a known initial pose in the robot's workspace into an open-front receptacle whose pose is also known. The parcel insertion task is further divided into several stages that comprise acquiring the rigid parcel (acquisition/grasping),
+reorienting the parcel by 90 degrees (reorientation), transporting the parcel to the receptacle (transport), inserting the parcel with 10 mm of clearance per side along the tight axis (insertion), and releasing the parcel (release). A successful episode requires the parcel to settle within the final position and orientation tolerances. The simulation tooling, policy training, and policy evaluation assets provided in $\texttt{v1.0.0}$ utilize a fixed-base Unitree G1 humanoid with a RealHand L6 anthropomorphic right hand.
 </p>
 
 <p align="justify">
@@ -160,15 +160,18 @@ observation slices, action semantics, reset protocol, and record schema.
 | `tests/` | pure geometry tests and simulator-backed physics tests |
 
 ## Citation
-The accompanying preprint is in preparation. The arXiv identifier will
-appear here and in `CITATION.cff` once assigned.
+The accompanying preprint is
+[arXiv:2609.01453](https://arxiv.org/abs/2609.01453) \[cs.RO\].
 
 ```bibtex
 @misc{enwerem2026parcelstow,
-  title  = {Does Imitation Preserve Temporal Robustness in Dexterous
-            Manipulation? An Expert–Learner Comparison Across Task Execution Speeds},
+  title  = {Does Imitation Learning Preserve Temporal Robustness in Dexterous
+            Manipulation? An Expert-Learner Comparison Across Task Execution Speeds},
   author = {Enwerem, Clinton and Baras, John S. and Belta, Calin},
   year   = {2026},
-  note   = {arXiv identifier TBA}
+  eprint = {2609.01453},
+  archivePrefix = {arXiv},
+  primaryClass = {cs.RO},
+  url    = {https://arxiv.org/abs/2609.01453}
 }
 ```
