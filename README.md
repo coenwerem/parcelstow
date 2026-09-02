@@ -6,9 +6,8 @@ execution speeds.
 [![Dataset on HF](https://img.shields.io/badge/%F0%9F%A4%97-Dataset-lightgrey)](https://huggingface.co/datasets/cenwerem/parcelstow)
 [![Paper (arXiv)](https://img.shields.io/badge/arXiv-2609.01453-b31b1b)](https://arxiv.org/abs/2609.01453)
 
-
 <p align="justify">
-ParcelStow is an Isaac Lab benchmark for contact-rich parcel insertion.
+ParcelStow's task is contact-rich parcel insertion.
 In the task provided with $\texttt{v1.0.0}$, a poly-articulated robot equipped with an anthropomorphic end-effector is charged with inserting a rigid parcel placed stably on a planar surface at a known initial pose in the robot's workspace into an open-front receptacle whose pose is also known. The parcel insertion task is further divided into several stages that comprise acquiring the rigid parcel (acquisition/grasping),
 reorienting the parcel by 90 degrees (reorientation), transporting the parcel to the receptacle (transport), inserting the parcel with 10 mm of clearance per side along the tight axis (insertion), and releasing the parcel (release). A successful episode requires the parcel to settle within the final position and orientation tolerances. The simulation tooling, policy training, and policy evaluation assets provided in $\texttt{v1.0.0}$ utilize a fixed-base Unitree G1 humanoid with a RealHand L6 anthropomorphic right hand.
 </p>
