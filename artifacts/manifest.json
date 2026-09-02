@@ -20,11 +20,13 @@
   ],
   "upright": [
    "upright_act_checkpoint",
-   "upright_expert_demonstrations"
+   "upright_expert_demonstrations",
+   "v2_task_videos"
   ],
   "peg": [
    "peg_act_checkpoint",
-   "peg_expert_demonstrations"
+   "peg_expert_demonstrations",
+   "v2_task_videos"
   ]
  },
  "artifacts": {
@@ -181,6 +183,17 @@
    "url": "https://huggingface.co/datasets/cenwerem/parcelstow-v2/resolve/main/demonstrations/peg_expert_episodes.pt",
    "hf_path": "demonstrations/peg_expert_episodes.pt",
    "hf_repo": "cenwerem/parcelstow-v2"
+  },
+  "v2_task_videos": {
+   "description": "Expert and ACT rollout videos of the upright placement and keyed-peg insertion tasks (960x720, 25 fps, real time at r = 1), with JSON sidecars",
+   "path": "outputs/peg_upright_videos.tar.gz",
+   "produced_by": "scripts/manipulation/record_task_rollouts.py",
+   "read_by": "viewer",
+   "bytes": 35170447,
+   "sha256": "876c8f5f8cb6dc0a2e425e3eafd1b311221a96605c072a66ab658a9d6c1163a1",
+   "hf_repo": "cenwerem/parcelstow-v2",
+   "url": "https://huggingface.co/datasets/cenwerem/parcelstow-v2/resolve/main/videos/peg_upright_videos.tar.gz",
+   "hf_path": "videos/peg_upright_videos.tar.gz"
   }
  },
  "hf_repo": "cenwerem/parcelstow",
