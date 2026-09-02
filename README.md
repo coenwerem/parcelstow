@@ -1,7 +1,7 @@
 # ParcelStow
 
-Matched expert–learner evaluation of temporal robustness in dexterous
-manipulation.
+An Isaac Lab benchmark for expert-learner evaluation across task
+execution speeds.
 
 
 <p align="justify">
@@ -102,7 +102,8 @@ python scripts/run_task.py
 
 **Tier 2, Run a Released Reference Policy**
 
-Evaluate the ACT-A checkpoint at two speeds:
+Evaluate the ACT-A checkpoint, fetched from the [Hugging Face
+dataset](https://huggingface.co/datasets/cenwerem/parcelstow), at two speeds:
 
 ```bash
 python scripts/download_artifacts.py --demo     # ACT-A checkpoint
@@ -111,7 +112,8 @@ python scripts/evaluate.py --actor act --rates 1.0 2.0 --episodes 100
 
 **Tier 3, Full Reproduction**
 
-Retrieve demonstrations and all checkpoints from Hugging Face (or obtain them from a fresh training pass), then rerun the full evaluation following
+Retrieve demonstrations and all checkpoints from the [Hugging Face
+dataset](https://huggingface.co/datasets/cenwerem/parcelstow) (or obtain them from a fresh training pass), then rerun the full evaluation following
 ([docs/REPRODUCING_THE_PAPER.md](docs/REPRODUCING_THE_PAPER.md)).
 
 ## Installation
