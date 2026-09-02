@@ -55,8 +55,15 @@ CORR_CLAMP = 0.35
 # grip force. The pinky sits nearest the shaft end, where extra flexion
 # pushes axially and ejects the object (measured in the validation
 # traces), so it keeps the synthesized shape. Fixed by expert-only
-# validation, no learner outcome.
-CLOSE_OVERDRIVE = 0.20
+# validation, no learner outcome. The peg task raised the overdrive from
+# the upright's 0.20: under the fixed gravity moment the object pivots
+# quasistatically in the grasp through the free-air phases (traced,
+# 2 to 18 deg by the INSERT start with no fixture contact, load
+# migrating into the ring finger), and arrivals pitched past about
+# 15 deg wedge in the funnel; more pinch raises the pivot friction
+# threshold, and slowing phases would lengthen the time under moment
+# instead (the upright's r = 0.5 dip, the same physics).
+CLOSE_OVERDRIVE = 0.30
 FLEXION_JOINTS = ("rh_thumb_cmc_pitch", "rh_index_mcp_pitch", "rh_middle_mcp_pitch",
                   "rh_ring_mcp_pitch")
 
