@@ -1,5 +1,5 @@
-"""Keyed-peg insertion task, standing a cuboid peg into a square
-pocket with 3 mm of clearance per side (docs/EXTENSION_PLAN.md).
+"""Keyed peg insertion task, reorienting a cuboid and inserting it into a
+square pocket with 3 mm of clearance per side.
 
 Fixed-pelvis G1 with the RealHand L6, the v1 tabletop, the shared
 55 x 55 x 180 mm cuboid lying on its side, and a pocket block of nine

@@ -11,8 +11,8 @@ title = "ParcelStow"
 author = "Clinton Enwerem"
 maintainer = "Clinton Enwerem"
 description="Isaac Lab benchmark for matched expert-learner evaluation across task execution speeds"
-repository = ""
-keywords = ["benchmark", "manipulation", "imitation-learning", "isaaclab"]
+repository = "https://github.com/coenwerem/parcelstow"
+keywords = ["robot-learning", "robotics-benchmark", "manipulation", "imitation-learning", "isaac-lab"]
 
 [dependencies]
 "isaaclab" = {}

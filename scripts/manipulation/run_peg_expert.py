@@ -8,7 +8,7 @@ the physical predicate of the task geometry, nothing else.
 
 Modes,
   validate   fixed speed, fixed jitter, N episodes
-  sweep      the same over a speed list (Gate B expert calibration)
+  sweep      the same over a speed list (expert-only speed calibration)
   demos      uniform rate in [lo, hi] and planar jitter, saves the
              physically successful episodes to --demo_out
 
@@ -34,7 +34,7 @@ parser.add_argument("--num_envs", type=int, default=32)
 parser.add_argument("--episodes", type=int, default=20)
 parser.add_argument("--rate", type=float, default=0.5)
 parser.add_argument("--rates", type=float, nargs="*", default=[0.5, 0.75, 1.0, 1.25, 1.5, 2.0, 2.5, 3.0])
-# Frozen at Gate B: the >=0.9 contiguous range of the 64-episode sweep
+# Frozen after expert-only calibration: the >=0.9 contiguous range of the 64-episode sweep
 # (63, 62, 58 of 64 at r in {0.5, 0.75, 1.0}; the envelope dips to 0.73
 # at r = 1.5 and recovers to about 0.9 at r >= 2).
 parser.add_argument("--rate_lo", type=float, default=0.5)

@@ -1,5 +1,5 @@
-"""Upright placement task, standing a tall cuboid on a marked target
-region (docs/EXTENSION_PLAN.md).
+"""Upright placement task, reorienting a tall cuboid to an upright pose on a
+marked target region.
 
 Fixed-pelvis G1 with the RealHand L6, the v1 tabletop, a rigid
 55 x 55 x 180 mm cuboid lying on its side, and a visual target disk on

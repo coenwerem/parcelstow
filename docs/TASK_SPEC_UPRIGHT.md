@@ -4,8 +4,8 @@ Status legend. FROZEN means the value is fixed and no learner result
 may change it. Every value below derives from kinematic probes, grasp
 synthesis feasibility, or expert-only calibration, never from a
 learner outcome. The freeze log at the end records every change with
-a date and a reason. The arXiv-v2 design note
-([EXTENSION_PLAN.md](EXTENSION_PLAN.md)) records the increments and
+a date and a reason. The historical development record
+([EXTENSION_PLAN.md](development-history/EXTENSION_PLAN.md)) records the increments and
 their measured evidence; this document states the frozen values.
 
 Document created 2026-09-01. Learner training and evaluation started
@@ -16,13 +16,13 @@ only after every entry below was frozen.
 The task extends the matched expert-learner evaluation across task
 execution speeds to a manipulation whose terminal predicate is
 quasi-static stability rather than the geometric containment of
-ParcelStow. A scripted expert stands a tall cuboid upright on a marked
+ParcelStow. A scripted expert reorients a tall cuboid to an upright pose on a marked
 target region; the only environment contact is the table, so failure
 cannot be jam-mediated, and faster execution raises the release
 transients and the in-hand pivot that placement precision depends on.
 The endpoint is task success as a function of the speedup factor r.
 
-## 2. Object (FROZEN, Chosen by Kinematic and Synthesis Criteria Only)
+## 2. Object (Frozen, Chosen by Kinematic and Synthesis Criteria Only)
 
 - Shape, rigid cuboid, extents 55 x 55 x 180 mm (x, y, z in the
   object frame, the long axis on z).
@@ -39,7 +39,7 @@ The endpoint is task success as a function of the speedup factor r.
   ending inside the shaft. Tipping angle of the resting cuboid,
   atan(27.5 / 90) = 17.0 degrees.
 
-## 3. Table and Robot (FROZEN, the v1 Scene)
+## 3. Table and Robot (Frozen, the v1 Scene)
 
 Table center (0.55, 0.0, 0.68), size 0.81 x 1.092 x 0.04 m, top at
 z = 0.70 m. Pelvis fixed at (0, 0, 0.75), identity orientation, the
@@ -48,7 +48,7 @@ static re-park shifts the waist gravity load and the resulting torso
 sag enough to break the millimeter-margin open-loop acquisition
 (measured, two park variants).
 
-## 4. Start and Goal Poses (FROZEN)
+## 4. Start and Goal Poses (Frozen)
 
 Object center at (0.35, 0.0, 0.7285), 1 mm above rest height, lying
 on a 55 x 180 face with the long axis yawed +45 deg (the grasped +z
@@ -60,7 +60,7 @@ world (0.527, 0.035), on the robot's right of the transport axis and
 0.207 m clear of the idle left hand (the left-side candidates put the
 placement inside the idle hand's zone). Transport distance 0.180 m.
 
-## 5. Grasp Source (FROZEN, Provenance in assets/upright_place_bank.json)
+## 5. Grasp Source (Frozen, Provenance in assets/upright_place_bank.json)
 
 The synthesis record is
 assets/provenance/frogger_upright/scene_lab_x0.35_riser0/cuboid_180x55x55.json,
@@ -79,7 +79,7 @@ margin 0.001). The bank re-solves the arm chain by damped least
 squares IK at the start pose and fills the planar start-offset grid
 of the v1 procedure, 49 of 49 entries feasible.
 
-## 6. Manipulation Geometry (FROZEN by the Probe and Validation)
+## 6. Manipulation Geometry (Frozen by the Probe and Validation)
 
 Lift straight up by 0.18 m: an object that pivots in the grasp hangs
 142 mm below the grasp point, and at this lift its hanging end clears
@@ -97,7 +97,7 @@ configuration, all 38 knots within 3.6 mm and 0.9 deg, minimum
 joint-limit margin 0.085 (worst at the end of LOWER, waist pitch);
 trajectory evidence, 63 knots within 2.0 mm at margin 0.110.
 
-## 7. Phase Sequence and Speedup Factor (FROZEN at Gate B)
+## 7. Phase Sequence And Speedup Factor (Frozen After Expert-Only Calibration)
 
 Phases in order, with the nominal duration at unit rate,
 
@@ -118,7 +118,7 @@ Phases in order, with the nominal duration at unit rate,
 Cycle time at rate r equals 5.7 s + 14.8 s / r + 1.0 s. The geometric
 path is a function of the phase index and in-phase fraction alone, so
 changing r changes only the timing, the v1 invariant, asserted by the
-pure tests. The scaled nominals were set by the Gate B expert-only
+pure tests. The scaled nominals were set by the expert-only phase-schedule
 calibration: at half these durations the expert's placement bias (the
 in-hand pitch accumulated under the gravity moment of the end-shifted
 grasp) exceeds the 30 mm target radius from r = 1. Episode length
@@ -132,7 +132,7 @@ outputs of run_upright_expert.py --mode sweep), success 55, 59, 62,
 and a dip at 0.5 where the slow cycle gives the in-hand pivot more
 time to creep.
 
-## 8. Physical Success (FROZEN)
+## 8. Physical Success (Frozen)
 
 Stage markers, each latched at the first step its condition holds
 (upright_place/mdp/monitor.py),
@@ -170,7 +170,7 @@ Failure reason, the first category that applies in the order below,
                               base center outside the target region
     other                     anything else
 
-## 9. Slip Diagnostics (FROZEN, Diagnostics Only)
+## 9. Slip Diagnostics (Frozen, Diagnostics Only)
 
 At the acquired step the recorder stores the object pose in the hand
 root frame; every later step reports the relative translation and
@@ -180,7 +180,7 @@ the end of REORIENT, and at LOWER start and scored with the in-repo
 Ferrari-Canny margin as diagnostics (epsilon_lift, epsilon_reorient,
 epsilon_lower). No slip or margin threshold defines success.
 
-## 10. Observation and Action Interface (FROZEN, the v1 Interface)
+## 10. Observation and Action Interface (Frozen, the v1 Interface)
 
 The 147-D state observation and 16-D joint-position action of the v1
 interface, unchanged in layout: the object pose slice carries the
@@ -188,7 +188,7 @@ cuboid pose in the pelvis frame, task_phase is (k + f) / 13, and the
 speedup factor r sits at index 146. Control at 50 Hz, physics at
 200 Hz, the v1 PD gains.
 
-## 11. Expert Construction (FROZEN in Method)
+## 11. Expert Construction (Frozen in Method)
 
 Acquisition from the bank's planar start-offset grid entry nearest
 the realized start, cosine blends between phase targets, the v1
@@ -200,7 +200,7 @@ flexion ejects the object). Manipulation targets interpolate the
 IK-verified trajectory knots (assets/upright_place_trajectory.json).
 The object is never attached to anything.
 
-## 12. Training Distribution (FROZEN at Gate B)
+## 12. Training Distribution (Frozen Before Learner Training)
 
 - Start jitter, uniform dx, dy in [-10, 10] mm, no yaw jitter.
 - Speedup factor, uniform over [0.75, 1.75], the range over which the
@@ -209,7 +209,7 @@ The object is never attached to anything.
   by physical task_success only, collected once with observation
   corruption on, and reused by every learner.
 
-## 13. Evaluation Distribution (FROZEN at Gate B)
+## 13. Evaluation Distribution (Frozen Before Learner Evaluation)
 
 - The same jitter law as training, seeds fixed per speed
   (12345 + 1000 x speed index) and identical across policies.
@@ -218,7 +218,7 @@ The object is never attached to anything.
   r >= 2.0 above it, 100 episodes per policy and speed, corruption
   off.
 
-## 14. Primary Metrics (FROZEN)
+## 14. Primary Metrics (Frozen)
 
 - P(task_success | rate) with Wilson 95 percent intervals, per policy.
 - Stage completion probabilities per rate.
@@ -242,7 +242,7 @@ The object is never attached to anything.
   seats the base at rest height (a positive release drop plants the
   pitched base off center), from validation traces, before any
   learner ran. Expert validation 20 of 20 at r = 0.5.
-- 2026-09-01 Gate B, scaled nominal durations doubled from the
+- 2026-09-01 expert-only phase-schedule calibration, scaled nominal durations doubled from the
   provisional values (the placement bias crosses the target radius
   from r = 1 under the fast nominal), episode fallback 45 s, rate
   grid and training range frozen from the 64-episode sweep, all

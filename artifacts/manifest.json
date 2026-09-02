@@ -1,6 +1,6 @@
 {
  "version": 1,
- "note": "External release artifacts of the ParcelStow paper, hosted in the Hugging Face dataset repository named by hf_repo. scripts/download_artifacts.py fetches by hf_path (huggingface_hub when installed, the resolve url otherwise) and verifies sha256. Episode-level evaluation records are provided with the repository under data/records and are not listed here.",
+ "note": "Demonstrations, checkpoints, and videos hosted in the Hugging Face dataset repository named by hf_repo. scripts/download_artifacts.py fetches by hf_path and verifies sha256. Episode-level evaluation records are provided with the repository under data/records and are not listed here.",
  "bundles": {
   "paper": [
    "act_a_checkpoint",
@@ -141,7 +141,7 @@
    "hf_path": "videos/parcelstow_videos.tar.gz"
   },
   "upright_act_checkpoint": {
-   "description": "ACT pilot checkpoint of the upright placement task (secondary architecture result)",
+   "description": "Upright placement ACT checkpoint trained on 315 successful expert demonstrations over r in [0.75, 1.75]; secondary result because nominal success does not match the expert",
    "path": "outputs/upright/act/act_upright.pt",
    "produced_by": "scripts/manipulation/run_upright_act.py",
    "read_by": "scripts/manipulation/eval_upright_policies.py --actors act",
@@ -161,7 +161,7 @@
    "hf_path": "demonstrations/upright_expert_episodes.pt"
   },
   "peg_act_checkpoint": {
-   "description": "ACT pilot checkpoint of the keyed-peg insertion task",
+   "description": "Keyed peg insertion ACT checkpoint trained on 325 successful expert demonstrations over r in [0.5, 1.0]; secondary result because nominal success does not match the expert",
    "path": "outputs/peg/act/act_peg.pt",
    "produced_by": "scripts/manipulation/run_peg_act.py",
    "read_by": "scripts/manipulation/eval_peg_policies.py --actors act",

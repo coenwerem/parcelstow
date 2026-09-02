@@ -8,7 +8,7 @@ the physical predicate of the task geometry, nothing else.
 
 Modes,
   validate   fixed speed, fixed jitter, N episodes
-  sweep      the same over a speed list (Gate B expert calibration)
+  sweep      the same over a speed list (expert-only speed calibration)
   demos      uniform rate in [lo, hi] and planar jitter, saves the
              physically successful episodes to --demo_out
 

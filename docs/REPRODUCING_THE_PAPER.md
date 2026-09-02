@@ -1,4 +1,4 @@
-# Reproducing the Paper
+# Reproducing The Released Results
 
 The release contract is numerical. The released episode records plus the
 analysis code in this repository reproduce the quantitative results the
@@ -6,7 +6,7 @@ paper reports. Principal evaluation plots can also be regenerated from
 the released data. Exact camera-ready figure generation (layout, fonts,
 TikZ assembly) is not part of the release contract.
 
-Two paths exist. The record path recomputes the reported quantities from
+Two paths exist. The record path recomputes the released quantities from
 the released episode records and needs only Python with numpy, scipy,
 and matplotlib. The simulation path regenerates the records themselves
 and needs Isaac Lab with a GPU.
@@ -14,13 +14,20 @@ and needs Isaac Lab with a GPU.
 ## From Released Records, No Isaac
 
 ```bash
+python scripts/reproduce.py all-tasks
 python scripts/reproduce.py all
 ```
+
+`all-tasks` prints the source path and demonstrated-range boundaries for
+parcel insertion, upright placement, and keyed peg insertion. It writes one
+task-explicit success table and figure per task. `all` preserves the original
+parcel-paper analysis targets.
 
 Every reported quantity maps to a released record and a public command,
 
 | reported quantity | source record | command |
 |---|---|---|
+| all three task-success tables and curves | `data/records/{,upright/,peg/}{expert,act}_episodes.jsonl.gz` | `reproduce.py all-tasks` |
 | task-success fractions and Wilson intervals at each speed, including the upper bound at zero successes | `data/records/eval_summary.jsonl` | `reproduce.py envelope` |
 | expert over ACT-A matched gap at r=2 (0.31) and its 20000-resample paired bootstrap 95% interval ([0.18, 0.44]) | `{expert,act}_episodes.jsonl.gz` | `reproduce.py envelope` (or `plot_envelope.py --gap expert act`) |
 | stage-completion and terminal-failure counts per policy and speed | `eval_summary.jsonl`, episode records | `reproduce.py stages`, fields per episode |
@@ -57,6 +64,7 @@ installation, the analysis tier needs only the three Python packages.
 | PyTorch | 2.7.0+cu128 |
 | SciPy (Isaac environment) | 1.15.3 |
 | numpy (Isaac environment) | 1.26.4 |
+| GPU | NVIDIA RTX 5070 Ti |
 | diffusers (Diffusion Policy) | 0.30.3 |
 | gymnasium | 1.2.1 |
 
@@ -78,6 +86,14 @@ tested versions above. Install the extension into that environment with
 uv pip install -p <isaaclab-venv>/bin/python -e source/parcelstow
 # add [diffusion] for Diffusion Policy, [analysis] for the
 # record-reproduction tier, [all] for everything
+```
+
+Run simulator test groups in separate processes before regenerating records:
+
+```bash
+python -m pytest tests/test_parcel_physics.py tests/test_relative_handoff.py --isaac -q
+python -m pytest tests/test_upright_physics.py --isaac-upright -q
+python -m pytest tests/test_peg_physics.py --isaac-peg -q
 ```
 
 Then, in dependency order,

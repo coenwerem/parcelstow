@@ -1,11 +1,19 @@
 cff-version: 1.2.0
 message: "If you use ParcelStow, please cite it as below."
-title: "ParcelStow: An Isaac Lab Benchmark for Expert-Learner Evaluation Across Task Execution Speeds"
+title: "ParcelStow"
+abstract: "The v1.0.0 software release for the parcel-insertion study reported in arXiv:2609.01453."
 authors:
   - family-names: Enwerem
     given-names: Clinton
+  - family-names: Baras
+    given-names: John S.
+  - family-names: Belta
+    given-names: Calin
 type: software
 version: 1.0.0
+date-released: 2026-09-01
+repository-code: "https://github.com/coenwerem/parcelstow"
+url: "https://github.com/coenwerem/parcelstow/releases/tag/v1.0.0"
 identifiers:
   - type: other
     value: "arXiv:2609.01453"

@@ -18,7 +18,6 @@ Run,
 """
 
 import argparse
-import json
 import os
 import sys
 import time
@@ -49,10 +48,9 @@ app_launcher = AppLauncher(args_cli)
 simulation_app = app_launcher.app
 
 import gymnasium as gym  # noqa: E402
+import parcelstow.tasks  # noqa: E402, F401
 
 from isaaclab_tasks.utils.hydra import hydra_task_config  # noqa: E402
-
-import parcelstow.tasks  # noqa: E402, F401
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import stow_runtime as rt  # noqa: E402
@@ -81,11 +79,11 @@ def main(env_cfg, agent_cfg):
         rec_path = os.path.join(args_cli.out_dir, f"{fname}{args_cli.tag}.jsonl")
         for ri, r in enumerate(args_cli.rates):
             seed = args_cli.eval_seed + 1000 * ri
+            trace_dir = os.path.join(args_cli.out_dir, "traces") if args_cli.trace_envs else None
             recs, _ = rt.run_episodes(env, base, actor, monitor, args_cli.episodes, {"mode": "fixed", "value": r},
                                       args_cli.jitter, seed, switches, expert=expert, corrupt=False, stamp=stamp,
                                       tag=f"{name}_r{r:g}", extra={"checkpoint": ckpts.get(name, args_cli.custom_ckpt)},
-                                      trace_dir=os.path.join(args_cli.out_dir, "traces") if args_cli.trace_envs else None,
-                                      task_id=args_cli.task, cycle_time=G.cycle_time)
+                                      trace_dir=trace_dir, task_id=args_cli.task, cycle_time=G.cycle_time)
             rt.write_jsonl(rec_path, recs)
             s = rt.summarize(recs)
             s.update({"policy": name, "rate": r, "cycle_time_s": G.cycle_time(r), "seed": seed,

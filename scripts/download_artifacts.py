@@ -1,4 +1,4 @@
-"""Fetch and verify the external release artifacts listed in
+"""Fetch and verify the demonstrations, checkpoints, and videos listed in
 artifacts/manifest.json.
 
 Artifacts live in the Hugging Face dataset repository named by the

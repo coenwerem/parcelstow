@@ -1,11 +1,11 @@
 """Upright placement task geometry.
 
 A tall rigid cuboid starts lying on its side at a known pose; the task
-stands it upright on a marked circular target region on the table. The
+reorients it to an upright pose on a marked circular target region. The
 terminal predicate is quasi-static stability, final tilt from vertical
 at most FINAL_TILT_TOL_DEG with the base center inside the target
 region, rather than the geometric containment of ParcelStow
-(docs/EXTENSION_PLAN.md).
+(docs/TASK_SPEC_UPRIGHT.md).
 
 Geometry frozen by the kinematic probes and expert-only validation of
 2026-09-01 (scripts/manipulation/probe_upright_geometry.py, reports
@@ -34,7 +34,7 @@ within 3.6 mm and 0.9 deg at minimum joint-limit margin 0.085 (worst
 at the end of LOWER, waist pitch), the trajectory's 63 knots solve
 within 2.0 mm at margin 0.110, and the scripted expert validates
 20 of 20 at r = 0.5 with final tilt 0.0 deg and base offsets of 7 to
-19 mm. Phase durations await the Gate B expert-only calibration. The
+19 mm. Phase durations were then fixed by expert-only calibration. The
 module is self-contained (numpy only) so the pure tests load it by
 file path, the convention of the ParcelStow geometry module.
 
@@ -103,7 +103,7 @@ SETTLE_ANG = 0.2  # rad/s
 # ----------------------------------------------------------------------------
 # Acquisition keeps the v1 timings and stays fixed; the settle window is
 # extended to 1.0 s so tipping resolves inside the episode. The scaled
-# nominal durations were set by the Gate B expert-only calibration of
+# Nominal durations were set by expert-only phase-schedule calibration on
 # 2026-09-01: at half these durations the expert's placement bias (the
 # in-hand pitch accumulated under the gravity moment of the end-shifted
 # grasp) exceeds the 30 mm target radius from r = 1, so the nominal
@@ -127,7 +127,7 @@ PHASES = [
 PHASE_INDEX = {name: i for i, (name, _, _) in enumerate(PHASES)}
 
 # ----------------------------------------------------------------------------
-# stage markers and failure reasons (docs/EXTENSION_PLAN.md)
+# Stage markers and failure reasons are frozen in docs/TASK_SPEC_UPRIGHT.md.
 # ----------------------------------------------------------------------------
 STAGES = ["acquired", "lifted_clear", "reoriented_upright",
           "placed", "released", "settled"]
