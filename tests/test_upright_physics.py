@@ -1,4 +1,4 @@
-"""Gate A simulator-backed checks of the upright placement task: the
+"""Simulator-backed checks of the upright placement task: the
 schedule binding, the 147-D observation, the physical premise of the
 stability predicate, the monitor's final-state fields, and per-env
 speedup-factor independence. Run in their own process,

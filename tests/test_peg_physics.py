@@ -1,4 +1,4 @@
-"""Gate A simulator-backed checks of the keyed-peg insertion task: the
+"""Simulator-backed checks of the keyed peg insertion task: the
 schedule binding, the 147-D observation, the pocket collision physics,
 and the monitor's containment fields. Run in their own process,
 

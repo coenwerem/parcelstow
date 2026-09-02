@@ -10,7 +10,7 @@ only after every PENDING entry reads FROZEN.
 
 ## 1. Scientific Question
 
-The benchmark asks whether temporal robustness persists through imitation
+ParcelStow asks whether temporal robustness persists through imitation
 of a dexterous behavior. A model-derived expert acquires a small
 parcel and executes a full reorient-and-stow manipulation with real
 contacts. DAgger, Diffusion Policy, and ACT imitate the same demonstration

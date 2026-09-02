@@ -1,12 +1,11 @@
-# Keyed-Peg Insertion Task Specification (Frozen Scientific Choices)
+# Keyed Peg Insertion Task Specification (Frozen Scientific Choices)
 
 Status legend. FROZEN means the value is fixed and no learner result
 may change it. Every value below derives from kinematic probes, grasp
 synthesis feasibility, or expert-only calibration, never from a
 learner outcome. The freeze log at the end records every change with
-a date and a reason. The historical development record
-([EXTENSION_PLAN.md](development-history/EXTENSION_PLAN.md)) records the increments and
-their measured evidence; this document states the frozen values.
+a date and a reason. This document states the frozen values and the measured
+evidence used to select them.
 
 Document created 2026-09-01. Learner training and evaluation started
 only after every entry below was frozen.

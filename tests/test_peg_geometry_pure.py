@@ -1,4 +1,4 @@
-"""Gate A pure checks of the keyed-peg insertion task skeleton: the
+"""Pure checks of the keyed peg insertion task definition: the
 phase schedule, the deterministic object path, the pocket containment
 predicates, and the derived tolerance. No simulator."""
 

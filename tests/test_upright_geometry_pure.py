@@ -1,4 +1,4 @@
-"""Gate A pure checks of the upright placement task skeleton: the
+"""Pure checks of the upright placement task definition: the
 phase schedule, the deterministic object path, and the success
 predicates. No simulator."""
 
