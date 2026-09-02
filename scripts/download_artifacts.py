@@ -12,6 +12,7 @@ Bundles,
   --paper   demonstrations, checkpoints, and subsets behind the paper
   --demo    the ACT-A checkpoint and the rollout videos
   --all     every artifact
+  --task    released ACT checkpoint and demonstrations for one task
   --verify  no downloads, verify size and sha256 of local files
 
 Files already present with a matching checksum are skipped.
@@ -30,6 +31,8 @@ import os
 import shutil
 import sys
 import urllib.request
+
+from task_registry import ALIASES, get_task
 
 REPO = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 MANIFEST = os.path.join(REPO, "artifacts", "manifest.json")
@@ -87,6 +90,8 @@ def main():
     ap.add_argument("--demo", action="store_true")
     ap.add_argument("--all", action="store_true")
     ap.add_argument("--verify", action="store_true")
+    ap.add_argument("--task", choices=ALIASES,
+                    help="fetch the selected task's ACT checkpoint and demonstrations")
     ap.add_argument("--names", nargs="+", default=None,
                     help="specific artifact names from the manifest")
     args = ap.parse_args()
@@ -100,6 +105,9 @@ def main():
         names |= set(m["bundles"]["paper"])
     if args.demo:
         names |= set(m["bundles"]["demo"])
+    if args.task:
+        spec = get_task(args.task)
+        names |= {spec.checkpoint_artifact, spec.demonstration_artifact}
     if args.names:
         names |= set(args.names)
     if not names:

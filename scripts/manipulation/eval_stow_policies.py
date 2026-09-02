@@ -84,7 +84,8 @@ def main(env_cfg, agent_cfg):
             recs, _ = rt.run_episodes(env, base, actor, monitor, args_cli.episodes, {"mode": "fixed", "value": r},
                                       args_cli.jitter, seed, switches, expert=expert, corrupt=False, stamp=stamp,
                                       tag=f"{name}_r{r:g}", extra={"checkpoint": ckpts.get(name, args_cli.custom_ckpt)},
-                                      trace_dir=os.path.join(args_cli.out_dir, "traces") if args_cli.trace_envs else None)
+                                      trace_dir=os.path.join(args_cli.out_dir, "traces") if args_cli.trace_envs else None,
+                                      task_id=args_cli.task, cycle_time=G.cycle_time)
             rt.write_jsonl(rec_path, recs)
             s = rt.summarize(recs)
             s.update({"policy": name, "rate": r, "cycle_time_s": G.cycle_time(r), "seed": seed,

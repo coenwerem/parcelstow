@@ -1,4 +1,4 @@
-"""Minimal ParcelStow policy showing the evaluation interface.
+"""Minimal policy shared by all three ParcelStow benchmark tasks.
 
 The evaluator accepts any class reachable as module.path:ClassName whose
 instances expose the actor interface of docs/POLICY_INTERFACE.md,
@@ -9,8 +9,10 @@ instances expose the actor interface of docs/POLICY_INTERFACE.md,
                              or None when the policy has no explicit
                              joint-space plan
 
-The observation is a (n, 147) torch tensor on the environment device,
-slices documented in docs/POLICY_INTERFACE.md. The action is the
+Each task supplies a (n, 147) torch tensor on the environment device,
+with task-specific slices documented in docs/POLICY_INTERFACE.md. Task
+identity is selected by ``evaluate.py --task`` and is not appended to the
+observation. The action is the
 normalized joint-position command of the 16 actuated joints, the
 environment applies target = 0.5 * action + q_default at 50 Hz.
 
@@ -20,8 +22,9 @@ act() with your model call.
 
 Run it on the frozen evaluation draws,
 
-  python scripts/evaluate.py --actor examples.custom_policy:HoldPosturePolicy \
-      --rates 1.0 --episodes 5 --num_envs 8
+  python scripts/evaluate.py --task parcel --actor examples.custom_policy:HoldPosturePolicy --rates 1 --episodes 5
+  python scripts/evaluate.py --task upright --actor examples.custom_policy:HoldPosturePolicy --rates 1 --episodes 5
+  python scripts/evaluate.py --task peg --actor examples.custom_policy:HoldPosturePolicy --rates 1 --episodes 5
 """
 
 import torch
@@ -34,6 +37,7 @@ class HoldPosturePolicy:
         # base is the ManagerBasedRLEnv, checkpoint the --custom_ckpt path
         self.base = base
         self.n = num_envs or base.num_envs
+        self.checkpoint = checkpoint
 
     def reset(self, ids, obs=None):
         # per-env recurrent state would reset here
