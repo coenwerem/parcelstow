@@ -40,16 +40,23 @@ The stable [`v1.0.0`](https://github.com/coenwerem/parcelstow/releases/tag/v1.0.
   </tr>
 </table>
 
-## What Runs without Isaac Lab
+## Reproduce Results from Evaluation Records
 
-The provided compressed episode records are stored in `data/records/`. The parcel records belong to v1.0.0; the upright and peg records describe the active development branch. This command uses only Python, NumPy, and Matplotlib. It recomputes success counts for all three tasks and writes task-explicit tables and figures without Isaac Lab, a GPU, checkpoints, or demonstrations:
+The compressed evaluation records in `data/records/` can be analyzed without
+Isaac Lab. Install NumPy and Matplotlib in a Python 3 environment, then
+recompute the success counts, tables, and figures for all three tasks:
 
 ```bash
 python3 -m pip install numpy matplotlib
 python3 scripts/reproduce.py all-tasks
 ```
 
-The existing parcel-paper targets remain available through `python3 scripts/reproduce.py all`. See [Reproducing the Results](docs/REPRODUCING_THE_PAPER.md) for the source record behind each result.
+The parcel records belong to v1.0.0; the upright and peg records describe the
+active development branch. This analysis does not require a GPU, checkpoint,
+or demonstration file. The existing parcel-paper targets remain available
+through `python3 scripts/reproduce.py all`. See [Reproducing the
+Results](docs/REPRODUCING_THE_PAPER.md) for the source record behind each
+result.
 
 ## Installation
 
