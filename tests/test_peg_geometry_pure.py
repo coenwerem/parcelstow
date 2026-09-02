@@ -22,7 +22,7 @@ def test_phase_schedule(peg_geometry, phase_schedule_mod):
     assert not sched.rate_scaled[-1]
     scaled_sum = sched.nominal_durations[sched.rate_scaled].sum()
     for r in RATES:
-        assert np.isclose(sched.cycle_time(r), 5.7 + scaled_sum / r + 1.0)
+        assert np.isclose(sched.cycle_time(r), 5.7 + scaled_sum / r + 2.0)
 
 
 def test_path_continuity_and_endpoints(peg_geometry):

@@ -5,10 +5,11 @@ new tasks, starts lying on its side at the proven start; the task stands it up a
 square pocket with 3 mm of clearance per side, the tight-clearance
 containment regime of the arXiv-v2 suite (docs/EXTENSION_PLAN.md).
 The 55 mm width is the RealHand L6 aperture floor the grasp synthesis
-established for the upright task; the pocket sits at the probed
-right-side location, clear of the idle left hand, and the pocket top
-at 120 mm above the table keeps the hand in the higher workspace
-the v1 receptacle already proved. The descent releases the peg 10 mm
+established for the upright task; the pocket sits on the robot's right
+of the transport axis, further out than the probed upright target (the
+relocation note at POCKET_CENTER), and the pocket top at 120 mm above
+the table keeps the hand in the higher workspace the v1 receptacle
+already proved. The descent releases the peg 10 mm
 above the pocket floor inside the guided cavity, the v1 receptacle's
 release convention. Derived tolerance: a
 square peg of side a in a square pocket with clearance c admits a yaw
@@ -33,8 +34,28 @@ OBJECT_FRICTION = 0.5
 TABLE_TOP = 0.70
 START_YAW_DEG = 45.0
 START_POS = (0.35, 0.0, TABLE_TOP + OBJECT_EXTENTS[0] / 2 + 0.001)
-LIFT_DZ = 0.22  # pivot-to-hang clearance over the raised pocket block
-POCKET_CENTER = (0.527, 0.035)  # the probed right-side location of the suite
+# Transport corridor height. At 0.22 the peg base clears the lead-in
+# tops by 15 mm nominal, but the arm carries the loaded hand 20 to
+# 22 mm below the commanded transfer height (traced object z 0.926 to
+# 0.928 against the nominal 0.9485 with 1.4 mm of in-hand slip), so the
+# base strikes the near lead mid-sweep (traced at TRANSFER f 0.5 to
+# 0.75: pocket force 11 N, slip 1.7 -> 27 mm, pitch 3 -> 18 deg) and
+# arrives at INSERT pitched 22 deg, which the 6.2 deg funnel tolerance
+# cannot admit. At 0.26 the nominal clearance is 55 mm.
+LIFT_DZ = 0.26
+# Pocket location: along 0.28 m, lateral -0.10 m in the transport frame
+# (target = start + along * d + lateral * (z x d), d = rotz(START_YAW)
+# @ ex), transport 0.297 m. At the probed upright target (0.527, 0.035),
+# along 0.15 m, the block's near face sits at about 0.090 m along d,
+# exactly at the lying peg's far end, and the grasp fingers extend past
+# that end into the fixture's airspace (measured slab-distance traces:
+# rh_middle_distal within about 6 mm of the lead_c and wall_a surfaces
+# through CLOSE and GRASP_DWELL, 18/20 acquisition failures). Half
+# object (0.090) plus finger extent (about 0.06) plus block
+# half-footprint (about 0.10) plus margin needs 0.28 to 0.30 m; at
+# along 0.28 the near face moves to about 0.22 m, about 70 mm beyond
+# the finger extent.
+POCKET_CENTER = (0.6187, 0.1273)
 CLEARANCE = 0.003
 POCKET_W = OBJECT_EXTENTS[0] + 2 * CLEARANCE  # 61 mm across the cavity
 POCKET_DEPTH = 0.060
@@ -54,6 +75,12 @@ RELEASE_DROP = 0.010
 SEAT_Z = POCKET_FLOOR_Z + RELEASE_DROP + OBJECT_HALF_HEIGHT
 INSERTED_MIN_DEPTH = 0.040  # base at least 40 mm below the pocket top
 RETREAT_DISTANCE = 0.10
+# The retreat climbs as it withdraws: the seated peg stands 120 mm
+# proud of the mouth and a purely horizontal retreat sweeps the open
+# fingers through the shaft above the rim, levering the peg out of the
+# cavity over the 60 mm walls (measured: inserted-and-released episodes
+# ending lying on the table beyond the block, final tilt 90 deg).
+RETREAT_RISE = 0.12
 # Frozen grasp-region offset along the shaft toward the future top end,
 # the upright task's grasp on the shared object (synthesized centroid
 # +0.072 m slid 20 mm toward the center of mass); at the release height
@@ -68,8 +95,14 @@ SETTLE_ANG = 0.2
 # phase schedule, (name, nominal seconds, rate scaled)
 # ----------------------------------------------------------------------------
 # Acquisition keeps the v1 timings; the scaled nominals carry over the
-# upright Gate B calibration (INSERT takes the LOWER slot), pending this
-# task's own calibration.
+# upright Gate B calibration except where this task's own Gate B sweep
+# re-anchored them: INSERT rose from the LOWER slot's 2.0 s to 3.0 s
+# (the 128 mm guided descent wedges at speed: 52 of 64 insertion jams
+# at r = 1.5 with arrivals of 5 to 10 mm, against 43 mm/s at r = 1
+# under the slower descent), and the unscaled SETTLE rose from 1.0 to
+# 2.0 s (every r <= 1 timeout of the first sweep was a seated upright
+# peg whose settle counter ran out of episode: 5, 8, and 11 of 64 at
+# r = 0.5, 0.75, 1).
 PHASES = [
     ("PARK", 0.5, False),
     ("APPROACH", 2.5, False),
@@ -79,11 +112,11 @@ PHASES = [
     ("LIFT", 2.4, True),
     ("REORIENT", 3.2, True),
     ("TRANSFER", 3.2, True),
-    ("INSERT", 2.0, True),
+    ("INSERT", 3.0, True),
     ("INSERT_DWELL", 0.8, True),
     ("RELEASE", 1.2, True),
     ("RETREAT", 2.0, True),
-    ("SETTLE", 1.0, False),
+    ("SETTLE", 2.0, False),
 ]
 PHASE_INDEX = {name: i for i, (name, _, _) in enumerate(PHASES)}
 
@@ -184,13 +217,19 @@ def inside_pocket(p, R):
     return True
 
 
-# Entry lead-in: at 3 mm of clearance an open-loop insertion catches the
+# Entry lead-in: at 3 mm of clearance an open-loop insertion wedges on the
 # rim (measured, sustained 45 N wedging with a 1 mm, 1 deg arrival), so
 # the mouth carries the chamfer every engineered fixture has, four
-# slanted slabs widening the entry by LEAD_H tan(LEAD_ANGLE) = 14 mm per
-# side and funneling the peg into the tight containment.
+# slanted slabs widening the entry by LEAD_H tan(LEAD_ANGLE) = 24.5 mm
+# per side and funneling the peg into the tight containment. The first
+# Gate B sweep measured the capture edge of the 20 mm lead (14 mm per
+# side) exactly: at r = 0.5 every success arrived within 12.8 mm of the
+# pocket center and every jam at 17.2 mm or more, while the 10 mm start
+# jitter scatters arrivals out to 25 mm, so the lead height rose to
+# 35 mm; the lead's outer edge at 55 mm stays inside the 60.5 mm wall
+# footprint.
 LEAD_ANGLE_DEG = 35.0
-LEAD_H = 0.020
+LEAD_H = 0.035
 LEAD_T = 0.008
 
 
@@ -319,7 +358,9 @@ def retreat_hand_pose(X_OH, f, frames=None):
     fr = _DEFAULT_FRAMES if frames is None else frames
     T = hand_pose_from_object(make_tf(fr["R_upright"], fr["p_seat"]), X_OH)
     T = T.copy()
-    T[:3, 3] = T[:3, 3] - fr["d"] * (RETREAT_DISTANCE * smoothstep(f))
+    s = smoothstep(f)
+    T[:3, 3] = T[:3, 3] - fr["d"] * (RETREAT_DISTANCE * s)
+    T[2, 3] = T[2, 3] + RETREAT_RISE * s
     return T
 
 
