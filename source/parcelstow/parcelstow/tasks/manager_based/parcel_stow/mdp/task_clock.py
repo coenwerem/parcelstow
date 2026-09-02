@@ -1,12 +1,14 @@
-"""Per-environment task phase and speedup factor of the ParcelStow task.
+"""Per-environment task phase and speedup factor.
 
 The phase clock derives from the per-environment step counter and the
-per-environment speedup factor. Time t = steps * dt runs through the phase
-schedule of geometry.PHASES with the manipulation phases divided by the
-speedup factor r, so two environments at different speeds sit at different
-phases at the same wall time. The speedup-factor buffer lives on the
-environment and the reset event samples it from RATE_SPEC, which the
-drivers set before every reset.
+per-environment speedup factor. Time t = steps * dt runs through the
+task's phase schedule with the rate-scaled phases divided by the speedup
+factor r, so two environments at different speeds sit at different
+phases at the same wall time. The schedule is a PhaseSchedule the task
+package binds to SCHEDULE when it loads (ParcelStow binds
+geometry.PHASES in mdp/__init__.py). The speedup-factor buffer lives on
+the environment and the reset event samples it from RATE_SPEC, which
+the drivers set before every reset.
 """
 
 from __future__ import annotations
@@ -15,16 +17,24 @@ from typing import TYPE_CHECKING
 
 import torch
 
-from .. import geometry as G
-
 if TYPE_CHECKING:
     from isaaclab.envs import ManagerBasedRLEnv
+
+# Bound by the task package at import time (a PhaseSchedule).
+SCHEDULE = None
 
 # Driver-set specification of the speedup-factor law applied at reset.
 #   {"mode": "fixed", "value": r}
 #   {"mode": "uniform", "lo": a, "hi": b}
 #   {"mode": "per_env", "values": tensor (E,)}
 RATE_SPEC = {"mode": "fixed", "value": 1.0}
+
+
+def _schedule():
+    if SCHEDULE is None:
+        raise RuntimeError("task_clock.SCHEDULE is unbound; import the task package "
+                           "or assign a PhaseSchedule before using the clock")
+    return SCHEDULE
 
 
 def rate_buf(env: ManagerBasedRLEnv) -> torch.Tensor:
@@ -34,10 +44,11 @@ def rate_buf(env: ManagerBasedRLEnv) -> torch.Tensor:
 
 
 def _durations(env: ManagerBasedRLEnv) -> torch.Tensor:
-    """(E, N_PHASES) durations at each environment's rate."""
+    """(E, n_phases) durations at each environment's rate."""
     if not hasattr(env, "_stow_nominal"):
-        env._stow_nominal = torch.tensor(G.NOMINAL_DURATIONS, dtype=torch.float32, device=env.device)
-        env._stow_scaled = torch.tensor(G.RATE_SCALED, device=env.device)
+        sched = _schedule()
+        env._stow_nominal = torch.tensor(sched.nominal_durations, dtype=torch.float32, device=env.device)
+        env._stow_scaled = torch.tensor(sched.rate_scaled, device=env.device)
     r = rate_buf(env).unsqueeze(1)
     nom = env._stow_nominal.unsqueeze(0).expand(env.num_envs, -1)
     return torch.where(env._stow_scaled.unsqueeze(0), nom / r, nom)
@@ -53,7 +64,7 @@ def phase_state(env: ManagerBasedRLEnv):
     d = _durations(env)
     cum = torch.cumsum(d, dim=1)
     t = elapsed_time(env)
-    k = (t.unsqueeze(1) >= cum).sum(dim=1).clamp(max=G.N_PHASES - 1)
+    k = (t.unsqueeze(1) >= cum).sum(dim=1).clamp(max=_schedule().n_phases - 1)
     start = torch.where(k > 0, torch.gather(cum, 1, (k - 1).clamp(min=0).unsqueeze(1)).squeeze(1),
                         torch.zeros_like(t))
     dur = torch.gather(d, 1, k.unsqueeze(1)).squeeze(1)
@@ -62,9 +73,9 @@ def phase_state(env: ManagerBasedRLEnv):
 
 
 def task_phase(env: ManagerBasedRLEnv) -> torch.Tensor:
-    """Observation, (k + f) / N_PHASES in [0, 1], shape (E, 1)."""
+    """Observation, (k + f) / n_phases in [0, 1], shape (E, 1)."""
     k, f, _, _ = phase_state(env)
-    return ((k.float() + f) / float(G.N_PHASES)).unsqueeze(1)
+    return ((k.float() + f) / float(_schedule().n_phases)).unsqueeze(1)
 
 
 def task_rate(env: ManagerBasedRLEnv) -> torch.Tensor:

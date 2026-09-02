@@ -12,6 +12,11 @@ REPO = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 GEOMETRY_PY = os.path.join(REPO, "source", "parcelstow", "parcelstow", "tasks", "manager_based",
                            "parcel_stow", "geometry.py")
 EXPERT_PY = os.path.join(REPO, "scripts", "manipulation", "parcel_stow_expert.py")
+PHASE_SCHEDULE_PY = os.path.join(REPO, "source", "parcelstow", "parcelstow", "phase_schedule.py")
+UPRIGHT_GEOMETRY_PY = os.path.join(REPO, "source", "parcelstow", "parcelstow", "tasks", "manager_based",
+                                   "upright_place", "geometry.py")
+PEG_GEOMETRY_PY = os.path.join(REPO, "source", "parcelstow", "parcelstow", "tasks", "manager_based",
+                               "peg_insert", "geometry.py")
 
 
 def load_module(name, path):
@@ -32,21 +37,46 @@ def expert_mod():
     return load_module("stow_expert_under_test", EXPERT_PY)
 
 
+@pytest.fixture(scope="session")
+def phase_schedule_mod():
+    return load_module("phase_schedule_under_test", PHASE_SCHEDULE_PY)
+
+
+@pytest.fixture(scope="session")
+def upright_geometry():
+    return load_module("upright_geometry_under_test", UPRIGHT_GEOMETRY_PY)
+
+
+@pytest.fixture(scope="session")
+def peg_geometry():
+    return load_module("peg_geometry_under_test", PEG_GEOMETRY_PY)
+
+
 def pytest_addoption(parser):
     parser.addoption("--isaac", action="store_true", default=False, help="run the simulator tests")
+    parser.addoption("--isaac-upright", action="store_true", default=False,
+                     help="run the upright placement simulator tests (separate process from --isaac, "
+                          "one Isaac environment per process)")
+    parser.addoption("--isaac-peg", action="store_true", default=False,
+                     help="run the keyed-peg insertion simulator tests (own process)")
 
 
 def pytest_configure(config):
     config.addinivalue_line("markers", "isaac: needs the Isaac simulator")
+    config.addinivalue_line("markers", "isaac_upright: needs the Isaac simulator with the upright scene")
+    config.addinivalue_line("markers", "isaac_peg: needs the Isaac simulator with the peg scene")
 
 
 def pytest_collection_modifyitems(config, items):
-    if config.getoption("--isaac"):
-        return
-    skip = pytest.mark.skip(reason="needs --isaac")
+    skip_p = pytest.mark.skip(reason="needs --isaac")
+    skip_u = pytest.mark.skip(reason="needs --isaac-upright")
     for item in items:
-        if "isaac" in item.keywords:
-            item.add_marker(skip)
+        if "isaac" in item.keywords and not config.getoption("--isaac"):
+            item.add_marker(skip_p)
+        if "isaac_upright" in item.keywords and not config.getoption("--isaac-upright"):
+            item.add_marker(skip_u)
+        if "isaac_peg" in item.keywords and not config.getoption("--isaac-peg"):
+            item.add_marker(pytest.mark.skip(reason="needs --isaac-peg"))
 
 
 @pytest.fixture(scope="session")
@@ -59,6 +89,7 @@ def isaac_scene(request):
     if not request.config.getoption("--isaac"):
         pytest.skip("needs --isaac")
     import argparse
+
     from isaaclab.app import AppLauncher
     parser = argparse.ArgumentParser()
     AppLauncher.add_app_launcher_args(parser)
@@ -68,12 +99,12 @@ def isaac_scene(request):
     sys.path.insert(0, os.path.join(REPO, "scripts", "manipulation"))
     sys.path.insert(0, REPO)
     import gymnasium as gym
-    import torch
     import parcelstow.tasks  # noqa: F401
-    from parcelstow.tasks.manager_based.parcel_stow.parcel_stow_env_cfg import ParcelStowEnvCfg_PLAY
-    from parcelstow.tasks.manager_based.parcel_stow import geometry as G
-    from parcelstow.tasks.manager_based.parcel_stow.mdp import task_clock, metrics
     import stow_runtime as rt
+    import torch
+    from parcelstow.tasks.manager_based.parcel_stow import geometry as G
+    from parcelstow.tasks.manager_based.parcel_stow.mdp import metrics, task_clock
+    from parcelstow.tasks.manager_based.parcel_stow.parcel_stow_env_cfg import ParcelStowEnvCfg_PLAY
     cfg = ParcelStowEnvCfg_PLAY()
     cfg.scene.num_envs = 4
     cfg.observations.policy.enable_corruption = False
@@ -81,5 +112,79 @@ def isaac_scene(request):
     base = env.unwrapped
     ns = {"app": app, "env": env, "base": base, "torch": torch, "G": G, "task_clock": task_clock,
           "metrics": metrics, "rt": rt, "geom": G.load_geometry()}
+    yield ns
+    env.close()
+
+
+@pytest.fixture(scope="session")
+def upright_scene(request):
+    """One Isaac app and one four-environment UprightPlace scene per pytest
+    process. Exclusive with isaac_scene (one environment per process), so
+    the upright simulator tests run in their own process via
+    --isaac-upright."""
+    if not request.config.getoption("--isaac-upright"):
+        pytest.skip("needs --isaac-upright")
+    assert not request.config.getoption("--isaac"), \
+        "--isaac and --isaac-upright are exclusive, one Isaac environment per process"
+    import argparse
+
+    from isaaclab.app import AppLauncher
+    parser = argparse.ArgumentParser()
+    AppLauncher.add_app_launcher_args(parser)
+    a = parser.parse_args([])
+    a.headless = True
+    app = AppLauncher(a).app
+    sys.path.insert(0, os.path.join(REPO, "scripts", "manipulation"))
+    sys.path.insert(0, REPO)
+    import gymnasium as gym
+    import parcelstow.tasks  # noqa: F401
+    import torch
+    from parcelstow.tasks.manager_based.parcel_stow.mdp import task_clock
+    from parcelstow.tasks.manager_based.upright_place import geometry as U
+    from parcelstow.tasks.manager_based.upright_place.mdp import monitor as umon
+    from parcelstow.tasks.manager_based.upright_place.upright_place_env_cfg import UprightPlaceEnvCfg_PLAY
+    cfg = UprightPlaceEnvCfg_PLAY()
+    cfg.scene.num_envs = 4
+    cfg.observations.policy.enable_corruption = False
+    env = gym.make("UprightPlace-L6-Play-v0", cfg=cfg)
+    base = env.unwrapped
+    ns = {"app": app, "env": env, "base": base, "torch": torch, "U": U, "task_clock": task_clock,
+          "umon": umon}
+    yield ns
+    env.close()
+
+
+@pytest.fixture(scope="session")
+def peg_scene(request):
+    """One Isaac app and one four-environment PegInsert scene per pytest
+    process, exclusive with the other Isaac fixtures."""
+    if not request.config.getoption("--isaac-peg"):
+        pytest.skip("needs --isaac-peg")
+    assert not (request.config.getoption("--isaac") or request.config.getoption("--isaac-upright")), \
+        "the Isaac scene options are exclusive, one environment per process"
+    import argparse
+
+    from isaaclab.app import AppLauncher
+    parser = argparse.ArgumentParser()
+    AppLauncher.add_app_launcher_args(parser)
+    a = parser.parse_args([])
+    a.headless = True
+    app = AppLauncher(a).app
+    sys.path.insert(0, os.path.join(REPO, "scripts", "manipulation"))
+    sys.path.insert(0, REPO)
+    import gymnasium as gym
+    import parcelstow.tasks  # noqa: F401
+    import torch
+    from parcelstow.tasks.manager_based.parcel_stow.mdp import task_clock
+    from parcelstow.tasks.manager_based.peg_insert import geometry as P
+    from parcelstow.tasks.manager_based.peg_insert.mdp import monitor as pmon
+    from parcelstow.tasks.manager_based.peg_insert.peg_insert_env_cfg import PegInsertEnvCfg_PLAY
+    cfg = PegInsertEnvCfg_PLAY()
+    cfg.scene.num_envs = 4
+    cfg.observations.policy.enable_corruption = False
+    env = gym.make("PegInsert-L6-Play-v0", cfg=cfg)
+    base = env.unwrapped
+    ns = {"app": app, "env": env, "base": base, "torch": torch, "P": P, "task_clock": task_clock,
+          "pmon": pmon}
     yield ns
     env.close()
