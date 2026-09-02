@@ -168,11 +168,20 @@ and ACT succeeds in 74. ACT does not match the expert at nominal speed, so this
 comparison does not isolate sensitivity to execution speed from the difference
 in success rate already present at nominal speed.
 
-<p align="center">
-  <img src="media/upright_operating_envelope.png" alt="Upright placement success across execution speeds" width="65%">
-  <br>
-  <sub><b>Upright Placement Success.</b> Speeds below <code>r=0.75</code> and above <code>r=1.75</code> lie outside the demonstrated range.</sub>
-</p>
+<table align="center">
+  <tr>
+    <td align="center" width="50%">
+      <img src="media/upright_expert_vs_act_r1.gif?v=2x" alt="Expert and ACT upright placement at r=1" width="100%">
+      <br>
+      <sub><b>Expert–ACT Contrast.</b> At <code>r=1</code>, the expert stands the cuboid on the target region while ACT arrives with the cuboid still on its side and never reaches the place pose.</sub>
+    </td>
+    <td align="center" width="50%">
+      <img src="media/upright_operating_envelope.png" alt="Upright placement success across execution speeds" width="90%">
+      <br>
+      <sub><b>Success Across Execution Speeds.</b> Speeds below <code>r=0.75</code> and above <code>r=1.75</code> lie outside the demonstrated range.</sub>
+    </td>
+  </tr>
+</table>
 
 ### Keyed Peg Insertion
 The keyed peg insertion task uses the same 180 × 55 × 55 mm cuboid. The robot
