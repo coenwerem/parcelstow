@@ -153,42 +153,46 @@ separations are compared.
 
 ### Keyed-Peg Insertion
 
-- Object: a rigid square prism, approximately 25 x 25 x 90 mm and
-  0.10 kg, resting on its side; a table-mounted fixture block with a
-  square through-slot providing 2 to 3 mm of clearance per side. The
-  square cross-section admits four yaw solutions (C4 symmetry about
-  the peg axis).
-- Contact sequence: grasp the shaft, lift, transport to the slot
-  axis, align, insert axially with possible two-point wedging
-  contact, release, settle.
-- Expert construction: as v1 in method; a grasp-bank entry
-  synthesized for the peg, task-space object waypoints along the
-  frozen path, damped least squares IK at fixed knots, joint-target
-  interpolation between knots.
-- Speed-scaled phases: lift, transport, alignment dwell, insert,
-  insert dwell, release, retreat. Fixed phases: park, approach,
-  pregrasp dwell, close, grasp dwell, settle.
+- Object: the upright task's 55 x 55 x 180 mm cuboid at the v1
+  parcel mass of 0.120 kg, one object across both new tasks (the
+  original 25 mm sketch fell to the synthesis aperture floor: no
+  seated force-closed grasp below 55 mm width), resting on its side;
+  a table-mounted pocket block with a square cavity providing 3 mm of
+  clearance per side, a lead-in funnel at the mouth, and the pocket
+  top 120 mm above the table. The square cross-section admits four
+  yaw solutions (C4 symmetry about the peg axis).
+- Contact sequence: grasp the shaft, lift, reorient 90 degrees to
+  vertical, transport to the pocket axis, lower into the guided
+  cavity, release inside it, retreat up and back, settle.
+- Expert construction: as v1 in method; the shared grasp-bank entry,
+  task-space object waypoints along the frozen path, damped least
+  squares IK at fixed knots, joint-target interpolation between
+  knots, plus a raised approach via and the measured realized-grasp
+  compensation (the tenth increment).
+- Speed-scaled phases: lift, reorient, transfer, insert, insert
+  dwell, release, retreat. Fixed phases: park, approach, pregrasp
+  dwell, close, grasp dwell, settle.
 - Demonstrated speed range: from the expert calibration sweep; the
-  tighter clearance is expected to narrow the range relative to v1,
-  which Gate B measures rather than assumes.
-- Success predicate: peg center past a depth threshold along the
-  slot axis, inside the slot cross-section, released, and settled
-  within a final tilt tolerance derived from the clearance-to-length
-  ratio, following the v1 derivation (2 c / L).
-- Stage outcomes: acquired, lifted_clear, aligned, inserted,
-  released, settled.
+  tighter clearance narrowed the range to [0.5, 1.0] against the
+  upright's [0.75, 1.75] (the eleventh increment), measured rather
+  than assumed.
+- Success predicate: peg base past a 40 mm depth threshold, all four
+  base corners inside the cavity cross-section, released, and settled
+  within a 5 deg final tilt tolerance; the cross-section encodes the
+  yaw tolerance the clearance derives (2 c / a = 6.2 deg).
+- Stage outcomes: acquired, lifted_clear, reoriented_upright,
+  aligned, inserted, released, settled.
 - Failure reasons: acquisition_failure, dropped_during_transport,
-  alignment_failure, insertion_jam, release_failure, timeout.
+  alignment_failure, insertion_jam, timeout, other.
 - Initial conditions: planar start jitter in x and y, as v1; no yaw
   jitter in the first version.
 - Evidence added: the tolerance-to-clearance ratio is roughly an
-  order of magnitude tighter than ParcelStow's 10 mm per side, and
-  there is no 90-degree reorientation, so success is bound by
-  terminal alignment precision rather than by reorientation-phase
-  transport. Jamming here is wedge-mediated two-point contact rather
-  than misalignment at a wide entrance. Whether the v1 separation
-  persists when the accuracy demand rather than the transport
-  dynamics binds is exactly the cross-task question.
+  order of magnitude tighter than ParcelStow's 10 mm per side, so
+  success is bound by arrival alignment precision at the mouth and by
+  wedge-mediated jamming inside the cavity rather than by a wide
+  entrance. Whether the v1 separation persists when the accuracy
+  demand rather than the transport dynamics binds is exactly the
+  cross-task question.
 - xArm7 feasibility: high; an insertion scene already exists for the
   xArm7-L6 MuJoCo arena, and the hardware fixture is one machined
   block.
@@ -489,3 +493,68 @@ data/records/upright/eval_summary.jsonl --actors expert act`, and the
 checkpoint and demonstrations are inventoried in
 `artifacts/manifest.json` (bundle `upright`, hosting pending like the
 v1 flow).
+
+The tenth increment implements the keyed-peg insertion task and
+carries it to a green expert validation, with every geometric change
+below fixed by a measured mechanism before any learner ran. The scene
+adds a pocket block of nine kinematic slabs (a floor, four walls, and
+four lead-in slabs, the v1 receptacle pattern) holding a 61 mm square
+cavity, 60 mm deep, whose top sits 120 mm above the table; the peg is
+the upright task's 55 x 55 x 180 mm cuboid, one object across both
+tasks, and the pocket clearance is 3 mm per side. The path to the
+green validation, in order: the block rose from 70 to 120 mm (waist
+roll saturation at the descent bottom); the mouth gained the lead-in
+funnel (sustained 45 N rim wedging at a 1 mm, 1 deg arrival); the
+descent ends 10 mm above the pocket floor and releases inside the
+guided cavity (commanding a full seat lowers the hand onto the mouth
+hardware); the approach routes through a raised via (the open fingers
+sweep the pocket's airspace on the direct blend); the pocket moved
+from the probed upright target to (0.6187, 0.1273), transport 0.297 m
+(at 0.180 m the block's near face sits at the lying peg's far end and
+the grasp fingers extend into the fixture's airspace, 18 of 20
+acquisition failures, all acquired after the move); the transport
+corridor rose to 0.26 m (the loaded arm carries the hand 20 to 22 mm
+below the commanded transfer height, and the peg base struck the near
+lead mid-sweep, traced as a pocket-force spike with a slip step at
+TRANSFER fraction 0.5 to 0.75); the expert's integral sag correction
+extends through TRANSFER and the hand targets carry a
+(-19.3, +1.1) mm world-frame compensation from the descent on (with
+the droop closed, the object still arrived 19 mm past the pocket
+center along x: it settles shifted in the grasp relative to the
+synthesized hand-object transform, the same realized-grasp offset the
+upright task absorbed in its 30 mm target); the retreat climbs
+0.12 m as it withdraws (a horizontal retreat sweeps the open fingers
+through the seated peg's proud shaft and levers it out of the
+cavity); the squeeze overdrive rose to 0.30 rad (the object pivots
+quasistatically in the grasp under its gravity moment, and arrivals
+pitched past about 15 deg wedge in the funnel); and the bank builder
+retries grid entries whose grasp solve returns its seed unmoved (one
+entry admitted at 3.49 mm against 0.3 to 0.9 mm for its neighbors,
+and every validation episode drawing it seated badly and pivoted).
+The expert validates 19 of 20 at r = 1 under 10 mm start jitter, with
+the one failure a pivot-creep outlier of the kind the operating
+envelope characterizes.
+
+The eleventh increment runs the Gate B expert-only calibration and
+freezes the speed protocol. The first 64-episode sweep measured the
+20 mm lead-in's capture edge exactly (at r = 0.5 every success
+arrived within 12.8 mm of the pocket center and every jam at 17.2 mm
+or more, against the 14 mm per-side widening), so the lead height
+rose to 35 mm (24.5 mm per side, the lead's outer edge inside the
+wall footprint); every r <= 1 timeout was a seated upright peg whose
+settle window ran out, so the unscaled SETTLE rose from 1.0 to 2.0 s;
+and the descent wedged at speed with centered arrivals (52 of 64
+insertion jams at r = 1.5), so INSERT rose from 2.0 to 3.0 s, 43 mm/s
+at r = 1. The frozen sweep (64 episodes per speed, 10 mm jitter)
+reads 63, 62, 58, 53, 47, 48, 57, 58, 55 of 64 at r in {0.5, 0.75,
+1.0, 1.25, 1.5, 1.75, 2.0, 2.5, 3.0}: at least 0.9 over [0.5, 1.0],
+a valley of 0.73 to 0.75 at r in [1.5, 1.75], and a recovery to 0.86
+to 0.91 at r >= 2. The valley-and-recovery shape separates the two
+failure clocks of the tight-clearance regime: the in-hand pivot creep
+is time-driven and shrinks as the cycle shortens, while the descent
+excitation grows with speed, and above r = 2 the shorter cycle
+starves the creep faster than the descent degrades. The training
+range froze at [0.5, 1.0] by the 0.9 rule, lower and narrower than
+the upright's [0.75, 1.75]; the evaluation grid keeps the eight
+upright speeds so the matched evaluation measures the full
+non-monotonic envelope.
