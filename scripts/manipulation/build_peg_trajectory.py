@@ -44,6 +44,27 @@ DENSE = {
     "RETREAT": np.linspace(0, 1, 9),
 }
 
+# Realized-grasp bias compensation, world frame. With the arm integrally
+# on target through TRANSFER (object z within 1 mm of the commanded
+# 0.9885 at the INSERT start), the object still arrives (+19.3, -1.1) mm
+# off the pocket center in the plane: the object settles shifted in the
+# grasp relative to the synthesized X_OH (the upright task's 7 to 19 mm
+# placement offsets, tolerated there by the 30 mm target, past the
+# funnel's 17 mm capture here; measured over 40 episodes, spread
+# +-3 mm, outputs/peg/expert/validate_lift26_r1.jsonl and
+# validate_ti_rise_r1.jsonl). The hand targets shift by the negated
+# measured bias, blended in over TRANSFER and held through the descent
+# and retreat, so the realized object arrives on the nominal path.
+BIAS_COMP_W = np.array([-0.0193, 0.0011, 0.0])
+
+
+def bias_weight(name, f):
+    if name in ("LIFT", "REORIENT"):
+        return 0.0
+    if name == "TRANSFER":
+        return float(ug.smoothstep(f))
+    return 1.0
+
 
 def main():
     with open(args.bank) as fh:
@@ -70,6 +91,8 @@ def main():
                 p_o, R_o = ug.object_pose(k, f)
                 T_WO = ug.make_tf(R_o, p_o)
                 T_WH = ug.hand_pose_from_object(T_WO, X_OH)
+            T_WH = T_WH.copy()
+            T_WH[:3, 3] = T_WH[:3, 3] + bias_weight(name, f) * BIAS_COMP_W
             r = solver.solve(T_WH, q)
             if not r["ok"]:
                 r = solver.solve_multi(T_WH, [q], n_random=6, scale=0.3)
