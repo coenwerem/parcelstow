@@ -18,13 +18,14 @@ jobs:
           pip install numpy matplotlib pytest ruff
           pip install torch --index-url https://download.pytorch.org/whl/cpu
       - name: Lint
-        run: ruff check scripts/plot_envelope.py scripts/reproduce.py scripts/evaluate.py scripts/run_task.py scripts/download_artifacts.py examples/custom_policy.py
+        run: ruff check scripts/plot_envelope.py scripts/reproduce.py scripts/task_registry.py scripts/evaluate.py scripts/run_task.py scripts/download_artifacts.py examples/custom_policy.py tests/test_task_registry.py tests/test_reproduce_all_tasks.py tests/test_custom_policy.py
       - name: Pure geometry tests
         run: python -m pytest tests/ -q
       - name: Artifact manifest schema
         run: python -c "import json; m = json.load(open('artifacts/manifest.json')); [m['artifacts'][n] for b in m['bundles'].values() for n in b]"
       - name: Tier 0 reproduction from released records
         run: |
+          python scripts/reproduce.py all-tasks
           python scripts/reproduce.py envelope
           python scripts/reproduce.py stages
           python scripts/reproduce.py certificate

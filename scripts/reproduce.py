@@ -10,6 +10,9 @@ docs/REPRODUCING_THE_PAPER.md maps every reported quantity to its record
 and command.
 
 Targets,
+  all-tasks   success tables and success-versus-speed figures for parcel,
+              upright, and peg from released episode records
+  parcel | upright | peg  one released task success table and figure
   envelope     task-success counts and plot across execution speeds, with
                Wilson intervals, and the 20000-resample paired bootstrap
                interval of the expert over ACT-A success gap at r=2
@@ -35,11 +38,18 @@ import os
 import shutil
 import subprocess
 import sys
+from collections import defaultdict
 
 REPO = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 RECORDS = os.path.join(REPO, "data", "records")
 EVAL_DIR = os.path.join(REPO, "outputs", "paper", "eval")
 ACTORS = ["expert", "act", "dagger", "dp"]
+
+TASK_RECORDS = {
+    "parcel": (os.path.join(RECORDS), (0.5, 2.0), "ACT-A"),
+    "upright": (os.path.join(RECORDS, "upright"), (0.75, 1.75), "ACT"),
+    "peg": (os.path.join(RECORDS, "peg"), (0.5, 1.0), "ACT"),
+}
 
 
 REPLICATION = {
@@ -76,6 +86,78 @@ def ensure_records():
 def run(cmd):
     print("[run]", " ".join(cmd), flush=True)
     subprocess.run(cmd, cwd=REPO, check=True)
+
+
+def released_success_counts(task):
+    """Return validated success counts from one task's frozen records."""
+    record_dir, _, _ = TASK_RECORDS[task]
+    counts = {}
+    for actor in ("expert", "act"):
+        path = os.path.join(record_dir, f"{actor}_episodes.jsonl.gz")
+        print(f"[{task}:{actor}] source {path}")
+        if not os.path.isfile(path):
+            raise FileNotFoundError(f"missing released record: {path}")
+        by_rate = defaultdict(lambda: [0, 0])
+        try:
+            with gzip.open(path, "rt", encoding="utf-8") as stream:
+                for line_number, line in enumerate(stream, 1):
+                    row = json.loads(line)
+                    if "task_rate" not in row or not isinstance(row.get("task_success"), bool):
+                        raise ValueError(f"{path}:{line_number}: missing task_rate or Boolean task_success")
+                    if row.get("policy") != actor:
+                        raise ValueError(f"{path}:{line_number}: expected policy {actor!r}")
+                    rate = float(row["task_rate"])
+                    by_rate[rate][1] += 1
+                    by_rate[rate][0] += int(row["task_success"])
+        except (OSError, json.JSONDecodeError) as exc:
+            raise ValueError(f"malformed released record {path}: {exc}") from exc
+        if not by_rate:
+            raise ValueError(f"released record contains no episodes: {path}")
+        counts[actor] = dict(sorted(by_rate.items()))
+    return counts
+
+
+def reproduce_task(task, output_dir):
+    import matplotlib
+    matplotlib.use("Agg")
+    import matplotlib.pyplot as plt
+
+    counts = released_success_counts(task)
+    _, demonstrated, learner_label = TASK_RECORDS[task]
+    print(f"[{task}] demonstrated speed range r=[{demonstrated[0]:g}, {demonstrated[1]:g}]")
+    rows = []
+    for actor in ("expert", "act"):
+        label = "Expert" if actor == "expert" else learner_label
+        for rate, (successes, episodes) in counts[actor].items():
+            print(f"[{task}] {label} r={rate:g}: {successes}/{episodes}")
+            rows.append({"task": task, "policy": label, "rate": rate,
+                         "successes": successes, "episodes": episodes})
+
+    os.makedirs(output_dir, exist_ok=True)
+    table_path = os.path.join(output_dir, f"{task}_expert_act_success_counts.json")
+    with open(table_path, "w", encoding="utf-8") as stream:
+        json.dump({"task": task, "demonstrated_speed_range": list(demonstrated), "rows": rows},
+                  stream, indent=2)
+        stream.write("\n")
+
+    fig, ax = plt.subplots(figsize=(5.4, 3.6))
+    for actor, marker in (("expert", "o"), ("act", "s")):
+        values = counts[actor]
+        rates = list(values)
+        fractions = [values[rate][0] / values[rate][1] for rate in rates]
+        ax.plot(rates, fractions, marker=marker,
+                label="Expert" if actor == "expert" else learner_label)
+    ax.axvspan(*demonstrated, color="0.9", label="Demonstrated range", zorder=0)
+    ax.set(xlabel="Speedup factor r", ylabel="Task success", ylim=(-0.03, 1.03),
+           title=f"{task.title()} Success Versus Speed")
+    ax.grid(alpha=0.2)
+    ax.legend(frameon=False)
+    figure_path = os.path.join(output_dir, f"{task}_expert_act_success_vs_speed.png")
+    fig.savefig(figure_path, dpi=200, bbox_inches="tight", facecolor="white")
+    plt.close(fig)
+    print(f"[{task}] wrote {table_path}")
+    print(f"[{task}] wrote {figure_path}")
+    return counts
 
 
 def target_envelope():
@@ -147,8 +229,17 @@ TARGETS = {
 def main():
     ap = argparse.ArgumentParser(description=__doc__,
                                  formatter_class=argparse.RawDescriptionHelpFormatter)
-    ap.add_argument("target", choices=[*TARGETS, "all"])
+    ap.add_argument("target", choices=[*TARGETS, "all", *TASK_RECORDS, "all-tasks"])
+    ap.add_argument("--output-dir", default=os.path.join("outputs", "reproduce", "all_tasks"),
+                    help="directory for all-task derived tables and figures")
     args = ap.parse_args()
+    if args.target in TASK_RECORDS:
+        reproduce_task(args.target, args.output_dir)
+        return
+    if args.target == "all-tasks":
+        for task in TASK_RECORDS:
+            reproduce_task(task, args.output_dir)
+        return
     names = list(TARGETS) if args.target == "all" else [args.target]
     for n in names:
         TARGETS[n]()
