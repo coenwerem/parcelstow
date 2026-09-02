@@ -173,7 +173,7 @@ in success rate already present at nominal speed.
     <td align="center" width="50%">
       <img src="media/upright_expert_vs_act_r1.gif?v=2x" alt="Expert and ACT upright placement at r=1" width="100%">
       <br>
-      <sub><b>Expert–ACT Contrast.</b> At <code>r=1</code>, the expert stands the cuboid on the target region while ACT arrives with the cuboid still on its side and never reaches the place pose.</sub>
+      <sub><b>Expert–ACT Contrast.</b> At <code>r=1</code>, the expert places the cuboid upright on the target region, while ACT fails, placing the cuboid in the wrong orientation and missing the target region.</sub>
     </td>
     <td align="center" width="50%">
       <img src="media/upright_operating_envelope.png" alt="Upright placement success across execution speeds" width="90%">
