@@ -6,6 +6,9 @@ first simulator check after installation.
 
 Run,
   python scripts/run_task.py
+  python scripts/run_task.py --task parcel
+  python scripts/run_task.py --task upright
+  python scripts/run_task.py --task peg
   python scripts/run_task.py --actor act --rate 2.0 --episodes 10
 """
 
@@ -13,28 +16,38 @@ import argparse
 import os
 import sys
 
-REPO = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
-DRIVER = os.path.join(REPO, "scripts", "manipulation", "eval_stow_policies.py")
+from task_registry import ALIASES, REPO, get_task
+
+
+def build_command(args, passthrough, *, task_explicit):
+    spec = get_task(args.task)
+    if args.out_dir:
+        out_dir = args.out_dir
+    elif task_explicit:
+        out_dir = f"outputs/quickstart/{spec.alias}"
+    else:
+        out_dir = "outputs/quickstart"
+    return [sys.executable, str(spec.driver_path), "--task", spec.gym_id,
+            "--actors", args.actor, "--rates", f"{args.rate:g}",
+            "--episodes", str(args.episodes), "--num_envs", str(args.num_envs),
+            "--out_dir", out_dir, *passthrough]
 
 
 def main():
     ap = argparse.ArgumentParser(description=__doc__,
                                  formatter_class=argparse.RawDescriptionHelpFormatter)
+    task_explicit = "--task" in sys.argv or any(arg.startswith("--task=") for arg in sys.argv)
+    ap.add_argument("--task", choices=ALIASES, default="parcel",
+                    help="benchmark task alias (default: parcel)")
     ap.add_argument("--actor", default="expert")
     ap.add_argument("--rate", type=float, default=1.0)
     ap.add_argument("--episodes", type=int, default=5)
     ap.add_argument("--num_envs", type=int, default=8)
-    ap.add_argument("--out_dir", default="outputs/quickstart")
+    ap.add_argument("--out_dir", default=None)
     args, passthrough = ap.parse_known_args()
 
-    cmd = [sys.executable, DRIVER,
-           "--actors", args.actor,
-           "--rates", f"{args.rate:g}",
-           "--episodes", str(args.episodes),
-           "--num_envs", str(args.num_envs),
-           "--out_dir", args.out_dir]
-    cmd += passthrough
-    os.chdir(REPO)
+    cmd = build_command(args, passthrough, task_explicit=task_explicit)
+    os.chdir(str(REPO))
     os.execv(sys.executable, cmd)
 
 

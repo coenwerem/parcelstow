@@ -1,9 +1,9 @@
 """Keyed-peg insertion task geometry.
 
 The upright task's 55 x 55 x 180 mm cuboid, one object across both
-new tasks, starts lying on its side at the proven start; the task stands it up and inserts it into a
+new tasks, starts lying on its side at the proven start; the task reorients it to an upright pose and inserts it into a
 square pocket with 3 mm of clearance per side, the tight-clearance
-containment regime of the arXiv-v2 suite (docs/EXTENSION_PLAN.md).
+containment regime specified in docs/TASK_SPEC_PEG.md.
 The 55 mm width is the RealHand L6 aperture floor the grasp synthesis
 established for the upright task; the pocket sits on the robot's right
 of the transport axis, further out than the probed upright target (the
@@ -95,7 +95,7 @@ SETTLE_ANG = 0.2
 # phase schedule, (name, nominal seconds, rate scaled)
 # ----------------------------------------------------------------------------
 # Acquisition keeps the v1 timings; the scaled nominals carry over the
-# upright Gate B calibration except where this task's own Gate B sweep
+# upright expert-only calibration except where this task's own expert sweep
 # re-anchored them: INSERT rose from the LOWER slot's 2.0 s to 3.0 s
 # (the 128 mm guided descent wedges at speed: 52 of 64 insertion jams
 # at r = 1.5 with arrivals of 5 to 10 mm, against 43 mm/s at r = 1
@@ -222,7 +222,7 @@ def inside_pocket(p, R):
 # the mouth carries the chamfer every engineered fixture has, four
 # slanted slabs widening the entry by LEAD_H tan(LEAD_ANGLE) = 24.5 mm
 # per side and funneling the peg into the tight containment. The first
-# Gate B sweep measured the capture edge of the 20 mm lead (14 mm per
+# The expert-only sweep measured the capture edge of the 20 mm lead (14 mm per
 # side) exactly: at r = 0.5 every success arrived within 12.8 mm of the
 # pocket center and every jam at 17.2 mm or more, while the 10 mm start
 # jitter scatters arrivals out to 25 mm, so the lead height rose to

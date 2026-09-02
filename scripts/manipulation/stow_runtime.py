@@ -10,9 +10,11 @@ from __future__ import annotations
 
 import json
 import os
+import signal
 import subprocess
 import sys
 import time
+import traceback
 
 import numpy as np
 import torch
@@ -22,12 +24,11 @@ REPO = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
 sys.path.insert(0, REPO)
 sys.path.insert(0, os.path.join(REPO, "scripts", "manipulation"))
 
-from parcelstow.tasks.manager_based.parcel_stow.parcel_stow_env_cfg import CHAIN_ACTUATED  # noqa: E402
+import parcel_stow_expert as pse  # noqa: E402
 from parcelstow.tasks.manager_based.parcel_stow import geometry as G  # noqa: E402
 from parcelstow.tasks.manager_based.parcel_stow.mdp import task_clock  # noqa: E402
-from parcelstow.tasks.manager_based.parcel_stow.mdp.metrics import StowMonitor, TRACE_COLUMNS  # noqa: E402
-
-import parcel_stow_expert as pse  # noqa: E402
+from parcelstow.tasks.manager_based.parcel_stow.mdp.metrics import TRACE_COLUMNS  # noqa: E402
+from parcelstow.tasks.manager_based.parcel_stow.parcel_stow_env_cfg import CHAIN_ACTUATED  # noqa: E402
 
 TASK = "ParcelStow-L6-Distill-Play-v0"
 
@@ -47,7 +48,8 @@ def config_stamp(base):
         "task": TASK,
         "parcel_extents": list(G.PARCEL_EXTENTS), "parcel_mass": G.PARCEL_MASS, "parcel_friction": G.PARCEL_FRICTION,
         "parcel_start": list(G.PARCEL_START),
-        "receptacle": {"family": gd.get("family"), "entrance": gd.get("entrance"), "shelf_height": gd.get("shelf_height"),
+        "receptacle": {"family": gd.get("family"), "entrance": gd.get("entrance"),
+                       "shelf_height": gd.get("shelf_height"),
                        "W_loose": gd.get("W_loose"), "W_tight": gd.get("W_tight"), "D_in": gd.get("D_in"),
                        "grasp_yaw": gd.get("grasp_yaw")},
         "phases": [[n, d, s] for n, d, s in G.PHASES],
@@ -126,6 +128,7 @@ class DPActor:
 
     def __init__(self, ckpt, device, n):
         from diffusers.schedulers.scheduling_ddpm import DDPMScheduler
+
         from third_party.diffusion_policy.conditional_unet1d import ConditionalUnet1D
         state = torch.load(ckpt, map_location=device)
         a = state["args"]
@@ -285,6 +288,64 @@ class EnvSwitches:
         task_clock.RATE_SPEC.update(spec)
 
 
+def _initial_condition_bank(base, switches, n_episodes, jitter, seed):
+    """Sample reset states by logical episode with a private CPU generator."""
+    robot = base.scene["robot"]
+    object_name = switches.reset_parcel_cfg.params["asset_cfg"].name
+    generator = torch.Generator(device="cpu")
+    generator.manual_seed(seed)
+    joint_offsets = 0.1 * torch.rand(
+        n_episodes, robot.data.default_joint_pos.shape[1], generator=generator
+    ) - 0.05
+    object_offsets = torch.zeros(n_episodes, 3)
+    if jitter > 0:
+        object_offsets[:, :2] = 2.0 * jitter * torch.rand(
+            n_episodes, 2, generator=generator
+        ) - jitter
+    manipulated_object = base.scene[object_name]
+    object_poses = manipulated_object.data.default_root_state[0, :7].detach().cpu().repeat(
+        n_episodes, 1
+    )
+    object_poses[:, :3] += object_offsets
+    return {
+        "object_name": object_name,
+        "joint_offsets": joint_offsets,
+        "object_poses": object_poses,
+    }
+
+
+def _apply_initial_conditions(base, switches, bank, env_ids, draw_indices):
+    """Write indexed robot and object reset states after an automatic reset."""
+    if not env_ids:
+        return
+    device = base.device
+    ids = torch.as_tensor(env_ids, dtype=torch.long, device=device)
+    bank_indices = torch.as_tensor(
+        [0 if index is None else index for index in draw_indices], dtype=torch.long
+    )
+    robot = base.scene["robot"]
+    joint_pos = robot.data.default_joint_pos[ids].clone()
+    joint_pos += bank["joint_offsets"][bank_indices].to(device)
+    limits = robot.data.soft_joint_pos_limits[ids]
+    joint_pos.clamp_(limits[..., 0], limits[..., 1])
+    joint_vel = robot.data.default_joint_vel[ids].clone()
+    robot.write_joint_state_to_sim(joint_pos, joint_vel, env_ids=ids)
+
+    manipulated_object = base.scene[bank["object_name"]]
+    root_state = manipulated_object.data.default_root_state[ids].clone()
+    root_state[:, :7] = bank["object_poses"][bank_indices].to(device)
+    root_state[:, :3] += base.scene.env_origins[ids]
+    manipulated_object.write_root_pose_to_sim(root_state[:, :7], env_ids=ids)
+    manipulated_object.write_root_velocity_to_sim(root_state[:, 7:13], env_ids=ids)
+    base.sim.forward()
+
+    if not hasattr(base, "_stow_start_pos"):
+        base._stow_start_pos = torch.zeros(base.num_envs, 3, device=device)
+        base._stow_start_quat = torch.zeros(base.num_envs, 4, device=device)
+    base._stow_start_pos[ids] = root_state[:, :3] - base.scene.env_origins[ids]
+    base._stow_start_quat[ids] = root_state[:, 3:7]
+
+
 # ----------------------------------------------------------------------------
 # episode runner
 # ----------------------------------------------------------------------------
@@ -292,7 +353,7 @@ def run_episodes(env, base, actor, monitor, n_episodes, rate_spec, jitter, seed,
                  expert=None, record_data=False, corrupt=False, action_noise=0.0, noise_half=False,
                  stamp=None, tag="", trace_dir=None, extra=None, verbose=True, max_steps=None,
                  step_hook=None, after_step_hook=None, record_hook=None,
-                 task_id=None, cycle_time=None):
+                 task_id=None, cycle_time=None, indexed_initial_conditions=False):
     """Roll the actor until n_episodes complete episodes are recorded.
 
     expert, an ExpertActor whose act() runs every step (its integrator
@@ -316,9 +377,16 @@ def run_episodes(env, base, actor, monitor, n_episodes, rate_spec, jitter, seed,
     switches.set_corruption(corrupt)
     torch.manual_seed(seed)
     torch.cuda.manual_seed_all(seed)
+    initial_bank = _initial_condition_bank(base, switches, n_episodes, jitter, seed) \
+        if indexed_initial_conditions else None
     obs_dict, _ = env.reset()
-    obs = obs_dict["policy"]
     all_ids = list(range(n))
+    next_draw = min(n, n_episodes)
+    active_draws = list(range(min(n, n_episodes))) + [None] * max(0, n - n_episodes)
+    if initial_bank is not None:
+        _apply_initial_conditions(base, switches, initial_bank, all_ids, active_draws)
+        obs_dict = base.observation_manager.compute()
+    obs = obs_dict["policy"]
     monitor.reset(all_ids)
     actor.reset(all_ids, obs)
     if expert is not None and expert is not actor:
@@ -326,7 +394,6 @@ def run_episodes(env, base, actor, monitor, n_episodes, rate_spec, jitter, seed,
     rate_at_reset = task_clock.rate_buf(base).clone()
     buf_obs = [[] for _ in range(n)]
     buf_act = [[] for _ in range(n)]
-    ep_index = torch.zeros(n, dtype=torch.long, device=device)
     noisy = torch.arange(n, device=device) < (n // 2) if noise_half else torch.ones(n, dtype=torch.bool, device=device)
     records, episodes = [], []
     counter = 0
@@ -360,16 +427,29 @@ def run_episodes(env, base, actor, monitor, n_episodes, rate_spec, jitter, seed,
                 after_step_hook(base, monitor, done)
             done_ids = done.nonzero(as_tuple=False).flatten().tolist()
             for i in done_ids:
-                if len(records) >= n_episodes:
+                draw_index = active_draws[i]
+                if initial_bank is not None and draw_index is None:
+                    continue
+                if initial_bank is None and len(records) >= n_episodes:
                     break
                 rec = monitor.episode_record(i)
                 r = float(rate_at_reset[i])
+                episode_index = counter if draw_index is None else draw_index
                 rec.update({
                     "task": task_id,
-                    "policy": actor.name, "tag": tag, "seed": int(seed), "episode": counter,
+                    "policy": actor.name, "tag": tag, "seed": int(seed), "episode": episode_index,
                     "env": i, "task_rate": r, "task_duration_s": cycle_time(r),
                     "jitter": jitter, "corrupt": bool(corrupt), "action_noise": action_noise,
                 })
+                if initial_bank is not None:
+                    rec["initial_condition_id"] = episode_index
+                    pose = initial_bank["object_poses"][episode_index]
+                    pose_key = ("parcel_initial_pose" if "parcel_initial_pose" in rec
+                                else "object_initial_pose")
+                    rec[pose_key] = {
+                        "pos": pose[:3].tolist(),
+                        "quat_wxyz": pose[3:7].tolist(),
+                    }
                 if stamp is not None:
                     rec["config"] = stamp
                 if extra:
@@ -394,6 +474,14 @@ def run_episodes(env, base, actor, monitor, n_episodes, rate_spec, jitter, seed,
                 buf_obs[i] = []
                 buf_act[i] = []
             if done_ids:
+                if initial_bank is not None:
+                    for i in done_ids:
+                        active_draws[i] = next_draw if next_draw < n_episodes else None
+                        next_draw += int(next_draw < n_episodes)
+                    _apply_initial_conditions(base, switches, initial_bank, done_ids,
+                                              [active_draws[i] for i in done_ids])
+                    obs_dict = base.observation_manager.compute()
+                    obs = obs_dict["policy"]
                 monitor.reset(done_ids)
                 actor.reset(done_ids, obs)
                 if expert is not None and expert is not actor:
@@ -401,6 +489,9 @@ def run_episodes(env, base, actor, monitor, n_episodes, rate_spec, jitter, seed,
                 rate_at_reset[done_ids] = task_clock.rate_buf(base)[done_ids]
             if max_steps is not None and steps >= max_steps:
                 break
+    if initial_bank is not None:
+        records.sort(key=lambda rec: rec["initial_condition_id"])
+        episodes.sort(key=lambda episode: episode[2]["initial_condition_id"])
     return records, episodes
 
 
@@ -457,6 +548,35 @@ def write_jsonl(path, rows, mode="a"):
     with open(path, mode) as fh:
         for r in rows:
             fh.write(json.dumps(r) + "\n")
+
+
+def run_simulation_main(main, simulation_app):
+    """Run a simulator entry point without losing its process exit status."""
+    def _interrupt(_signum, _frame):
+        sys.stdout.flush()
+        sys.stderr.flush()
+        os._exit(130)
+
+    previous_interrupt = signal.signal(signal.SIGINT, _interrupt)
+    try:
+        main()
+    except KeyboardInterrupt:
+        sys.stdout.flush()
+        sys.stderr.flush()
+        os._exit(130)
+    except SystemExit as exc:
+        exit_code = exc.code if isinstance(exc.code, int) else 1
+        sys.stdout.flush()
+        sys.stderr.flush()
+        os._exit(exit_code)
+    except BaseException:
+        traceback.print_exc()
+        sys.stdout.flush()
+        sys.stderr.flush()
+        os._exit(1)
+    finally:
+        signal.signal(signal.SIGINT, previous_interrupt)
+    simulation_app.close()
 
 
 def light_record(rec):

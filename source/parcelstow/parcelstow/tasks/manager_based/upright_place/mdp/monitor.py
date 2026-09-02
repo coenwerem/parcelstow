@@ -39,7 +39,7 @@ SETTLE_ANG = 0.2
 SETTLE_STEPS = 20
 DROP_FORCE = 0.5
 DROP_STEPS = 10
-# placement thresholds (docs/EXTENSION_PLAN.md, the task geometry)
+# Placement thresholds are frozen in docs/TASK_SPEC_UPRIGHT.md.
 STANDING_TOL_DEG = 15.0
 PLACE_POS_TOL = 0.030
 
@@ -339,7 +339,7 @@ class UprightMonitor:
 
     # ------------------------------------------------------------------
     def failure_reason(self, i, task_success, final_tilt_deg, final_inside):
-        """First applicable category (docs/EXTENSION_PLAN.md vocabulary)."""
+        """Return the first applicable task-specific failure category."""
         if task_success:
             return "none", "none"
         if not bool(self.acquired[i]):

@@ -1,4 +1,4 @@
-"""Record videos of the arXiv-v2 task episodes, the
+"""Record videos of upright placement and keyed peg insertion episodes, the
 record_stow_rollouts.py camera pattern over the upright placement and
 keyed-peg insertion tasks.
 

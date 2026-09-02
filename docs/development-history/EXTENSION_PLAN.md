@@ -1,4 +1,10 @@
-# ParcelStow arXiv-v2 Extension Plan
+# Historical Three-Task Development Plan
+
+> **Historical record.** This file preserves implementation decisions and
+> expert-calibration evidence from the addition of upright placement and keyed
+> peg insertion. It is not an adopter guide or current status report. Use
+> [Benchmark Specification](../BENCHMARK.md), the task specifications, and
+> [Task Authoring](../TASK_AUTHORING.md) for current documentation.
 
 The arXiv-v1 study is frozen at tag `v1.0.0` (commit `d2f7622`). All
 extension work happens on the branch `extension/arxiv-v2`, which starts
@@ -467,7 +473,7 @@ evaluation grid is {0.5, 0.75, 1.0, 1.25, 1.5, 1.75, 2.0, 2.5} with
 r = 0.5 testing extrapolation below the demonstrated range and
 r >= 2.0 above it, 100 episodes per policy and speed, the v1 seed
 law, corruption off. The frozen values are stated in
-[TASK_SPEC_UPRIGHT.md](TASK_SPEC_UPRIGHT.md).
+[TASK_SPEC_UPRIGHT.md](../TASK_SPEC_UPRIGHT.md).
 
 The ninth increment runs the frozen protocol end to end and releases
 the records. Demonstrations: 315 of 330 expert episodes admitted by

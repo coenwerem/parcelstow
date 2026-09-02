@@ -6,44 +6,55 @@ the same initial-condition draws, task geometry, success criteria, observation,
 and action interface at each tested speed. This matched evaluation measures
 whether the learner preserves the expert's task-success response to execution
 speed rather than whether the learner succeeds under nominal conditions alone.
+Parcel insertion supplies the primary nominally matched comparison reported in
+arXiv:2609.01453. Upright placement and keyed peg insertion retain the same
+evaluation procedure but their released ACT checkpoints do not match expert
+success at nominal speed.
+
+| Task | Task Specification | Demonstrated `r` | Evaluation Grid |
+|---|---|---:|---|
+| Parcel insertion | [TASK_SPEC.md](TASK_SPEC.md) | `[0.5, 2.0]` | `{0.5, 1, 1.5, 2, 2.25, 2.5, 3}` |
+| Upright placement | [TASK_SPEC_UPRIGHT.md](TASK_SPEC_UPRIGHT.md) | `[0.75, 1.75]` | `{0.5, 0.75, 1, 1.25, 1.5, 1.75, 2, 2.5}` |
+| Keyed peg insertion | [TASK_SPEC_PEG.md](TASK_SPEC_PEG.md) | `[0.5, 1.0]` | `{0.5, 0.75, 1, 1.25, 1.5, 1.75, 2, 2.5}` |
 
 ## Execution-Speed Intervention
 
-The speedup factor `r` divides the nominal durations of the manipulation phases
-from lift through retreat. Acquisition and settling retain their nominal
-durations. Consequently, `r=1` gives the nominal phase schedule, whereas `r=2`
-halves the durations of the scaled phases. The complete cycle lasts 14.1 s at
-`r=1` and 10.2 s at `r=2` because the acquisition and settling durations remain
-fixed.
+The speedup factor `r` divides the nominal duration of phases marked as scaled
+in the selected task specification. Acquisition and settling retain fixed
+durations in all three tasks. Consequently, `r=1` gives a task's
+nominal phase schedule, whereas `r=2` halves only that task's scaled phases.
+For parcel insertion, the complete cycle lasts 14.1 s at `r=1` and 10.2 s at
+`r=2`.
 
-The demonstrations sample `r` uniformly from `[0.5, 2]`. Thus, `r=2` is the
-maximum demonstrated speed and the boundary of the training support; speeds
-above `r=2` test extrapolation beyond the demonstrated range. Every policy
-observes `r`. [TASK_SPEC.md](TASK_SPEC.md) records the frozen phase schedule and
-training distribution.
+Each task samples demonstrations uniformly from the range in the table above.
+Evaluation outside that range tests speed extrapolation. Every policy observes
+`r`; the task identity is selected by the public command and is not appended to
+the observation.
 
-Changing `r` does not change the 80 x 55 x 40 mm parcel, its mass or friction,
-the five-contact acquisition grasp, the expert's geometric path, or the
-open-front receptacle. The receptacle provides 10 mm of clearance per side
-along its tight axis. Evaluation also retains the same 10 mm planar start-pose
-jitter and uses the same sampled start poses for the expert and each learner.
+Changing `r` does not change a task's geometry, mass, friction, expert path,
+initial-condition distribution, observation, action, or success predicates.
+The expert and learner use the same sampled initial conditions at each speed.
 
 ## Task Success
 
-An episode succeeds only when the parcel is acquired with force-bearing
-contacts, lifted clear of the table, reoriented, inserted to the required
-depth, released, and settled inside the final position and orientation
-tolerances. These predicates depend on simulated physical state. The
-Ferrari–Canny margin and the other grasp measurements are diagnostics and do
-not enter the success criterion.
+Each task specification defines task-specific stage outcomes, terminal failure
+reasons, and physical success predicates. Analytical grasp scores do not enter
+task success. Parcel requires insertion and settling in its receptacle;
+upright requires a released, stable upright pose inside the target region; peg
+requires insertion and settling inside the square pocket.
 
 ## Evaluation Protocol
 
-The released evaluation contains 100 episodes for each policy and speedup
-factor in `{0.5, 1.0, 1.5, 2.0, 2.25, 2.5, 3.0}`. It runs 32 environments per
-process with observation corruption disabled. The seed for speed index `i` is
-`12345 + 1000*i`; reusing that seed for every policy pairs their initial
-conditions. Reported task-success intervals are Wilson 95% intervals. The
+Each recorded evaluation contains 100 episodes for each policy and speedup
+factor in the task-specific grids above. It runs 32 environments per process
+with observation corruption disabled. The 32-environment batch width is part
+of the evaluation configuration; results from another batch width are not
+benchmark-comparable. The seed for speed index `i` is
+`12345 + 1000*i`. The evaluator uses that seed to construct an
+initial-condition bank indexed by logical episode, then assigns every actor
+the same indexed robot and object state. This assignment does not depend on
+the order in which parallel environments terminate. Reported task-success
+intervals are Wilson 95% intervals. The
 expert–learner difference at `r=2` uses a paired bootstrap over the shared
 initial-condition draws.
 
@@ -67,12 +78,13 @@ used by the evaluator. Run a compatible policy on the released speedup grid
 with
 
 ```bash
-python scripts/evaluate.py --actor your.module:YourPolicy \
-    --rates 0.5 1.0 1.5 2.0 2.25 2.5 3.0 --episodes 100
+python scripts/evaluate.py --task parcel --actor your.module:YourPolicy
+python scripts/evaluate.py --task upright --actor your.module:YourPolicy
+python scripts/evaluate.py --task peg --actor your.module:YourPolicy
 ```
 
 Then plot its task-success curve with
 
 ```bash
-python scripts/plot_envelope.py --summary outputs/eval/summary.jsonl
+python scripts/reproduce.py all-tasks
 ```

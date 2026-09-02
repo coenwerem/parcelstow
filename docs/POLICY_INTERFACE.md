@@ -1,12 +1,11 @@
 # Policy Interface
 
-ParcelStow evaluates any policy exposing a three-member actor interface.
-The released expert and learners (scripted expert, ACT, Diffusion Policy,
-DAgger) use the same interface, defined in
-`scripts/manipulation/stow_runtime.py` and frozen by section 10 of
-[TASK_SPEC.md](TASK_SPEC.md).
+ParcelStow evaluates any policy exposing a three-member actor interface. All
+three tasks use the same tensor dimensions and normalized joint-position
+action semantics. The object-pose term, task phase, stage outcomes, and failure
+reasons retain task-specific meanings.
 
-## The Actor Interface
+## Actor Interface
 
 ```python
 class MyPolicy:
@@ -31,11 +30,13 @@ class MyPolicy:
         ...
 ```
 
-A working example lives at `examples/custom_policy.py`. Run it with
+A working example lives at `examples/custom_policy.py`. The same class loads
+for all three tasks:
 
 ```bash
-python scripts/evaluate.py --actor examples.custom_policy:HoldPosturePolicy \
-    --rates 1.0 --episodes 5 --num_envs 8
+python scripts/evaluate.py --task parcel --actor examples.custom_policy:HoldPosturePolicy --rates 1 --episodes 5
+python scripts/evaluate.py --task upright --actor examples.custom_policy:HoldPosturePolicy --rates 1 --episodes 5
+python scripts/evaluate.py --task peg --actor examples.custom_policy:HoldPosturePolicy --rates 1 --episodes 5
 ```
 
 Any `module.path:ClassName` reachable on the Python path works the same way.
@@ -52,13 +53,23 @@ during evaluation.
 | 0:51 | 51 | joint positions of all 51 robot joints, relative to defaults |
 | 51:102 | 51 | joint velocities, relative |
 | 102:118 | 16 | previous action |
-| 118:125 | 7 | parcel pose in the pelvis frame, position xyz then quaternion wxyz |
+| 118:125 | 7 | parcel or object pose in the pelvis frame, position xyz then quaternion wxyz |
 | 125:140 | 15 | distal phalanx positions in the pelvis frame, five fingers times xyz |
 | 140:145 | 5 | distal contact force magnitudes, clipped at 50 N, scaled by 1/10 |
 | 145 | 1 | task phase, (k + f) / N_PHASES in [0, 1] |
 | 146 | 1 | speedup factor r |
 
-The policy receives the speedup factor only through `obs[:, 146]`.
+The parcel configuration names the 118:125 term `parcel_pose`; upright and peg
+name it `object_pose`. The numerical representation and pelvis frame match.
+Index 145 normalizes the selected task's own phase index and in-phase fraction,
+so its semantic value is task-specific. The policy receives the speedup factor
+only through `obs[:, 146]`.
+
+Task identity is selected by `evaluate.py --task` and is not encoded in the
+147-dimensional observation. A multi-task model that requires an explicit
+task token must add that token inside its policy adapter based on deployment
+configuration; it must not change the environment observation or a released
+checkpoint's input contract.
 
 ## Action, 16-D Joint-Position Target
 
@@ -81,19 +92,22 @@ decimation 4). An action of zero holds the default posture.
 - One episode spans one full manipulation cycle at the sampled speedup factor
   plus the settling window. `geometry.cycle_time(r)` maps `r` to cycle
   seconds per the frozen phase schedule of the task specification.
-- The episode record stores the eight stage predicates (`acquired`,
-  `lifted_clear`, `reoriented`, `preinsert_reached`, `inserted`, `released`,
-  `settled`, and `task_success`), the failure reason, slip and contact
-  diagnostics, and the configuration stamp. [DIAGNOSTICS.md](DIAGNOSTICS.md)
-  documents these fields.
-- Identical evaluation seeds produce identical start draws across policies,
-  so per-episode comparisons pair by the `episode` field.
+- The episode record stores the selected task's stage predicates and failure
+  reason. Parcel retains `preinsert_reached`; upright retains `placed`; peg
+  retains `aligned`. [Diagnostics](DIAGNOSTICS.md) and the task specifications
+  document these fields.
+- The evaluator samples a fixed initial-condition bank for each speed. Every
+  actor receives the bank entry indexed by `initial_condition_id`, independent
+  of asynchronous environment completion. Records pair by speed and
+  `initial_condition_id`.
+- `policy` contains the actor object's canonical `name`. For a custom policy,
+  `actor_spec` stores the `module.path:ClassName` import specification in the
+  episode and summary records.
 
 ## Scientific Constraints
 
-The interface is part of the frozen benchmark definition. Comparisons
-against the released numbers require the 147-D observation, the 16-D
-action, the speedup factor inside the observation, and 50 Hz control,
-unchanged. A policy built on a different interface can still run in the
-environment, but its numbers no longer compare against the released
-task-success curves.
+The interface is part of each frozen task definition. Comparisons against the
+released numbers require the selected task's 147-dimensional observation,
+16-dimensional action, speedup factor inside the observation, and 50 Hz
+control unchanged. Do not claim common semantics beyond the verified terms
+above.

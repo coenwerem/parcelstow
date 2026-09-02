@@ -1,30 +1,24 @@
-# Keyed-Peg Insertion Task Specification (Frozen Scientific Choices)
+# Keyed Peg Insertion Task Specification (Frozen Scientific Choices)
 
 Status legend. FROZEN means the value is fixed and no learner result
 may change it. Every value below derives from kinematic probes, grasp
 synthesis feasibility, or expert-only calibration, never from a
 learner outcome. The freeze log at the end records every change with
-a date and a reason. The arXiv-v2 design note
-([EXTENSION_PLAN.md](EXTENSION_PLAN.md)) records the increments and
-their measured evidence; this document states the frozen values.
+a date and a reason. This document states the frozen values and the measured
+evidence used to select them.
 
 Document created 2026-09-01. Learner training and evaluation started
 only after every entry below was frozen.
 
 ## 1. Scientific Question
 
-The task extends the matched expert-learner evaluation across task
-execution speeds to the tight-clearance containment regime: the
-upright task's cuboid stood up and inserted into a square pocket with
-3 mm of clearance per side, where failure is jam-mediated and the
-terminal predicate is geometric containment. Faster execution raises
-the in-hand pivot that arrival alignment depends on and the descent
-excitation that wedging depends on; the two clocks run in opposite
-directions with the cycle time, and the operating envelope measures
-their competition. The endpoint is task success as a function of the
-speedup factor r.
+The task evaluates a learned policy and scripted expert as execution speed
+changes during keyed peg insertion. The robot reorients the upright task's
+cuboid and inserts it into a square pocket with 3 mm of clearance per side.
+Success requires geometric containment after release and settling. The
+evaluation measures task success as a function of the speedup factor r.
 
-## 2. Object (FROZEN, Shared with the Upright Task)
+## 2. Object (Frozen, Shared with the Upright Task)
 
 The upright placement task's object, unchanged: rigid cuboid
 55 x 55 x 180 mm, 0.120 kg, friction 0.5, restitution 0.0, one box
@@ -33,7 +27,7 @@ the mass, and the aperture-floor rationale fixed
 (TASK_SPEC_UPRIGHT.md section 2); a 160 mm variant returned no seated
 force-closed grasp in synthesis.
 
-## 3. Table, Robot, and Pocket Block (FROZEN)
+## 3. Table, Robot, and Pocket Block (Frozen)
 
 Table and robot are the v1 scene (TASK_SPEC_UPRIGHT.md section 3);
 the left arm stays at the arm-zero default. The pocket block is nine
@@ -59,7 +53,7 @@ four lead-in slabs, yaw-aligned with the goal at 45 deg.
   fixture's airspace (measured slab-distance traces, 18 of 20
   acquisition failures).
 
-## 4. Start and Goal Poses (FROZEN)
+## 4. Start and Goal Poses (Frozen)
 
 Start, identical to the upright task: object center at
 (0.35, 0.0, 0.7285), lying on a side face, long axis yawed +45 deg.
@@ -68,7 +62,7 @@ the start yaw. Derived yaw tolerance of the containment,
 2 c / a = 6.2 deg, stricter than the C4 symmetry requires; final tilt
 tolerance 5 deg, fixed before any expert or learner ran.
 
-## 5. Grasp Source (FROZEN, Provenance in assets/peg_insert_bank.json)
+## 5. Grasp Source (Frozen, Provenance in assets/peg_insert_bank.json)
 
 The upright task's synthesis record and 20 mm center-of-mass slide,
 unchanged (TASK_SPEC_UPRIGHT.md section 5, contact centroid +52 mm).
@@ -81,7 +75,7 @@ against 0.3 to 0.9 mm for its neighbors; every validation episode
 drawing it seated badly and pivoted in the grasp). 49 of 49 grid
 entries feasible, worst grasp error 1.74 mm.
 
-## 6. Manipulation Geometry (FROZEN by Trajectory Build and Validation)
+## 6. Manipulation Geometry (Frozen by Trajectory Build and Validation)
 
 Lift straight up by 0.26 m: the transport corridor must clear the
 lead-in tops, and the loaded arm carries the hand 20 to 22 mm below
@@ -105,7 +99,7 @@ episodes, spread +-3 mm). Trajectory evidence at the frozen
 configuration: 63 knots, all IK-verified within 2.0 mm and 0.7 deg,
 minimum joint-limit margin 0.049 (the LIFT apex, waist roll).
 
-## 7. Phase Sequence and Speedup Factor (FROZEN at Gate B)
+## 7. Phase Sequence and Speedup Factor (Frozen after Expert-Only Calibration)
 
 Phases in order, with the nominal duration at unit rate,
 
@@ -126,7 +120,7 @@ Phases in order, with the nominal duration at unit rate,
 Cycle time at rate r equals 5.7 s + 15.8 s / r + 2.0 s. The geometric
 path is a function of the phase index and in-phase fraction alone,
 asserted by the pure tests. Two durations were re-anchored by this
-task's Gate B calibration from the upright values: INSERT rose from
+task's expert-only phase-schedule calibration from the upright values: INSERT rose from
 2.0 to 3.0 s (the 128 mm guided descent wedges at speed, 52 of 64
 insertion jams at r = 1.5 with centered arrivals) and SETTLE rose
 from 1.0 to 2.0 s (every r <= 1 timeout of the first sweep was a
@@ -142,7 +136,7 @@ outputs of run_peg_expert.py --mode sweep), success 63, 62, 58, 53,
 (the time-driven pivot creep shrinks with the cycle while the descent
 excitation grows with speed).
 
-## 8. Physical Success (FROZEN)
+## 8. Physical Success (Frozen)
 
 Stage markers, each latched at the first step its condition holds
 (peg_insert/mdp/monitor.py),
@@ -183,19 +177,19 @@ Failure reason, the first category that applies in the order below,
     other                     anything else (including leaving the
                               pocket after settling)
 
-## 9. Slip Diagnostics (FROZEN, Diagnostics Only)
+## 9. Slip Diagnostics (Frozen, Diagnostics Only)
 
 As the upright task (TASK_SPEC_UPRIGHT.md section 9), with the
 per-phase splits at the end of REORIENT and at INSERT start, and the
 pocket contact force recorded from the slab-filtered contact sensor
 (peg_pocket_s). No slip or force threshold defines success.
 
-## 10. Observation and Action Interface (FROZEN, the v1 Interface)
+## 10. Observation and Action Interface (Frozen, the v1 Interface)
 
 The 147-D state observation and 16-D joint-position action of the v1
 interface, unchanged in layout (TASK_SPEC_UPRIGHT.md section 10).
 
-## 11. Expert Construction (FROZEN in Method)
+## 11. Expert Construction (Frozen in Method)
 
 Acquisition from the bank's planar start-offset grid entry nearest
 the realized start; a two-segment approach blend through the raised
@@ -215,7 +209,7 @@ and arrivals pitched past about 15 deg wedge in the funnel; slowing
 phases would lengthen the time under moment instead). The object is
 never attached to anything.
 
-## 12. Training Distribution (FROZEN at Gate B)
+## 12. Training Distribution (Frozen Before Learner Training)
 
 - Start jitter, uniform dx, dy in [-10, 10] mm, no yaw jitter.
 - Speedup factor, uniform over [0.5, 1.0], the range over which the
@@ -224,16 +218,17 @@ never attached to anything.
   by physical task_success only, collected once with observation
   corruption on, and reused by every learner.
 
-## 13. Evaluation Distribution (FROZEN at Gate B)
+## 13. Evaluation Distribution (Frozen Before Learner Evaluation)
 
-- The same jitter law as training, seeds fixed per speed
-  (12345 + 1000 x speed index) and identical across policies.
+- The same jitter law as training. The seed for each speed
+  (12345 + 1000 x speed index) generates a fixed initial-condition bank
+  indexed by logical episode and shared by every policy.
 - Speedup grid {0.5, 0.75, 1.0, 1.25, 1.5, 1.75, 2.0, 2.5}, the
   upright grid, with r >= 1.25 above the demonstrated range so the
   matched evaluation measures the full non-monotonic envelope, 100
   episodes per policy and speed, corruption off.
 
-## 14. Primary Metrics (FROZEN)
+## 14. Primary Metrics (Frozen)
 
 As the upright task (TASK_SPEC_UPRIGHT.md section 14): success and
 stage probabilities per rate with Wilson intervals, failure reason
@@ -268,7 +263,7 @@ differences of plot_envelope.py.
   past the funnel's pitch tolerance), bank grid outlier retry added
   (one entry solved at its seed, 3.49 mm error). Expert validation
   19 of 20 at r = 1 under 10 mm jitter.
-- 2026-09-01 Gate B, lead height 20 to 35 mm (the capture edge
+- 2026-09-01 expert-only phase-schedule calibration, lead height 20 to 35 mm (the capture edge
   measured at 12.8 mm success versus 17.2 mm jam arrivals against the
   14 mm per-side widening), INSERT 2.0 to 3.0 s (descent wedging at
   speed), SETTLE 1.0 to 2.0 s (seated timeouts), rate grid and

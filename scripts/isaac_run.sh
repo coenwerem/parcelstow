@@ -17,4 +17,6 @@ CORES="${ISAAC_CORES:-0-7}"
 NICE="${ISAAC_NICE:-10}"
 export OMP_NUM_THREADS=4 MKL_NUM_THREADS=4
 nice -n "$NICE" taskset -c "$CORES" "$@" > "$LOG" 2>&1
-echo "exit $?" >> "$LOG"
+STATUS=$?
+echo "exit $STATUS" >> "$LOG"
+exit "$STATUS"

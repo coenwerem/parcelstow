@@ -2,7 +2,7 @@
 same episodes for every actor.
 
 For every actor (expert, dagger, dp, act) and every speed of the frozen
-grid, the driver runs N episodes with the identical evaluation seed per
+grid, the driver runs N episodes from an indexed initial-condition bank per
 speed, the same start-jitter law, corruption off, under the physical
 monitor. Every episode record holds the stage markers, the failure reason,
 slip diagnostics, the realized contact sets at acquisition, end of
@@ -18,7 +18,6 @@ Run,
 """
 
 import argparse
-import json
 import os
 import sys
 import time
@@ -49,10 +48,9 @@ app_launcher = AppLauncher(args_cli)
 simulation_app = app_launcher.app
 
 import gymnasium as gym  # noqa: E402
+import parcelstow.tasks  # noqa: E402, F401
 
 from isaaclab_tasks.utils.hydra import hydra_task_config  # noqa: E402
-
-import parcelstow.tasks  # noqa: E402, F401
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import stow_runtime as rt  # noqa: E402
@@ -62,6 +60,7 @@ from parcelstow.tasks.manager_based.parcel_stow.mdp.metrics import StowMonitor  
 
 @hydra_task_config(args_cli.task, "rsl_rl_cfg_entry_point")
 def main(env_cfg, agent_cfg):
+    env_cfg.seed = args_cli.eval_seed
     env_cfg.scene.num_envs = args_cli.num_envs
     env = gym.make(args_cli.task, cfg=env_cfg)
     base = env.unwrapped
@@ -81,13 +80,20 @@ def main(env_cfg, agent_cfg):
         rec_path = os.path.join(args_cli.out_dir, f"{fname}{args_cli.tag}.jsonl")
         for ri, r in enumerate(args_cli.rates):
             seed = args_cli.eval_seed + 1000 * ri
+            trace_dir = os.path.join(args_cli.out_dir, "traces") if args_cli.trace_envs else None
             recs, _ = rt.run_episodes(env, base, actor, monitor, args_cli.episodes, {"mode": "fixed", "value": r},
                                       args_cli.jitter, seed, switches, expert=expert, corrupt=False, stamp=stamp,
-                                      tag=f"{name}_r{r:g}", extra={"checkpoint": ckpts.get(name, args_cli.custom_ckpt)},
-                                      trace_dir=os.path.join(args_cli.out_dir, "traces") if args_cli.trace_envs else None)
+                                      tag=f"{name}_r{r:g}",
+                                      extra={"actor_spec": name,
+                                             "num_envs": args_cli.num_envs,
+                                             "checkpoint": ckpts.get(name, args_cli.custom_ckpt)},
+                                      trace_dir=trace_dir, task_id=args_cli.task, cycle_time=G.cycle_time,
+                                      indexed_initial_conditions=True)
             rt.write_jsonl(rec_path, recs)
             s = rt.summarize(recs)
-            s.update({"policy": name, "rate": r, "cycle_time_s": G.cycle_time(r), "seed": seed,
+            s.update({"policy": actor.name, "actor_spec": name, "rate": r,
+                      "cycle_time_s": G.cycle_time(r), "seed": seed,
+                      "num_envs": args_cli.num_envs,
                       "jitter": args_cli.jitter, "episodes_requested": args_cli.episodes,
                       "checkpoint": ckpts.get(name, args_cli.custom_ckpt), "time": time.strftime("%Y-%m-%dT%H:%M:%S")})
             rt.write_jsonl(summary_path, [s])
@@ -98,5 +104,4 @@ def main(env_cfg, agent_cfg):
 
 
 if __name__ == "__main__":
-    main()
-    simulation_app.close()
+    rt.run_simulation_main(main, simulation_app)

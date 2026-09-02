@@ -79,6 +79,21 @@ def pytest_collection_modifyitems(config, items):
             item.add_marker(pytest.mark.skip(reason="needs --isaac-peg"))
 
 
+def pytest_sessionfinish(session, exitstatus):
+    """Retain the result until pytest has printed its terminal summary."""
+    session.config._parcelstow_exit_status = int(exitstatus)
+
+
+def pytest_unconfigure(config):
+    """Preserve pytest's exit status across Isaac Sim's exit handlers."""
+    if (hasattr(config, "_parcelstow_exit_status")
+            and any(config.getoption(option)
+                    for option in ("--isaac", "--isaac-upright", "--isaac-peg"))):
+        sys.stdout.flush()
+        sys.stderr.flush()
+        os._exit(config._parcelstow_exit_status)
+
+
 @pytest.fixture(scope="session")
 def isaac_scene(request):
     """One Isaac app and one four-environment ParcelStow scene per pytest
@@ -106,6 +121,9 @@ def isaac_scene(request):
     from parcelstow.tasks.manager_based.parcel_stow.mdp import metrics, task_clock
     from parcelstow.tasks.manager_based.parcel_stow.parcel_stow_env_cfg import ParcelStowEnvCfg_PLAY
     cfg = ParcelStowEnvCfg_PLAY()
+    cfg.seed = 12345
+    torch.manual_seed(cfg.seed)
+    torch.cuda.manual_seed_all(cfg.seed)
     cfg.scene.num_envs = 4
     cfg.observations.policy.enable_corruption = False
     env = gym.make("ParcelStow-L6-Distill-Play-v0", cfg=cfg)
@@ -144,6 +162,9 @@ def upright_scene(request):
     from parcelstow.tasks.manager_based.upright_place.mdp import monitor as umon
     from parcelstow.tasks.manager_based.upright_place.upright_place_env_cfg import UprightPlaceEnvCfg_PLAY
     cfg = UprightPlaceEnvCfg_PLAY()
+    cfg.seed = 12345
+    torch.manual_seed(cfg.seed)
+    torch.cuda.manual_seed_all(cfg.seed)
     cfg.scene.num_envs = 4
     cfg.observations.policy.enable_corruption = False
     env = gym.make("UprightPlace-L6-Play-v0", cfg=cfg)
@@ -180,6 +201,9 @@ def peg_scene(request):
     from parcelstow.tasks.manager_based.peg_insert.mdp import monitor as pmon
     from parcelstow.tasks.manager_based.peg_insert.peg_insert_env_cfg import PegInsertEnvCfg_PLAY
     cfg = PegInsertEnvCfg_PLAY()
+    cfg.seed = 12345
+    torch.manual_seed(cfg.seed)
+    torch.cuda.manual_seed_all(cfg.seed)
     cfg.scene.num_envs = 4
     cfg.observations.policy.enable_corruption = False
     env = gym.make("PegInsert-L6-Play-v0", cfg=cfg)
