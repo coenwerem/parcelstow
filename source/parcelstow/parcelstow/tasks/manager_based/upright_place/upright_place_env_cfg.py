@@ -75,8 +75,18 @@ class UprightPlaceSceneCfg(InteractiveSceneCfg):
         init_state=RigidObjectCfg.InitialStateCfg(pos=U.START_POS, rot=START_QUAT),
     )
     # The target region is defined by the geometry constants alone; no
-    # marker body enters the scene, so nothing can perturb the placed
-    # object at the target.
+    # collider enters the scene, so nothing can perturb the placed
+    # object at the target. The disk below is visual only, the marked
+    # region the task docstring names.
+    target_disk = AssetBaseCfg(
+        prim_path="{ENV_REGEX_NS}/TargetDisk",
+        spawn=sim_utils.CylinderCfg(
+            radius=U.TARGET_RADIUS, height=0.001,
+            visual_material=sim_utils.PreviewSurfaceCfg(diffuse_color=(0.35, 0.62, 0.42)),
+        ),
+        init_state=AssetBaseCfg.InitialStateCfg(
+            pos=(U.TARGET_CENTER[0], U.TARGET_CENTER[1], TABLE_POS[2] + TABLE_SIZE[2] / 2 + 0.001)),
+    )
     # net contact forces of the five distal phalanges (observation)
     tip_contacts = ContactSensorCfg(prim_path="{ENV_REGEX_NS}/Robot/rh_.*_distal", history_length=1)
     # object-filtered per-body forces (realized contact set, slip diagnostics)
