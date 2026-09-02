@@ -489,7 +489,8 @@ direction of the v1 ACT-A. The released records live under
 expert calibration sweep, demonstration summary), the figure at
 `media/upright_operating_envelope.*` regenerates with
 `python scripts/plot_envelope.py --summary
-data/records/upright/eval_summary.jsonl --actors expert act`, and the
+data/records/upright/eval_summary.jsonl --actors expert act --out
+media/upright_operating_envelope`, and the
 checkpoint and demonstrations are inventoried in
 `artifacts/manifest.json` (bundle `upright`, hosting pending like the
 v1 flow).
@@ -586,7 +587,8 @@ motion. The released records live under `data/records/peg/`
 (evaluation summary and episode records, expert calibration sweep,
 demonstration summary), the figure at `media/peg_operating_envelope.*`
 regenerates with `python scripts/plot_envelope.py --summary
-data/records/peg/eval_summary.jsonl --actors expert act`, and the
+data/records/peg/eval_summary.jsonl --actors expert act --out
+media/peg_operating_envelope`, and the
 checkpoint and demonstrations are inventoried in
 `artifacts/manifest.json` (bundle `peg`, hosted in the parcelstow-v2
 dataset repository).
