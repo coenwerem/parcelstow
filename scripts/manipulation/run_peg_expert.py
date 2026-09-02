@@ -34,8 +34,11 @@ parser.add_argument("--num_envs", type=int, default=32)
 parser.add_argument("--episodes", type=int, default=20)
 parser.add_argument("--rate", type=float, default=0.5)
 parser.add_argument("--rates", type=float, nargs="*", default=[0.5, 0.75, 1.0, 1.25, 1.5, 2.0, 2.5, 3.0])
-parser.add_argument("--rate_lo", type=float, default=0.75)
-parser.add_argument("--rate_hi", type=float, default=1.75)
+# Frozen at Gate B: the >=0.9 contiguous range of the 64-episode sweep
+# (63, 62, 58 of 64 at r in {0.5, 0.75, 1.0}; the envelope dips to 0.73
+# at r = 1.5 and recovers to about 0.9 at r >= 2).
+parser.add_argument("--rate_lo", type=float, default=0.5)
+parser.add_argument("--rate_hi", type=float, default=1.0)
 parser.add_argument("--jitter", type=float, default=0.0)
 parser.add_argument("--seed", type=int, default=1)
 parser.add_argument("--corrupt", action="store_true")
