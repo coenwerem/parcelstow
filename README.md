@@ -1,6 +1,6 @@
 # ParcelStow
 
-Isaac Lab robot-learning benchmark for expert–learner evaluation across task execution speeds.
+Isaac Lab robot learning benchmark for expert–learner evaluation across task execution speeds.
 
 [![CI](https://github.com/coenwerem/parcelstow/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/coenwerem/parcelstow/actions/workflows/ci.yml)
 [![Apache-2.0 License](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](LICENSE)
@@ -8,12 +8,11 @@ Isaac Lab robot-learning benchmark for expert–learner evaluation across task e
 [![arXiv:2609.01453](https://img.shields.io/badge/arXiv-2609.01453-b31b1b.svg)](https://arxiv.org/abs/2609.01453)
 [![Hugging Face Dataset](https://img.shields.io/badge/%F0%9F%A4%97-Dataset-yellow.svg)](https://huggingface.co/datasets/cenwerem/parcelstow)
 
-ParcelStow evaluates a scripted expert and learned policies under matched initial conditions as the speedup factor `r` changes. The expert and learner use the same task geometry, physical success predicates, state observation, and joint-position action interface at each evaluated speed. ParcelStow contains three tasks: parcel insertion, upright placement, and keyed peg insertion.
+ParcelStow evaluates a scripted expert and learned imitation policies (hereafter, *learner*) under matched initial conditions and at varying task execution speeds, with the execution speed characterized by a positive scalar speedup factor `r`. The expert and learner use the same task geometry, physical success predicates, state observation, and joint-position action interface at each evaluated speed. ParcelStow contains three tasks: parcel insertion, upright placement, and keyed peg insertion (see the gallery below and [Task Results](#current-three-task-results)).
 
-The stable [`v1.0.0`](https://github.com/coenwerem/parcelstow/releases/tag/v1.0.0) release corresponds to the parcel-insertion study in [arXiv:2609.01453](https://arxiv.org/abs/2609.01453). `main` is active development and contains all three tasks. A later v2 release will be tagged only after the consolidated manuscript and software package are final; current `main` is not a released v2 package.
+The stable [`v1.0.0`](https://github.com/coenwerem/parcelstow/releases/tag/v1.0.0) release corresponds to the parcel-insertion study in [arXiv:2609.01453](https://arxiv.org/abs/2609.01453). The software on `main` is in active development and contains all three tasks. A later v2 release is underway.
 
 ## Task Gallery
-
 <table align="center">
   <tr>
     <td align="center" valign="top" width="33%">
@@ -41,7 +40,6 @@ The stable [`v1.0.0`](https://github.com/coenwerem/parcelstow/releases/tag/v1.0.
 </table>
 
 ## Reproduce Results from Evaluation Records
-
 The compressed evaluation records in `data/records/` can be analyzed without
 Isaac Lab. Install NumPy and Matplotlib in a Python 3 environment, then
 recompute the success counts, tables, and figures for all three tasks:
@@ -59,7 +57,6 @@ Results](docs/REPRODUCING_THE_PAPER.md) for the source record behind each
 result.
 
 ## Installation
-
 Simulator execution requires Isaac Lab and a supported NVIDIA GPU. Install the extension into the Isaac Lab Python environment from the repository root:
 
 ```bash
@@ -68,7 +65,7 @@ uv pip install -p <isaaclab-venv>/bin/python -e source/parcelstow
 
 The provided records were produced with Python 3.11.14, Isaac Sim 5.1.0, Isaac Lab 0.54.2, PyTorch 2.7.0+cu128, SciPy 1.15.3, NumPy 1.26.4, and one NVIDIA RTX 5070 Ti. CPU-only record reproduction supports Python 3.10 or later.
 
-Run pure tests without Isaac Lab:
+Run direct module tests without Isaac Lab:
 
 ```bash
 python -m pytest tests/ -q
@@ -83,7 +80,6 @@ python -m pytest tests/test_peg_physics.py --isaac-peg -q
 ```
 
 ## Run a Task
-
 Change only `--task` to run another scripted expert:
 
 ```bash
@@ -125,7 +121,6 @@ Parcel insertion also provides Diffusion Policy and DAgger checkpoints through
 insertion do not provide those checkpoints.
 
 ## Current Three-Task Results
-
 Each policy-speed evaluation condition contains 100 episodes. The expert and learner use initial conditions indexed by speed and episode. Parcel ACT-A is the primary comparison because ACT-A and the expert both succeed in 100/100 episodes at `r=1`. The upright and peg ACT checkpoints do not meet that nominal-matching condition and are secondary task-specific results on the active development branch.
 
 | Task | Gym Identifier | Demonstrated `r` | Expert at `r=1` | ACT at `r=1` | Additional Current Result |
@@ -135,7 +130,6 @@ Each policy-speed evaluation condition contains 100 episodes. The expert and lea
 | Keyed peg insertion | `PegInsert-L6-Play-v0` | `[0.5, 1.0]` | 93/100 | ACT 75/100 | ACT acquisition is 0/100 at each evaluated `r >= 1.5` |
 
 ### Expert–ACT Rollouts at `r=2`
-
 Each video compares the expert and ACT on one matched initial condition. These
 episodes illustrate task outcomes; the table above reports the 100-episode
 evaluation results.
@@ -172,8 +166,7 @@ The [Benchmark Specification](docs/BENCHMARK.md) defines matched evaluation. The
 - [Upright Placement Task Specification](docs/TASK_SPEC_UPRIGHT.md)
 - [Keyed Peg Insertion Task Specification](docs/TASK_SPEC_PEG.md)
 
-## Evaluate One Custom Policy on All Tasks
-
+## Evaluate A Custom Policy on All Tasks
 The same Python class can be loaded for every task:
 
 ```bash
@@ -187,17 +180,14 @@ All tasks produce a 147-dimensional state observation and accept a 16-dimensiona
 `HoldPosturePolicy` commands the default posture and normally fails. It demonstrates loading and record generation, not task performance.
 
 ## Data, Checkpoints, and Videos
-
 The [Hugging Face dataset](https://huggingface.co/datasets/cenwerem/parcelstow) hosts Parquet demonstrations for interactive loading, `.pt` demonstrations used by training scripts, task-specific checkpoints, and videos. GitHub stores the frozen v1 parcel records, current development records for upright and peg, and CPU-only reproduction code. [`artifacts/manifest.json`](artifacts/manifest.json) preserves every hosted path, byte count, and SHA-256 checksum.
 
 See [Data and Checkpoints](docs/DATA_AND_CHECKPOINTS.md) for the file map and checkpoint limitations.
 
 ## Contributing
-
-[Contributing](CONTRIBUTING.md) distinguishes bug reports, policy results, policy integrations, candidate tasks, and changes to frozen definitions. [Candidate Task Authoring Protocol](docs/TASK_AUTHORING.md) defines the scientific and software evidence required before a task can be listed as part of ParcelStow.
+[Contributing](CONTRIBUTING.md) distinguishes bug reports, policy results, policy integrations, candidate tasks, and changes to fixed definitions. [Candidate Task Authoring Protocol](docs/TASK_AUTHORING.md) defines the scientific and software evidence required before a task can be listed as part of ParcelStow.
 
 ## Repository Map
-
 | Path | Content |
 |---|---|
 | `scripts/run_task.py`, `scripts/evaluate.py` | public simulator commands for all three tasks |
@@ -209,7 +199,6 @@ See [Data and Checkpoints](docs/DATA_AND_CHECKPOINTS.md) for the file map and ch
 | `docs/` | current benchmark, policy, reproduction, contribution, and task specifications |
 
 ## Citation
-
 The current arXiv v1 reports the parcel-insertion study:
 
 ```bibtex
