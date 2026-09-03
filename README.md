@@ -39,25 +39,7 @@ The stable [`v1.0.0`](https://github.com/coenwerem/parcelstow/releases/tag/v1.0.
   </tr>
 </table>
 
-## Reproduce Results from Evaluation Records
-The compressed evaluation records in `data/records/` can be analyzed without
-Isaac Lab. Install NumPy and Matplotlib in a Python 3 environment, then
-recompute the success counts, tables, and figures for all three tasks:
-
-```bash
-python3 -m pip install numpy matplotlib
-python3 scripts/reproduce.py all-tasks
-```
-
-The parcel records belong to v1.0.0; the upright and peg records describe the
-active development branch. This analysis does not require a GPU, checkpoint,
-or demonstration file. The existing parcel-paper targets remain available
-through `python3 scripts/reproduce.py all`. See [Reproducing the
-Results](docs/REPRODUCING_THE_PAPER.md) for the source record behind each
-result.
-
 ## Get the Code
-
 Clone `main` to use the current three-task benchmark:
 
 ```bash
@@ -185,6 +167,23 @@ The [Benchmark Specification](docs/BENCHMARK.md) defines matched evaluation. The
 - [Parcel Insertion Task Specification](docs/TASK_SPEC.md)
 - [Upright Placement Task Specification](docs/TASK_SPEC_UPRIGHT.md)
 - [Keyed Peg Insertion Task Specification](docs/TASK_SPEC_PEG.md)
+
+## Reproduce Results from Evaluation Records
+The compressed evaluation records in `data/records/` can be analyzed without
+Isaac Lab. Install NumPy and Matplotlib in a Python 3 environment, then
+recompute the success counts, tables, and figures for all three tasks:
+
+```bash
+python3 -m pip install numpy matplotlib
+python3 scripts/reproduce.py all-tasks
+```
+
+The parcel records belong to v1.0.0; the upright and peg records describe the
+active development branch. This analysis does not require a GPU, checkpoint,
+or demonstration file. The existing parcel-paper targets remain available
+through `python3 scripts/reproduce.py all`. See [Reproducing the
+Results](docs/REPRODUCING_THE_PAPER.md) for the source record behind each
+result.
 
 ## Evaluate A Custom Policy on All Tasks
 The same Python class can be loaded for every task:
