@@ -56,8 +56,28 @@ through `python3 scripts/reproduce.py all`. See [Reproducing the
 Results](docs/REPRODUCING_THE_PAPER.md) for the source record behind each
 result.
 
+## Get the Code
+
+Clone `main` to use the current three-task benchmark:
+
+```bash
+git clone --branch main https://github.com/coenwerem/parcelstow.git
+cd parcelstow
+```
+
+To reproduce the stable parcel-insertion software associated with arXiv v1,
+check out the `v1.0.0` release instead:
+
+```bash
+git clone --branch v1.0.0 --depth 1 https://github.com/coenwerem/parcelstow.git parcelstow-v1.0.0
+cd parcelstow-v1.0.0
+```
+
+The `v1.0.0` release does not contain the upright-placement or keyed-peg tasks.
+
 ## Installation
-Simulator execution requires Isaac Lab and a supported NVIDIA GPU. Install the extension into the Isaac Lab Python environment from the repository root:
+Simulator execution requires Isaac Lab and a supported NVIDIA GPU. From the
+repository root, install the extension into the Isaac Lab Python environment:
 
 ```bash
 uv pip install -p <isaaclab-venv>/bin/python -e source/parcelstow
