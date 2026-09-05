@@ -11,6 +11,7 @@ sys.path.insert(0, str(ROOT / "scripts" / "manipulation"))
 from act_training import (  # noqa: E402
     Normalization,
     build_action_batch,
+    demonstration_collection_summary,
     fixed_validation_starts,
     masked_l1_loss,
     split_episode_indices,
@@ -54,6 +55,33 @@ def test_fixed_validation_starts_are_reproducible():
     assert first == second
     assert len(first) == 6
     assert all(0 <= start < episodes[index][0].shape[0] for index, start in first)
+
+
+def test_demonstration_collection_summary_records_admission():
+    source = {
+        "all_records": [
+            {"task_success": True, "failure_reason": "none"},
+            {"task_success": True, "failure_reason": "none"},
+            {"task_success": False, "failure_reason": "insertion_jam"},
+        ],
+        "rate_spec": {"mode": "uniform", "lo": 0.5, "hi": 1.0},
+        "jitter": 0.01,
+        "seed": 1,
+    }
+    assert demonstration_collection_summary(source, 2) == {
+        "attempted_episodes": 3,
+        "admitted_episodes": 2,
+        "rejected_failure_reasons": {"insertion_jam": 1},
+        "rate_spec": {"mode": "uniform", "lo": 0.5, "hi": 1.0},
+        "jitter": 0.01,
+        "seed": 1,
+    }
+
+
+def test_demonstration_collection_summary_rejects_count_mismatch():
+    source = {"records": [{"task_success": True, "failure_reason": "none"}]}
+    with pytest.raises(ValueError, match="do not match"):
+        demonstration_collection_summary(source, 2)
 
 
 def test_action_batch_pads_without_changing_valid_values():

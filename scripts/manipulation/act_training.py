@@ -3,9 +3,11 @@
 from __future__ import annotations
 
 import hashlib
-from collections.abc import Sequence
+from collections import Counter
+from collections.abc import Mapping, Sequence
 from dataclasses import dataclass
 from pathlib import Path
+from typing import Any
 
 import numpy as np
 import torch
@@ -28,6 +30,32 @@ class Normalization:
     obs_std: torch.Tensor
     act_mean: torch.Tensor
     act_std: torch.Tensor
+
+
+def demonstration_collection_summary(
+    source: Mapping[str, Any], admitted_episode_count: int
+) -> dict[str, Any]:
+    """Extract and validate demonstration admission provenance."""
+    records = source.get("all_records", source.get("records", ()))
+    if records:
+        admitted_records = [record for record in records if record["task_success"]]
+        if len(admitted_records) != admitted_episode_count:
+            raise ValueError("successful demonstration records do not match stored episodes")
+        rejected = [record for record in records if not record["task_success"]]
+        attempted_episode_count = len(records)
+    else:
+        rejected = []
+        attempted_episode_count = admitted_episode_count
+    return {
+        "attempted_episodes": attempted_episode_count,
+        "admitted_episodes": admitted_episode_count,
+        "rejected_failure_reasons": dict(
+            Counter(record["failure_reason"] for record in rejected)
+        ),
+        "rate_spec": source.get("rate_spec"),
+        "jitter": source.get("jitter"),
+        "seed": source.get("seed"),
+    }
 
 
 def sha256_file(path: str | Path, chunk_size: int = 1 << 20) -> str:

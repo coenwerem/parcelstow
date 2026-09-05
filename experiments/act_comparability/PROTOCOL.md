@@ -113,6 +113,21 @@ Replace `TASK`, `SEED`, `CHECKPOINT`, and `EPOCH` with recorded values. The
 task-specific driver accepts `--act_ckpt` through the public wrapper's
 passthrough arguments.
 
+After every retained candidate and the expert have run on the same bank,
+apply the predeclared selection rule and verify the paired records:
+
+```bash
+python3 scripts/select_act_checkpoint.py --task TASK \
+  --training_dir outputs/act_comparability/TASK/seed-SEED/training \
+  --evaluation_dir outputs/act_comparability/TASK/seed-SEED/development \
+  --expert_record \
+    outputs/act_comparability/TASK/seed-SEED/development/expert_expert.jsonl
+```
+
+The selector rejects incomplete condition identifiers, inconsistent summary
+counts, altered development factors, and candidate or expert records from a
+different initial-condition bank.
+
 ## Final Evaluation Bank
 
 Do not generate or inspect the final bank until the training settings,

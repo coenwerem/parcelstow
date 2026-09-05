@@ -32,6 +32,7 @@ from act_training import (  # noqa: E402
     Normalization,
     build_action_batch,
     compute_normalization,
+    demonstration_collection_summary,
     fixed_validation_starts,
     masked_l1_loss,
     sample_episode_starts,
@@ -203,6 +204,7 @@ def main(argv=None) -> int:
         args.validation_start_seed,
     )
     demonstration_checksum = sha256_file(demos_path)
+    demonstration_collection = demonstration_collection_summary(source, len(episodes))
     prepare_output(output_path)
     provenance = {
         "task": args.task,
@@ -213,6 +215,7 @@ def main(argv=None) -> int:
         "train_episode_indices": split.train,
         "validation_episode_indices": split.validation,
         "validation_starts": validation_starts,
+        "demonstration_collection": demonstration_collection,
     }
     environment = {
         "python": platform.python_version(),
