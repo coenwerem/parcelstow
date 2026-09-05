@@ -3,7 +3,7 @@ run_stow_act.py configuration unchanged (state-only DETRVAE, chunk 100,
 KL weight 10, hidden 512, feedforward 3200, batch 8, AdamW 1e-5, 2000
 epochs, z-score normalization, temporal ensembling), trained on the
 successful full-task expert episodes, then evaluated with a diagnostic
-set at nominal speed under the upright monitor.
+set at nominal speed under the keyed-peg monitor.
 
 Run,
   python scripts/manipulation/run_peg_act.py --demos outputs/peg/demos/expert_episodes.pt \
@@ -48,12 +48,12 @@ import gymnasium as gym  # noqa: E402
 import numpy as np  # noqa: E402
 import parcelstow.tasks  # noqa: E402, F401
 import torch  # noqa: E402
-import torch.nn.functional as F  # noqa: E402
 
 from isaaclab_tasks.utils.hydra import hydra_task_config  # noqa: E402
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import stow_runtime as rt  # noqa: E402
+from act_training import masked_l1_loss  # noqa: E402
 from parcelstow.tasks.manager_based.peg_insert.mdp.monitor import STAGE_KEYS, PegMonitor  # noqa: E402
 from peg_runtime import SCHED, PegExpertActor, config_stamp  # noqa: E402
 from state_act import StateACT, kl_divergence  # noqa: E402
@@ -122,8 +122,7 @@ def main(env_cfg, agent_cfg):
             idx = perm[i:i + args_cli.batch]
             qpos, actions, is_pad = sample_batch(idx)
             a_hat, _, (mu, logvar) = model(qpos, actions, is_pad)
-            all_l1 = F.l1_loss(actions, a_hat, reduction="none")
-            l1 = (all_l1 * ~is_pad.unsqueeze(-1)).mean()
+            l1 = masked_l1_loss(a_hat, actions, is_pad)
             kl = kl_divergence(mu, logvar)[0]
             loss = l1 + args_cli.kl_weight * kl
             opt.zero_grad()
@@ -151,12 +150,12 @@ def main(env_cfg, agent_cfg):
                               task_id=args_cli.task, cycle_time=SCHED.cycle_time)
     s = rt.summarize(recs, stage_keys=STAGE_KEYS)
     log({"stage": "diag_eval", "diag_rate": args_cli.diag_rate, "task_success": s["task_success"],
-         "acquired": s["acquired"], "placed": s["placed"], "settled": s["settled"],
+         "acquired": s["acquired"], "aligned": s["aligned"], "inserted": s["inserted"],
+         "settled": s["settled"],
          "failure_reasons": s["failure_reasons"], "checkpoint": ckpt})
     rt.write_jsonl(os.path.join(args_cli.out_dir, "diag.jsonl"), [rt.light_record(r) for r in recs])
     env.close()
 
 
 if __name__ == "__main__":
-    main()
-    simulation_app.close()
+    rt.run_simulation_main(main, simulation_app)

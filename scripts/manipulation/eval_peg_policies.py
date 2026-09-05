@@ -30,6 +30,10 @@ parser.add_argument("--rates", type=float, nargs="*",
 parser.add_argument("--episodes", type=int, default=100)
 parser.add_argument("--jitter", type=float, default=0.01)
 parser.add_argument("--eval_seed", type=int, default=12345)
+parser.add_argument("--bank_role", choices=["unclassified", "development", "final", "diagnostic"],
+                    default="unclassified")
+parser.add_argument("--diagnostic_fixed_phase_rate", type=float, default=None,
+                    help="replace the policy rate input during phases 0 through 4")
 parser.add_argument("--out_dir", type=str, default="outputs/peg/eval")
 parser.add_argument("--tag", type=str, default="")
 parser.add_argument("--trace_envs", type=int, default=0)
@@ -47,6 +51,7 @@ from isaaclab_tasks.utils.hydra import hydra_task_config  # noqa: E402
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import stow_runtime as rt  # noqa: E402
+from act_diagnostics import FIXED_ACQUISITION_PHASES, FixedPhaseRateActor  # noqa: E402
 from parcelstow.tasks.manager_based.peg_insert.mdp.monitor import STAGE_KEYS, PegMonitor  # noqa: E402
 from peg_runtime import SCHED, PegExpertActor, config_stamp  # noqa: E402
 
@@ -70,6 +75,10 @@ def main(env_cfg, agent_cfg):
     for name in args_cli.actors:
         actor = expert if name == "expert" else rt.load_actor(name, ckpts.get(name, args_cli.custom_ckpt),
                                                               base, args_cli.num_envs)
+        if args_cli.diagnostic_fixed_phase_rate is not None:
+            if name == "expert":
+                raise ValueError("the fixed-phase rate intervention applies only to learned policies")
+            actor = FixedPhaseRateActor(actor, args_cli.diagnostic_fixed_phase_rate)
         ep_path = os.path.join(args_cli.out_dir, f"{name.replace(':', '_').replace('.', '_')}{tag}.jsonl")
         for ri, r in enumerate(args_cli.rates):
             seed = args_cli.eval_seed + 1000 * ri
@@ -78,12 +87,23 @@ def main(env_cfg, agent_cfg):
                                       expert=expert, corrupt=False, stamp=stamp, tag=f"{name}_r{r:g}",
                                       task_id=args_cli.task, cycle_time=SCHED.cycle_time,
                                       indexed_initial_conditions=True,
-                                      extra={"actor_spec": name, "num_envs": args_cli.num_envs})
+                                      extra={"actor_spec": name, "num_envs": args_cli.num_envs,
+                                             "bank_role": args_cli.bank_role,
+                                             "fixed_phase_rate_override":
+                                                 args_cli.diagnostic_fixed_phase_rate,
+                                             "fixed_phase_indices":
+                                                 list(FIXED_ACQUISITION_PHASES)
+                                                 if args_cli.diagnostic_fixed_phase_rate is not None
+                                                 else None})
             rt.write_jsonl(ep_path, recs)
             row = rt.summarize(recs, stage_keys=STAGE_KEYS)
             row.update({"policy": actor.name, "actor_spec": name, "rate": r,
                         "cycle_time_s": SCHED.cycle_time(r), "seed": seed,
                         "num_envs": args_cli.num_envs,
+                        "bank_role": args_cli.bank_role,
+                        "fixed_phase_rate_override": args_cli.diagnostic_fixed_phase_rate,
+                        "fixed_phase_indices": list(FIXED_ACQUISITION_PHASES)
+                        if args_cli.diagnostic_fixed_phase_rate is not None else None,
                         "jitter": args_cli.jitter, "episodes_requested": args_cli.episodes,
                         "checkpoint": ckpts.get(name, args_cli.custom_ckpt) if name != "expert" else None,
                         "time": time.strftime("%Y-%m-%dT%H:%M:%S")})

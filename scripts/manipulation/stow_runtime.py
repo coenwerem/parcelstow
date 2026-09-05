@@ -25,6 +25,7 @@ sys.path.insert(0, REPO)
 sys.path.insert(0, os.path.join(REPO, "scripts", "manipulation"))
 
 import parcel_stow_expert as pse  # noqa: E402
+from act_diagnostics import initial_condition_bank_sha256  # noqa: E402
 from parcelstow.tasks.manager_based.parcel_stow import geometry as G  # noqa: E402
 from parcelstow.tasks.manager_based.parcel_stow.mdp import task_clock  # noqa: E402
 from parcelstow.tasks.manager_based.parcel_stow.mdp.metrics import TRACE_COLUMNS  # noqa: E402
@@ -311,6 +312,9 @@ def _initial_condition_bank(base, switches, n_episodes, jitter, seed):
         "object_name": object_name,
         "joint_offsets": joint_offsets,
         "object_poses": object_poses,
+        "sha256": initial_condition_bank_sha256(
+            object_name, joint_offsets, object_poses
+        ),
     }
 
 
@@ -443,6 +447,7 @@ def run_episodes(env, base, actor, monitor, n_episodes, rate_spec, jitter, seed,
                 })
                 if initial_bank is not None:
                     rec["initial_condition_id"] = episode_index
+                    rec["initial_condition_bank_sha256"] = initial_bank["sha256"]
                     pose = initial_bank["object_poses"][episode_index]
                     pose_key = ("parcel_initial_pose" if "parcel_initial_pose" in rec
                                 else "object_initial_pose")

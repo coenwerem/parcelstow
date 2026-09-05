@@ -48,12 +48,12 @@ import gymnasium as gym  # noqa: E402
 import numpy as np  # noqa: E402
 import parcelstow.tasks  # noqa: E402, F401
 import torch  # noqa: E402
-import torch.nn.functional as F  # noqa: E402
 
 from isaaclab_tasks.utils.hydra import hydra_task_config  # noqa: E402
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import stow_runtime as rt  # noqa: E402
+from act_training import masked_l1_loss  # noqa: E402
 from parcelstow.tasks.manager_based.upright_place.mdp.monitor import STAGE_KEYS, UprightMonitor  # noqa: E402
 from state_act import StateACT, kl_divergence  # noqa: E402
 from upright_runtime import SCHED, UprightExpertActor, config_stamp  # noqa: E402
@@ -122,8 +122,7 @@ def main(env_cfg, agent_cfg):
             idx = perm[i:i + args_cli.batch]
             qpos, actions, is_pad = sample_batch(idx)
             a_hat, _, (mu, logvar) = model(qpos, actions, is_pad)
-            all_l1 = F.l1_loss(actions, a_hat, reduction="none")
-            l1 = (all_l1 * ~is_pad.unsqueeze(-1)).mean()
+            l1 = masked_l1_loss(a_hat, actions, is_pad)
             kl = kl_divergence(mu, logvar)[0]
             loss = l1 + args_cli.kl_weight * kl
             opt.zero_grad()
@@ -158,5 +157,4 @@ def main(env_cfg, agent_cfg):
 
 
 if __name__ == "__main__":
-    main()
-    simulation_app.close()
+    rt.run_simulation_main(main, simulation_app)
