@@ -1,0 +1,32 @@
+{
+  "command_template": "python3 scripts/diagnose_act.py --task TASK --output outputs/act_comparability/TASK/offline-diagnostic.json",
+  "diagnostic_seed": 20260904,
+  "implementation_git_sha": "9a88b945419a340557a21d167be9051babeb2cae",
+  "peg": {
+    "demonstrations_sha256": "4512ae20440d89cb7beac1e714ad9585475401dafb12e8f3b9d84b7030fff17d",
+    "fixed_acquisition_rate_sensitivity_rms": {
+      "1": 0.0,
+      "1.5": 0.04683246836066246,
+      "1.75": 0.12313388288021088,
+      "2": 0.2036157101392746,
+      "2.5": 0.35239508748054504
+    },
+    "local_report_path": "outputs/act_comparability/peg/offline-diagnostic.json",
+    "local_report_sha256": "f22d25f92183b230c2379006221a87e4e645ff0b3efd8d4f4c3dc829247635c0",
+    "released_checkpoint_sha256": "20713233f262730314637c68453af65df2b72c145d0da616d386e474eca1747"
+  },
+  "samples_per_phase": 64,
+  "upright": {
+    "demonstrations_sha256": "2959a467aa3c99d33556598998262d81648f1d26aafceda36994eeb1f8bb07",
+    "fixed_acquisition_rate_sensitivity_rms": {
+      "1": 0.0,
+      "1.5": 0.007484368048608303,
+      "1.75": 0.012026572600007057,
+      "2": 0.024757804349064827,
+      "2.5": 0.2013676017522812
+    },
+    "local_report_path": "outputs/act_comparability/upright/offline-diagnostic.json",
+    "local_report_sha256": "907cadee9c8fc6b6c9026d0a95547e82e8ab502c3107998bb427f58e5fc5df7b",
+    "released_checkpoint_sha256": "237925a1732ad8aa9b838fc3cbbe58515584ae090a9eeff3ea1f03e74a2bbc3"
+  }
+}

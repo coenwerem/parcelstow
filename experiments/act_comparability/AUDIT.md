@@ -135,10 +135,18 @@ though the first five phase durations are fixed. The checkpoint's speedup
 normalization has mean 0.7391 and standard deviation 0.1379; `r=1.5` is 5.52
 standard deviations above that mean. In an offline intervention on recorded
 fixed-phase observations, replacing only the rate feature changed the ACT
-first-action output by root-mean-square values of 0.062 at `r=1.5`, 0.162 at
-`r=1.75`, 0.249 at `r=2`, and 0.378 at `r=2.5`, relative to `r=1`. This
-supports a simulator test of rate-feature sensitivity but does not establish
-that it causes the acquisition failures.
+first-action output by root-mean-square values of 0.047 at `r=1.5`, 0.123 at
+`r=1.75`, 0.204 at `r=2`, and 0.352 at `r=2.5`, relative to `r=1`.
+
+A paired simulator intervention then evaluated 40 indexed episodes at actual
+`r=1.5`. The documented observation produced 0/40 acquisitions and 0/40 task
+successes. Replacing only the rate feature with 1.0 during phases 0 through 4
+produced 40/40 acquisitions and 27/40 task successes on the identical
+initial-condition bank. The remaining failures were six transport drops and
+seven alignment failures. This intervention establishes that out-of-range rate
+conditioning caused the observed acquisition failures for this checkpoint and
+bank. It does not explain the nominal `r=1` gap and does not support changing
+the documented observation.
 
 ## Chunk and Phase Observations
 
@@ -163,7 +171,7 @@ testing a phase-aware execution variant.
 | --- | --- | --- | --- |
 | Final epoch is the only saved checkpoint | The retained model may not be the best generalizing checkpoint | Save periodic candidates, rank by held-out action error, then select on a disjoint nominal development bank | Untested |
 | Padded chunks receive less L1 weight | Late phases may be underweighted and the effective KL ratio may vary with valid length | Unit-test a valid-element reduction, then compare one fixed-seed training pilot with the current objective | Verified implementation defect; effect untested |
-| Peg acquisition is 0/100 for `r >= 1.5` | The raw rate feature extrapolates outside the training range during fixed acquisition phases | Hold the rate feature at 1.0 only in phases 0 through 4 while the simulator remains at `r=1.5` | Offline sensitivity observed; rollout test pending |
+| Peg acquisition is 0/100 for `r >= 1.5` | The raw rate feature extrapolates outside the training range during fixed acquisition phases | Hold the rate feature at 1.0 only in phases 0 through 4 while the simulator remains at `r=1.5` | Confirmed on 40 paired diagnostic episodes: acquisition changed from 0/40 to 40/40 |
 | Upright success rises from `r=1` to `r=1.75` | Rate conditioning, phase duration, or contact dynamics may favor faster execution | Evaluate action error by rate and run paired nominal interventions that vary the policy rate input without changing simulator timing | Pending |
 | Many 100-step targets cross phase boundaries | Temporal ensembling may retain actions inferred before a phase change | Compare error before and after transitions; reset only the diagnostic actor's ensemble at transitions if the error localizes there | Pending |
 | Demonstrations retain successful expert episodes only | Failure filtering or uneven coverage may omit difficult starts | Compare admitted and rejected rate and pose strata; collect indexed demonstrations only if the stored metadata is insufficient | Rate and object-pose coverage checked; robot-state coverage unavailable |
@@ -180,7 +188,7 @@ No evidence currently supports changing task geometry, expert trajectories,
 success predicates, action semantics, or observation ordering.
 
 The next work should retain ACT, correct the training and reporting defects,
-run the fixed-phase rate diagnostic, and use held-out checkpoint selection in
-a bounded pilot. Another learned-policy method is not warranted until these
-tests establish whether the remaining gap reflects ACT rather than its current
-training procedure.
+use held-out checkpoint selection in a bounded pilot, and keep the fixed-phase
+rate intervention separate from reportable policy results. Another
+learned-policy method is not warranted until the pilot establishes whether the
+remaining nominal gap reflects ACT rather than its current training procedure.

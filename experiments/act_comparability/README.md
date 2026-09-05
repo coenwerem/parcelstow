@@ -10,6 +10,8 @@ release.
 - [Experimental Protocol](PROTOCOL.md) defines the data partitions,
   checkpoint selection, indexed evaluation banks, stopping rules, and retained
   evidence for new ACT policies.
+- [`results/`](results/) contains small diagnostic summaries and checksums for
+  the excluded local records.
 
 Development outputs belong under `outputs/act_comparability/`, which is
 excluded from Git. Small configuration and result summaries may be copied into

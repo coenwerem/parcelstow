@@ -70,6 +70,17 @@ files. Expected storage is at most 1.75 GB per seed, excluding logs, and the
 observed training runtime is approximately 45 to 55 minutes per 2,000-epoch
 run on the recorded RTX 5070 Ti system.
 
+Run the seed-0 bounded pilot without Isaac Lab:
+
+```bash
+python3 scripts/train_act.py --task upright --model_seed 0
+python3 scripts/train_act.py --task peg --model_seed 0
+```
+
+The default output directories are
+`outputs/act_comparability/TASK/seed-0/training`. The command refuses to use a
+nonempty output directory.
+
 ## Model-Development Evaluation
 
 Evaluate each retained candidate at `r=1` on 100 indexed episodes with 10 mm
@@ -95,7 +106,7 @@ The nominal development command for a selected checkpoint is:
 python scripts/evaluate.py --task TASK --actor act --rates 1.0 \
   --episodes 100 --num_envs 32 --eval_seed 42001 \
   --out_dir outputs/act_comparability/TASK/seed-SEED/development \
-  --act_ckpt CHECKPOINT --tag _epoch-EPOCH
+  --act_ckpt CHECKPOINT --tag _epoch-EPOCH --bank_role development
 ```
 
 Replace `TASK`, `SEED`, `CHECKPOINT`, and `EPOCH` with recorded values. The
@@ -122,7 +133,7 @@ python scripts/evaluate.py --task TASK --actor expert act \
   --rates 0.5 0.75 1.0 1.25 1.5 1.75 2.0 2.5 \
   --episodes 200 --num_envs 32 --eval_seed 73001 \
   --out_dir outputs/act_comparability/TASK/seed-SEED/final \
-  --act_ckpt CHECKPOINT --tag _protocol-1
+  --act_ckpt CHECKPOINT --tag _protocol-1 --bank_role final
 ```
 
 Run final evaluation once per selected checkpoint. Do not use a final result to
@@ -161,6 +172,21 @@ intervened policy as a baseline.
 Write the two record sets beneath
 `outputs/act_comparability/peg/rate-input-diagnostic/` with distinct filenames
 and record the rate replacement in every episode and summary row.
+
+The exact commands are:
+
+```bash
+python scripts/evaluate.py --task peg --actor act --rates 1.5 \
+  --episodes 40 --num_envs 32 --eval_seed 52001 \
+  --out_dir outputs/act_comparability/peg/rate-input-diagnostic/baseline \
+  --bank_role diagnostic --tag _r1.5_raw-rate
+
+python scripts/evaluate.py --task peg --actor act --rates 1.5 \
+  --episodes 40 --num_envs 32 --eval_seed 52001 \
+  --out_dir outputs/act_comparability/peg/rate-input-diagnostic/override-r1 \
+  --bank_role diagnostic --tag _r1.5_fixed-rate-r1 \
+  --diagnostic_fixed_phase_rate 1.0
+```
 
 ## Required Record Fields
 

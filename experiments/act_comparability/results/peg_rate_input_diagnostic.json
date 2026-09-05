@@ -1,0 +1,43 @@
+{
+  "actual_rate": 1.5,
+  "base_evaluation_seed": 52001,
+  "baseline": {
+    "acquired": 0,
+    "command": "python scripts/evaluate.py --task peg --actor act --rates 1.5 --episodes 40 --num_envs 32 --eval_seed 52001 --out_dir outputs/act_comparability/peg/rate-input-diagnostic/baseline --bank_role diagnostic --tag _r1.5_raw-rate",
+    "driver_seconds": 177,
+    "episode_records_sha256": "48187920633ff6da486c74ea883f9a569bb883291c8474d03216e24c8b991049",
+    "failure_reasons": {
+      "acquisition_failure": 40
+    },
+    "fixed_phase_rate_override": null,
+    "summary_sha256": "3f8b05a09812d658635c5fa24b59115b96da3363005d773bce2fa01516c31703",
+    "task_success": 0
+  },
+  "episodes": 40,
+  "implementation_git_sha": "cb3ddf6c46e14d6e7dd43b16f6e51801b090720b",
+  "initial_condition_bank_sha256": "fc10a5d04847ce258089b731fc52f5e3d5b1aabbebddd86939ded2384f03c3aa",
+  "num_envs": 32,
+  "override": {
+    "acquired": 40,
+    "command": "python scripts/evaluate.py --task peg --actor act --rates 1.5 --episodes 40 --num_envs 32 --eval_seed 52001 --out_dir outputs/act_comparability/peg/rate-input-diagnostic/override-r1 --bank_role diagnostic --tag _r1.5_fixed-rate-r1 --diagnostic_fixed_phase_rate 1.0",
+    "driver_seconds": 192,
+    "episode_records_sha256": "f4995d8498ecd36d71932ce2d0ba9484cefd3e9712048920509827362d552542",
+    "failure_reasons": {
+      "alignment_failure": 7,
+      "dropped_during_transport": 6,
+      "none": 27
+    },
+    "fixed_phase_indices": [
+      0,
+      1,
+      2,
+      3,
+      4
+    ],
+    "fixed_phase_rate_override": 1.0,
+    "summary_sha256": "9be74e798d827a7e8c023ec2a9c24b0a5a61c166ce1bca0d6ae231beb9fd2645",
+    "task_success": 27
+  },
+  "released_checkpoint_sha256": "20713233f262730314637c68453af65df2b72c145d0da616d386e474eca1747",
+  "task": "PegInsert-L6-Play-v0"
+}
