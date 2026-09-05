@@ -101,6 +101,15 @@ def get_task(alias: str) -> TaskSpec:
         raise ValueError(f"unknown task {alias!r}; valid aliases: {', '.join(ALIASES)}") from exc
 
 
+def get_task_by_gym_id(gym_id: str) -> TaskSpec:
+    """Return the registered task with the given Gym identifier."""
+    for task in TASKS.values():
+        if task.gym_id == gym_id:
+            return task
+    valid = ", ".join(task.gym_id for task in TASKS.values())
+    raise ValueError(f"unknown Gym task {gym_id!r}; registered identifiers: {valid}")
+
+
 def task_output_dir(spec: TaskSpec, base: str | None, *, legacy_default: bool = False) -> str:
     if base:
         return base

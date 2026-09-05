@@ -9,7 +9,13 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "scripts"))
 
-from task_registry import ALIASES, TASKS, get_task, task_output_dir  # noqa: E402
+from task_registry import (  # noqa: E402
+    ALIASES,
+    TASKS,
+    get_task,
+    get_task_by_gym_id,
+    task_output_dir,
+)
 
 
 def _load_script(name):
@@ -45,6 +51,11 @@ def test_unknown_alias_lists_valid_aliases():
         assert "parcel, upright, peg" in str(exc)
     else:
         raise AssertionError("unknown task accepted")
+
+
+def test_gym_identifiers_resolve_to_the_registered_task():
+    for task in TASKS.values():
+        assert get_task_by_gym_id(task.gym_id) is task
 
 
 def test_output_paths_are_separate_and_parcel_legacy_is_preserved():

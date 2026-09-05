@@ -2,16 +2,21 @@
 
 from __future__ import annotations
 
-import hashlib
 from collections import Counter
 from collections.abc import Mapping, Sequence
 from dataclasses import dataclass
-from pathlib import Path
 from typing import Any
 
 import numpy as np
 import torch
 import torch.nn.functional as F
+
+try:
+    from . import file_integrity as _file_integrity
+except ImportError:  # Loaded directly by the pure tests.
+    import file_integrity as _file_integrity
+
+sha256_file = _file_integrity.sha256_file
 
 
 @dataclass(frozen=True)
@@ -56,14 +61,6 @@ def demonstration_collection_summary(
         "jitter": source.get("jitter"),
         "seed": source.get("seed"),
     }
-
-
-def sha256_file(path: str | Path, chunk_size: int = 1 << 20) -> str:
-    digest = hashlib.sha256()
-    with Path(path).open("rb") as stream:
-        while data := stream.read(chunk_size):
-            digest.update(data)
-    return digest.hexdigest()
 
 
 def split_episode_indices(

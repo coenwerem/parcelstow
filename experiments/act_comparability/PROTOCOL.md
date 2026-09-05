@@ -113,6 +113,13 @@ Replace `TASK`, `SEED`, `CHECKPOINT`, and `EPOCH` with recorded values. The
 task-specific driver accepts `--act_ckpt` through the public wrapper's
 passthrough arguments.
 
+For `bank_role=development`, the driver accepts only `r=1`, 100 episodes,
+evaluation seed 42001, 10 mm planar jitter, no observation corruption, zero
+action noise, and no rate-feature intervention. Before Isaac Lab starts, the
+driver also refuses to run if the episode-record or summary path already
+exists. Use a new empty output directory or a new tag instead of appending to
+development evidence.
+
 After every retained candidate and the expert have run on the same bank,
 apply the predeclared selection rule and verify the paired records:
 
@@ -124,17 +131,28 @@ python3 scripts/select_act_checkpoint.py --task TASK \
     outputs/act_comparability/TASK/seed-SEED/development/expert_expert.jsonl
 ```
 
-The selector rejects incomplete condition identifiers, inconsistent summary
-counts, altered development factors, and candidate or expert records from a
-different initial-condition bank.
+New learner evaluations record the checkpoint path and its execution-time
+SHA-256 checksum in every episode and summary row. Expert rows record null
+values for both fields. The selector requires one path and checksum per
+learner evaluation, verifies agreement between episodes and the summary, and
+then verifies the recorded checksum against the current checkpoint file. It
+also rejects incomplete condition identifiers, inconsistent summary counts,
+altered development factors, and records from a different initial-condition
+bank.
+
+The retained seed-0 development records predate the execution-time checkpoint
+checksum field. They remain historical evidence and must not be edited in
+place. The strengthened selector rejects those records unless the evaluations
+are rerun into new files under the current protocol.
 
 ## Final Evaluation Bank
 
 Do not generate or inspect the final bank until the training settings,
 candidate-retention rule, development-selection rule, nominal comparison
-criterion, and selected checkpoint hashes are frozen. The final base seed is
-73001. Evaluate 200 indexed episodes per actor and speed with 10 mm planar
-jitter, 32 environments, and no observation corruption.
+calculation, any author-approved decision rule, and selected checkpoint hashes
+are frozen. The final base seed is 73001. Evaluate 200 indexed episodes per
+actor and speed with 10 mm planar jitter, 32 environments, and no observation
+corruption.
 
 Use the current task grids:
 
@@ -155,19 +173,54 @@ Run final evaluation once per selected checkpoint. Do not use a final result to
 change training, select a seed, select a checkpoint, alter the task grid, or
 revise a success predicate.
 
-## Nominal Comparison Criterion
+For `bank_role=final`, the driver accepts only the complete registered rate
+grid in the listed order, 200 episodes per rate, evaluation seed 73001, 10 mm
+planar jitter, no observation corruption, zero action noise, and no
+rate-feature intervention. It refuses to run if any target episode-record or
+summary path already exists. There is no overwrite option.
 
-The recommended criterion is paired non-inferiority at `r=1`: the lower
-one-sided 95% confidence bound for `p_ACT - p_expert` must exceed -0.10 on the
-200 matched final episodes. Report both success proportions, the paired
-difference, its confidence interval, and the discordant-pair counts.
+## Nominal Comparison Calculation
 
-This margin permits ACT to succeed on as many as ten percentage points fewer
-episodes than the expert, subject to sampling uncertainty. It therefore means
-nominal comparability, not equality. The author must approve or replace the
-margin and confidence procedure before this criterion governs the consolidated
-study. Until that decision is recorded, use `nominal comparison pending`
-rather than `parity` in retained results.
+The paired outcome for matched initial condition \(i\) is \(d_i=+1\) when ACT
+succeeds and the expert fails, \(d_i=-1\) when the expert succeeds and ACT
+fails, and \(d_i=0\) otherwise. The estimate is the sample mean of these
+outcomes, which equals \(p_{\mathrm{ACT}}-p_{\mathrm{expert}}\) on the matched
+episodes.
+
+The one-sided lower confidence bound uses the benchmark's paired bootstrap:
+
+1. Resample matched initial-condition pairs with replacement.
+2. Compute the mean paired outcome for each of 20,000 resamples.
+3. Use NumPy's `default_rng(0)` and the linear fifth percentile of the
+   bootstrap means.
+4. At supplied margin \(m\), declare paired noninferiority only when the lower
+   bound is strictly greater than \(-m\). Equality with \(-m\) fails.
+
+Run the calculation with an explicit margin:
+
+```bash
+python3 scripts/assess_nominal_comparability.py \
+  --expert-record EXPERT.jsonl \
+  --learner-record ACT.jsonl \
+  --margin 0.10 \
+  --output RESULT.json
+```
+
+The command validates the task, nominal rate, bank role, initial-condition
+bank checksum, condition identifiers, initial object poses, evaluation
+factors, and episode count. It reports both success counts, all four paired
+outcome counts, the paired difference, bootstrap configuration, lower bound,
+supplied margin, decision, and SHA-256 checksums of the input files.
+Development-bank output is labeled as development evidence, not a final
+conclusion. The calculation never selects a checkpoint or policy seed.
+
+> The 0.10 noninferiority margin is proposed and requires author approval before final evaluation.
+
+The proposed margin would permit ACT to succeed on as many as ten percentage
+points fewer episodes than the expert, subject to sampling uncertainty. It
+would support nominal comparability, not equality. Until the author approves
+or replaces the margin, retained results must state that the nominal comparison
+is pending.
 
 ## Fixed-Phase Rate Diagnostic
 

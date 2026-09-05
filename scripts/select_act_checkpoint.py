@@ -4,7 +4,6 @@
 from __future__ import annotations
 
 import argparse
-import hashlib
 import json
 from datetime import datetime
 from pathlib import Path
@@ -16,6 +15,7 @@ from manipulation.act_model_selection import (
     select_candidate,
     validate_development_records,
 )
+from manipulation.file_integrity import sha256_file
 from task_registry import get_task
 
 
@@ -34,14 +34,6 @@ def load_jsonl(path: Path) -> list[dict[str, Any]]:
     if not rows:
         raise ValueError(f"no records found in {path}")
     return rows
-
-
-def sha256_file(path: Path) -> str:
-    digest = hashlib.sha256()
-    with path.open("rb") as stream:
-        while data := stream.read(1 << 20):
-            digest.update(data)
-    return digest.hexdigest()
 
 
 def elapsed_seconds(start: str, end: str) -> int:
@@ -105,8 +97,6 @@ def main() -> int:
         checkpoint_path = (
             args.training_dir / "checkpoints" / f"epoch-{int(epoch):04d}.pt"
         )
-        if Path(summary["checkpoint"]) != checkpoint_path:
-            raise ValueError(f"summary checkpoint does not match {checkpoint_path}")
         bank_sha256 = validate_development_records(
             records,
             summary,
@@ -117,6 +107,7 @@ def main() -> int:
             expected_seed=args.eval_seed,
             expected_num_envs=args.num_envs,
             expected_jitter=args.jitter,
+            checkpoint_path=checkpoint_path,
         )
         candidate = CandidateResult(
             epoch=int(epoch),
@@ -182,9 +173,9 @@ def main() -> int:
                 "checkpoint": str(
                     args.training_dir / "checkpoints" / f"epoch-{candidate.epoch:04d}.pt"
                 ),
-                "checkpoint_sha256": sha256_file(
-                    args.training_dir / "checkpoints" / f"epoch-{candidate.epoch:04d}.pt"
-                ),
+                "checkpoint_sha256": summaries_by_epoch[candidate.epoch][
+                    "checkpoint_sha256"
+                ],
                 "validation_chunk_l1": candidate.validation_chunk_l1,
                 "task_success": candidate.task_success,
                 "stage_counts": dict(zip(task.stage_keys, candidate.stage_counts, strict=True)),
@@ -205,9 +196,9 @@ def main() -> int:
             for candidate in sorted(evidence, key=lambda item: item.epoch)
         ],
         "selected_epoch": selected.epoch,
-        "selected_checkpoint_sha256": sha256_file(
-            args.training_dir / "checkpoints" / f"epoch-{selected.epoch:04d}.pt"
-        ),
+        "selected_checkpoint_sha256": summaries_by_epoch[selected.epoch][
+            "checkpoint_sha256"
+        ],
     }
 
     if args.expert_record:
@@ -226,6 +217,7 @@ def main() -> int:
             expected_seed=args.eval_seed,
             expected_num_envs=args.num_envs,
             expected_jitter=args.jitter,
+            checkpoint_path=None,
         )
         if expert_bank != selected.bank_sha256:
             raise ValueError("expert and selected checkpoint used different banks")
@@ -248,6 +240,8 @@ def main() -> int:
             "episode_records_sha256": sha256_file(args.expert_record),
             "summary": str(expert_summary_path),
             "summary_sha256": sha256_file(expert_summary_path),
+            "checkpoint": None,
+            "checkpoint_sha256": None,
         }
 
     text = json.dumps(result, indent=2, sort_keys=True) + "\n"
