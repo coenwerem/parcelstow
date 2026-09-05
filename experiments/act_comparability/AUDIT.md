@@ -71,8 +71,8 @@ durations do not scale with `r`.
 
 | Task | Demonstrations | Checkpoint |
 | --- | --- | --- |
-| Upright placement | `outputs/upright/demos/expert_episodes.pt`, 315 admitted of 330 attempted, SHA-256 `2959a467aa3c99d33556598998262d81648f1d26aafceda36994eeb1f8bb07` | `outputs/upright/act/act_upright.pt`, SHA-256 `237925a1732ad8aa9b838fc3cbbe58515584ae090a9eeff3ea1f03e74a2bbc3` |
-| Keyed peg insertion | `outputs/peg/demos/expert_episodes.pt`, 325 admitted of 330 attempted, SHA-256 `4512ae20440d89cb7beac1e714ad9585475401dafb12e8f3b9d84b7030fff17d` | `outputs/peg/act/act_peg.pt`, SHA-256 `20713233f262730314637c68453af65df2b72c145d0da616d386e474eca1747` |
+| Upright placement | `outputs/upright/demos/expert_episodes.pt`, 315 admitted of 330 attempted, SHA-256 `2959a476b294bbd63fe76a4a7ab4e64e1a87dfadd7e146b132559b953acfbb07` | `outputs/upright/act/act_upright.pt`, SHA-256 `23792507a4a9e03b11682b28de929485211fb662c464bea10a3ed770caafbbc3` |
+| Keyed peg insertion | `outputs/peg/demos/expert_episodes.pt`, 325 admitted of 330 attempted, SHA-256 `4512ae3a7b0b651faa380351ff727cdabe85ec1b132fdec0ac5f3ec0c0fff17d` | `outputs/peg/act/act_peg.pt`, SHA-256 `207132aaed13d16bcdabe674c0df7450214997cc7c0dbcc6d50e7a3a0a1a1747` |
 
 The hashes, paths, and byte counts agree with `artifacts/manifest.json`.
 Upright demonstrations sample `r` uniformly from `[0.75, 1.75]`; peg
@@ -169,26 +169,69 @@ testing a phase-aware execution variant.
 
 | Observation | Plausible Explanation | Smallest Discriminating Test | Status |
 | --- | --- | --- | --- |
-| Final epoch is the only saved checkpoint | The retained model may not be the best generalizing checkpoint | Save periodic candidates, rank by held-out action error, then select on a disjoint nominal development bank | Untested |
+| Final epoch is the only saved checkpoint | The retained model may not be the best generalizing checkpoint | Save periodic candidates, rank by held-out action error, then select on a disjoint nominal development bank | Seed-0 pilot completed; candidate task success varied by 40 points for upright and 11 points for peg |
 | Padded chunks receive less L1 weight | Late phases may be underweighted and the effective KL ratio may vary with valid length | Unit-test a valid-element reduction, then compare one fixed-seed training pilot with the current objective | Verified implementation defect; effect untested |
 | Peg acquisition is 0/100 for `r >= 1.5` | The raw rate feature extrapolates outside the training range during fixed acquisition phases | Hold the rate feature at 1.0 only in phases 0 through 4 while the simulator remains at `r=1.5` | Confirmed on 40 paired diagnostic episodes: acquisition changed from 0/40 to 40/40 |
 | Upright success rises from `r=1` to `r=1.75` | Rate conditioning, phase duration, or contact dynamics may favor faster execution | Evaluate action error by rate and run paired nominal interventions that vary the policy rate input without changing simulator timing | Pending |
 | Many 100-step targets cross phase boundaries | Temporal ensembling may retain actions inferred before a phase change | Compare error before and after transitions; reset only the diagnostic actor's ensemble at transitions if the error localizes there | Pending |
 | Demonstrations retain successful expert episodes only | Failure filtering or uneven coverage may omit difficult starts | Compare admitted and rejected rate and pose strata; collect indexed demonstrations only if the stored metadata is insufficient | Rate and object-pose coverage checked; robot-state coverage unavailable |
 | Training and evaluation decode the same 16 actions | A basic action-order or scale defect is unlikely | Regression tests for the observation slices and action decoder | Existing contract verified; focused tests pending |
-| Peg development diagnostic was 43/50 but the current nominal bank is 75/100 | Performance varies across indexed banks or the earlier asynchronous bank | Use one fixed indexed development bank for every checkpoint and reserve a disjoint final bank | Protocol correction required |
+| Peg development diagnostic was 43/50 but the current nominal bank is 75/100 | Performance varies across indexed banks or the earlier asynchronous bank | Use one fixed indexed development bank for every checkpoint and reserve a disjoint final bank | Fixed development bank implemented and verified; final bank remains untouched |
+
+## Seed-0 Bounded Pilot
+
+The seed-0 training runs completed under the committed protocol. Upright
+training took 1,984 seconds, and peg training took 2,030 seconds. Both runs
+used the documented episode split, training-only normalization, valid-element
+reconstruction loss, and fixed validation starts. The selector verified 100
+unique condition identifiers, exact summary counts, and one initial-condition
+bank across every candidate and expert run. The common bank hash was
+`592eaf90642778f173a28db8a088869ee068ba9826eb3fdd9cbc6e3da5ee47c6`.
+
+| Task | Epoch | Validation Chunk L1 | Development Success | Expert Success | Paired Outcomes: Both / Expert Only / ACT Only / Neither |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| Upright placement | 2000 | 0.022889 | 98/100 | 97/100 | 95 / 2 / 3 / 0 |
+| Keyed peg insertion | 1400 | 0.027234 | 93/100 | 95/100 | 88 / 7 / 5 / 0 |
+
+The selected upright checkpoint had SHA-256
+`94888be60215900c6aff75d73ae8d4fd15535691ff16a7fcb545d34556e22fa7`.
+Its two failures were one acquisition failure and one placement miss. The
+selected peg checkpoint had SHA-256
+`c9c1e8cd08dae4d5501dbbeceae933e69e2037633f31007e4257914d346a911d`.
+Its seven failures were two acquisition failures, four transport drops, and
+one insertion jam.
+
+| Task | Retained Epoch and Success Counts |
+| --- | --- |
+| Upright placement | 1200: 85; 1300: 92; 1700: 83; 1900: 58; 2000: 98 |
+| Keyed peg insertion | 1400: 93; 1600: 87; 1800: 87; 1900: 82; 2000: 88 |
+
+The current public development records report 39/100 for the upright ACT
+checkpoint and 75/100 for the peg ACT checkpoint on their existing evaluation
+bank. The pilot point estimates are higher, but the pilot changed the loss,
+data partition, normalization source, and checkpoint-selection procedure
+together. These runs therefore do not isolate the contribution of one change.
+
+The pilot bank governed checkpoint selection, so its paired outcomes are model
+development evidence rather than final estimates. Only policy seed 0 has been
+run, the nominal comparison criterion still requires author approval, and the
+new final bank has not been generated or inspected. The complete compact
+evidence, including file and checkpoint hashes, is stored in
+`results/upright_seed0_pilot.json` and `results/peg_seed0_pilot.json`.
 
 ## Audit Conclusion
 
-The audit identifies two implementation defects in the training path: padded
-reconstruction loss is reduced over invalid elements, and the peg diagnostic
-summary requests the wrong stage. It also identifies an unsupported
-checkpoint-selection procedure and a testable peg rate-conditioning mechanism.
-No evidence currently supports changing task geometry, expert trajectories,
+The audit identified and corrected two implementation defects in the training
+path: reconstruction loss used the complete padded tensor as its denominator,
+and the peg diagnostic summary requested the wrong stage. The bounded pilot
+also established that checkpoint task success can differ substantially despite
+similar validation loss. The fixed-phase intervention isolated out-of-range
+rate conditioning as the cause of the tested peg acquisition failures at
+`r=1.5`. No evidence supports changing task geometry, expert trajectories,
 success predicates, action semantics, or observation ordering.
 
-The next work should retain ACT, correct the training and reporting defects,
-use held-out checkpoint selection in a bounded pilot, and keep the fixed-phase
-rate intervention separate from reportable policy results. Another
-learned-policy method is not warranted until the pilot establishes whether the
-remaining nominal gap reflects ACT rather than its current training procedure.
+The evidence supports retaining ACT and the corrected training and selection
+procedure. The next scientific step is to review the nominal comparison
+criterion, then train policy seeds 1 and 2 as replication instances. Another
+learned-policy method is not warranted before that replication and the
+predeclared final evaluation are complete.

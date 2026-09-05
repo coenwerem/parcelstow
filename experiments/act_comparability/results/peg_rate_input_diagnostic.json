@@ -38,6 +38,6 @@
     "summary_sha256": "9be74e798d827a7e8c023ec2a9c24b0a5a61c166ce1bca0d6ae231beb9fd2645",
     "task_success": 27
   },
-  "released_checkpoint_sha256": "20713233f262730314637c68453af65df2b72c145d0da616d386e474eca1747",
+  "released_checkpoint_sha256": "207132aaed13d16bcdabe674c0df7450214997cc7c0dbcc6d50e7a3a0a1a1747",
   "task": "PegInsert-L6-Play-v0"
 }
