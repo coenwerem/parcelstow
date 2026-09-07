@@ -6,7 +6,7 @@ ParcelStow accepts software fixes, documentation corrections, policy integration
 
 - **Bug reports:** include the commit, operating system, Python and Isaac Lab environment, exact command, complete error, and smallest reproduction.
 - **Documentation corrections:** identify the code, record, task specification, or external source that supports the correction.
-- **New policy results:** submit episode-level records and summaries produced by the public evaluator. State the policy checkpoint, evaluation seed, speed grid, episode count, and demonstrated speed range.
+- **New policy results:** follow [Policy Results](RESULTS.md#submit-a-policy-result) and submit episode-level records and summaries produced by the public evaluator. State the policy checkpoint, evaluation seed, speed grid, episode count, and demonstrated speed range.
 - **New policy integrations:** implement the actor contract in [Policy Interface](docs/POLICY_INTERFACE.md), add a no-Isaac import test, and provide one short evaluation command for each supported task.
 - **Candidate benchmark tasks:** follow [Task Authoring](docs/TASK_AUTHORING.md). A task is not part of ParcelStow until its scientific protocol, records, tests, and documentation pass review.
 - **Changes to frozen task definitions:** open an issue before writing code. Geometry, phase schedules, initial-condition distributions, observations, actions, success predicates, records, checkpoints, and reported results from a release remain immutable. Corrections require a new versioned artifact; never edit released files in place.
