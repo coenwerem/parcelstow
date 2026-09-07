@@ -3,8 +3,8 @@
 ## Does Imitation Learning Preserve Temporal Robustness as Task Execution Speed Increases?
 
 ParcelStow is an Isaac Lab benchmark suite that compares learned manipulation
-policies with the scripted expert that generated the training demonstrations
-under controlled changes in task execution speed.
+policies with the expert demonstrator under controlled changes in task
+execution speed.
 
 [![CI](https://github.com/coenwerem/parcelstow/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/coenwerem/parcelstow/actions/workflows/ci.yml)
 [![Apache-2.0 License](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](LICENSE)
