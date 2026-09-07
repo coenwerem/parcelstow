@@ -1,9 +1,13 @@
 # ParcelStow
 
-## Does Imitation Learning Preserve Temporal Robustness as Task Execution Speed Increases?
+## Comparing Learned Policies with Their Expert Demonstrators Under Temporal Scaling
 
-ParcelStow is an Isaac Lab benchmark suite for comparing a learned policy with
-its expert demonstrator under controlled changes in task execution speed.
+ParcelStow compares the task success of learned manipulation policies with that
+of their expert demonstrators across temporal scaling conditions in
+contact-rich manipulation tasks. The speedup factor `r` defines each condition:
+it divides the nominal durations of task phases designated as scaled, while
+fixed-duration phases retain their nominal durations. The nominal condition is
+`r=1`. At `r=2`, scaled phase durations are one-half of their nominal values.
 
 [![CI](https://github.com/coenwerem/parcelstow/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/coenwerem/parcelstow/actions/workflows/ci.yml)
 [![Apache-2.0 License](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](LICENSE)
@@ -11,26 +15,39 @@ its expert demonstrator under controlled changes in task execution speed.
 [![arXiv:2609.01453](https://img.shields.io/badge/arXiv-2609.01453-b31b1b.svg)](https://arxiv.org/abs/2609.01453)
 [![Hugging Face Dataset](https://img.shields.io/badge/%F0%9F%A4%97-Dataset-yellow.svg)](https://huggingface.co/datasets/cenwerem/parcelstow)
 
-**In parcel insertion, equal nominal success does not persist when the scaled
-task phases run twice as fast.**
+### Task Success at `r=1` and `r=2`
 
-| Execution Speed | Expert | ACT |
-|---|---:|---:|
-| Nominal, `r=1` | **100/100** | **100/100** |
-| Twice the nominal rate, `r=2` | **84/100** | **53/100** |
+| Task | Expert at `r=1` | ACT at `r=1` | Expert at `r=2` | ACT at `r=2` |
+|---|---:|---:|---:|---:|
+| Parcel insertion | **100/100** | **100/100** | **84/100** | **53/100** |
+| Upright placement | **92/100** | **39/100** | **43/100** | **8/100** |
+| Keyed peg insertion | **93/100** | **75/100** | **87/100** | **0/100** |
 
-Each cell contains 100 evaluation episodes. At each speed, the expert and ACT
-use the same indexed initial conditions. When `r` increases from 1 to 2, ACT
-success decreases by 47 percentage points and expert success decreases by 16,
-leaving a 31-point difference at `r=2`. ACT denotes the released ACT-A parcel
-checkpoint. The counts are computed from the frozen episode records by
-[`python3 scripts/reproduce.py all-tasks`](#reproduce-results-from-evaluation-records).
+Each entry reports successes over 100 episodes. Within each task and value of
+`r`, the expert demonstrator and ACT policy use the same indexed initial
+conditions. At `r=2`, expert success exceeds ACT success by 31 percentage
+points for parcel insertion, 35 for upright placement, and 87 for keyed peg
+insertion. The `r=2` condition is within the demonstrated speed range for
+parcel insertion and outside the demonstrated ranges for upright placement
+and keyed peg insertion. Running
+[`python3 scripts/reproduce.py all-tasks`](#reproduce-results-from-evaluation-records)
+recomputes these counts from the episode records.
+
+The evaluations for all three tasks compare the expert demonstrator and ACT
+policy at the same values of `r`. The released parcel comparison is nominally
+matched: the expert demonstrator and ACT-A each succeed in 100/100 episodes at
+`r=1`, so their difference at `r=2` is not attributable to different nominal
+success rates. The upright and keyed peg ACT checkpoints provide task-specific
+development results, but their nominal success rates differ from those of the
+corresponding expert demonstrators. Their `r=2` differences must therefore be
+interpreted together with the nominal differences. The [complete success
+curves and checkpoint roles](#current-three-task-results) preserve this
+distinction.
 
 ### Expert–ACT Rollouts at `r=2`
 
 Each video compares the expert and ACT on one matched initial condition. The
-videos illustrate individual outcomes; the table above and the
-[current three-task results](#current-three-task-results) report aggregate
+videos illustrate individual outcomes; the table above reports aggregate
 counts over 100 episodes per policy-speed condition.
 
 <table align="center">
@@ -59,10 +76,10 @@ counts over 100 episodes per policy-speed condition.
   </tr>
 </table>
 
-ParcelStow provides three contact-rich manipulation tasks, scripted experts,
+ParcelStow provides three contact-rich manipulation tasks, expert demonstrators,
 970,565 demonstration control steps, learned-policy checkpoints, matched
-evaluation records, and one policy interface for measuring success as
-execution speed changes.
+evaluation records, and one policy interface for evaluating task success across
+values of `r`.
 
 [**Paper**](https://arxiv.org/abs/2609.01453) ·
 [**Dataset**](https://huggingface.co/datasets/cenwerem/parcelstow) ·
@@ -75,12 +92,9 @@ execution speed changes.
 [submitting policy results](RESULTS.md#submit-a-policy-result), or citing the
 benchmark.
 
-The speedup factor `r` divides the duration of task phases marked as scaled;
-acquisition and settling durations remain fixed. At every evaluated speed, the
-expert and learned policy use the same task geometry, physical success
-predicates, state observation, joint-position action interface, and indexed
-initial conditions. ParcelStow contains parcel insertion, upright placement,
-and keyed peg insertion.
+The evaluation holds task geometry, initial-condition distributions, state
+observations, joint-position actions, and physical success predicates fixed as
+`r` changes.
 
 The stable [`v1.0.0`](https://github.com/coenwerem/parcelstow/releases/tag/v1.0.0) release corresponds to the parcel-insertion study in [arXiv:2609.01453](https://arxiv.org/abs/2609.01453). The software on `main` is in active development and contains all three tasks. A v2 release will be tagged only after the consolidated manuscript and software package are final; current `main` is not a released v2 package.
 
