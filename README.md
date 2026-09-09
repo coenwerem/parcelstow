@@ -1,5 +1,31 @@
 # ParcelStow
 
+## A Robot-Manipulation Benchmark for Evaluating Policies Under Temporal Scaling
+
+ParcelStow is a reproducible robot-manipulation benchmark for testing whether
+learned policies preserve task success when execution timing changes.
+
+**3 tasks · 970,565 demonstration control steps · scripted experts + ACT checkpoints ·
+matched evaluation records · one policy interface · CPU-only result reproduction from records**
+
+[![CI](https://github.com/coenwerem/parcelstow/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/coenwerem/parcelstow/actions/workflows/ci.yml)
+[![Apache-2.0 License](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](LICENSE)
+[![Isaac Lab](https://img.shields.io/badge/Isaac%20Lab-0.54.2-76B900?logo=nvidia&logoColor=white)](https://isaac-sim.github.io/IsaacLab/)
+[![arXiv:2609.01453](https://img.shields.io/badge/arXiv-2609.01453-b31b1b.svg)](https://arxiv.org/abs/2609.01453)
+[![Hugging Face Dataset](https://img.shields.io/badge/%F0%9F%A4%97-Dataset-yellow.svg)](https://huggingface.co/datasets/cenwerem/parcelstow)
+
+[**Paper**](https://arxiv.org/abs/2609.01453) ·
+[**Dataset**](https://huggingface.co/datasets/cenwerem/parcelstow) ·
+[**Install**](#installation) ·
+[**Reproduce Results on CPU**](#reproduce-results-from-evaluation-records) ·
+[**Evaluate a Policy**](docs/POLICY_INTERFACE.md) ·
+[**Submit Policy Results**](RESULTS.md#submit-a-policy-result)
+
+**Using ParcelStow or planning to try it?** Consider
+[starring the repository](https://github.com/coenwerem/parcelstow) to bookmark it.
+You can also [submit policy results](RESULTS.md#submit-a-policy-result) or
+[cite the benchmark](#citation).
+
 ## Comparing Learned Policies with Their Expert Demonstrators Under Temporal Scaling
 
 ParcelStow compares the task success of learned manipulation policies with that
@@ -8,12 +34,6 @@ contact-rich manipulation tasks. The speedup factor `r` defines each condition:
 it divides the nominal durations of task phases designated as scaled, while
 fixed-duration phases retain their nominal durations. The nominal condition is
 `r=1`. At `r=2`, scaled phase durations are one-half of their nominal values.
-
-[![CI](https://github.com/coenwerem/parcelstow/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/coenwerem/parcelstow/actions/workflows/ci.yml)
-[![Apache-2.0 License](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](LICENSE)
-[![Isaac Lab](https://img.shields.io/badge/Isaac%20Lab-0.54.2-76B900?logo=nvidia&logoColor=white)](https://isaac-sim.github.io/IsaacLab/)
-[![arXiv:2609.01453](https://img.shields.io/badge/arXiv-2609.01453-b31b1b.svg)](https://arxiv.org/abs/2609.01453)
-[![Hugging Face Dataset](https://img.shields.io/badge/%F0%9F%A4%97-Dataset-yellow.svg)](https://huggingface.co/datasets/cenwerem/parcelstow)
 
 ### Task Success at `r=1` and `r=2`
 
@@ -75,22 +95,6 @@ counts over 100 episodes per policy-speed condition.
     </td>
   </tr>
 </table>
-
-ParcelStow provides three contact-rich manipulation tasks, expert demonstrators,
-970,565 demonstration control steps, learned-policy checkpoints, matched
-evaluation records, and one policy interface for evaluating task success across
-values of `r`.
-
-[**Paper**](https://arxiv.org/abs/2609.01453) ·
-[**Dataset**](https://huggingface.co/datasets/cenwerem/parcelstow) ·
-[**Install**](#installation) ·
-[**Evaluate a Policy**](docs/POLICY_INTERFACE.md) ·
-[**Submit Policy Results**](RESULTS.md#submit-a-policy-result)
-
-**Using ParcelStow?** Consider
-[starring the repository](https://github.com/coenwerem/parcelstow),
-[submitting policy results](RESULTS.md#submit-a-policy-result), or citing the
-benchmark.
 
 The evaluation holds task geometry, initial-condition distributions, state
 observations, joint-position actions, and physical success predicates fixed as
