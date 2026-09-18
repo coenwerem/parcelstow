@@ -49,6 +49,13 @@ pre-registered confirmatory test, or treat its pointwise intervals as
 simultaneous inference. Expert and learners are paired within each rate;
 different rates use different banks and are not paired across rates.
 
+The preselected ACT comparator is seed 0 in each task's frozen
+`selection-20260911.json` manifest. For upright placement it is epoch 2000
+(`94888be60215900c6aff75d73ae8d4fd15535691ff16a7fcb545d34556e22fa7`);
+for keyed peg insertion it is epoch 1400
+(`c9c1e8cd08dae4d5501dbbeceae933e69e2037633f31007e4257914d346a911d`).
+These checkpoint digests must match the files loaded for final evaluation.
+
 Report per-rate success counts, demonstrated-rate boundaries, signed
 learner-minus-expert differences with 20,000-resample paired bootstrap 95%
 intervals, and stage/failure counts. Do not pool repeated expert rows across
