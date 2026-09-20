@@ -1,4 +1,4 @@
-"""Diffusion Policy on the ParcelStow demonstrations (M9), the released
+"""Diffusion Policy on ParcelStow task demonstrations (M9), the released
 low-dimensional configuration of scripts/baselines/run_diffusion_policy.py
 (ConditionalUnet1D, diffusion step embedding 256, down dims 256-512-1024,
 kernel 5, 8 groups, FiLM global conditioning on 2 observation steps, DDPM
@@ -12,10 +12,15 @@ nominal speed. Checkpoint outputs/paper/dp/dp_stow.pt.
 Run,
   python scripts/manipulation/run_stow_diffusion_policy.py --demos outputs/paper/demos/expert_episodes.pt \
       --out_dir outputs/paper/dp --epochs 300
+
+  python scripts/manipulation/run_stow_diffusion_policy.py --task UprightPlace-L6-Play-v0 \
+      --demos outputs/upright/demos/expert_episodes.pt --out_dir outputs/upright/dp \
+      --tag upright --epochs 300 --diag_episodes 100 --eval_seed 42001
 """
 
 import argparse
 import copy
+import hashlib
 import json
 import math
 import os
@@ -59,10 +64,11 @@ from isaaclab_tasks.utils.hydra import hydra_task_config  # noqa: E402
 
 import parcelstow.tasks  # noqa: E402, F401
 
-sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+sys.path.insert(0, SCRIPT_DIR)
+sys.path.insert(0, os.path.dirname(SCRIPT_DIR))
 import stow_runtime as rt  # noqa: E402
-from parcelstow.tasks.manager_based.parcel_stow import geometry as G  # noqa: E402
-from parcelstow.tasks.manager_based.parcel_stow.mdp.metrics import StowMonitor  # noqa: E402
+from task_registry import get_task_by_gym_id  # noqa: E402
 from third_party.diffusion_policy.conditional_unet1d import ConditionalUnet1D  # noqa: E402
 from third_party.diffusion_policy.ema_model import EMAModel  # noqa: E402
 
@@ -102,12 +108,47 @@ def build_windows(episodes, horizon, pad_before, pad_after):
     return torch.cat(obs_all), torch.cat(act_all), torch.tensor(starts, dtype=torch.long)
 
 
+def sha256_file(path):
+    digest = hashlib.sha256()
+    with open(path, "rb") as stream:
+        for chunk in iter(lambda: stream.read(1024 * 1024), b""):
+            digest.update(chunk)
+    return digest.hexdigest()
+
+
+def task_runtime(base, task_alias, task_id):
+    if task_alias == "parcel":
+        from parcelstow.tasks.manager_based.parcel_stow import geometry as G
+        from parcelstow.tasks.manager_based.parcel_stow.mdp.metrics import StowMonitor
+
+        return (StowMonitor(base, G.load_geometry()), rt.ExpertActor(base),
+                rt.EnvSwitches(base), rt.config_stamp(base), None)
+    if task_alias == "upright":
+        from parcelstow.tasks.manager_based.upright_place.mdp.monitor import UprightMonitor
+        from upright_runtime import SCHED, UprightExpertActor, config_stamp
+
+        return (UprightMonitor(base), UprightExpertActor(base),
+                rt.EnvSwitches(base, reset_term="reset_object"),
+                config_stamp(base, task_id=task_id), SCHED.cycle_time)
+    if task_alias == "peg":
+        from parcelstow.tasks.manager_based.peg_insert.mdp.monitor import PegMonitor
+        from peg_runtime import SCHED, PegExpertActor, config_stamp
+
+        return (PegMonitor(base), PegExpertActor(base),
+                rt.EnvSwitches(base, reset_term="reset_object"),
+                config_stamp(base, task_id=task_id), SCHED.cycle_time)
+    raise ValueError(task_alias)
+
+
 @hydra_task_config(args_cli.task, "rsl_rl_cfg_entry_point")
 def main(env_cfg, agent_cfg):
+    task_spec = get_task_by_gym_id(args_cli.task)
     env_cfg.scene.num_envs = args_cli.num_envs
     env = gym.make(args_cli.task, cfg=env_cfg)
     base = env.unwrapped
     device = base.device
+    if task_spec.alias != "parcel" and os.path.exists(args_cli.out_dir) and os.listdir(args_cli.out_dir):
+        raise FileExistsError(f"training output directory is not empty: {args_cli.out_dir}")
     os.makedirs(args_cli.out_dir, exist_ok=True)
     results_path = os.path.join(args_cli.out_dir, "results.jsonl")
 
@@ -119,12 +160,16 @@ def main(env_cfg, agent_cfg):
 
     demos = torch.load(args_cli.demos)
     kept = [(o, a) for o, a, _ in demos["episodes"]]
-    log({"stage": "demos", "path": args_cli.demos, "episodes": len(kept),
+    log({"stage": "demos", "task": task_spec.alias, "path": args_cli.demos,
+         "sha256": sha256_file(args_cli.demos), "episodes": len(kept),
          "samples": int(sum(o.shape[0] for o, _ in kept))})
 
     T, To, Ta = args_cli.horizon, args_cli.n_obs_steps, args_cli.n_action_steps
     obs_dim = kept[0][0].shape[1]
     act_dim = kept[0][1].shape[1]
+    if obs_dim != task_spec.observation_dim or act_dim != task_spec.action_dim:
+        raise ValueError(f"demonstration dimensions {(obs_dim, act_dim)} do not match "
+                         f"the {task_spec.alias} task {(task_spec.observation_dim, task_spec.action_dim)}")
     obs_buf, act_buf, starts = build_windows(kept, T, To - 1, Ta - 1)
     norm_obs = MinMaxNormalizer(obs_buf).to(device)
     norm_act = MinMaxNormalizer(act_buf).to(device)
@@ -173,19 +218,22 @@ def main(env_cfg, agent_cfg):
                 "norm_obs": norm_obs.state_dict(), "norm_act": norm_act.state_dict(),
                 "obs_dim": obs_dim, "act_dim": act_dim, "args": vars(args_cli)}, ckpt)
 
-    geom = G.load_geometry()
-    monitor = StowMonitor(base, geom)
-    expert = rt.ExpertActor(base)
-    switches = rt.EnvSwitches(base)
-    stamp = rt.config_stamp(base)
+    monitor, expert, switches, stamp, cycle_time = task_runtime(base, task_spec.alias, args_cli.task)
     actor = rt.DPActor(ckpt, device, base.num_envs)
+    kwargs = {}
+    if task_spec.alias != "parcel":
+        kwargs = {"task_id": args_cli.task, "cycle_time": cycle_time,
+                  "indexed_initial_conditions": True,
+                  "extra": {"actor_spec": "dp", "bank_role": "development",
+                            "checkpoint": ckpt, "checkpoint_sha256": sha256_file(ckpt)}}
     recs, _ = rt.run_episodes(env, base, actor, monitor, args_cli.diag_episodes,
                               {"mode": "fixed", "value": args_cli.diag_rate}, args_cli.jitter, args_cli.eval_seed,
-                              switches, expert=expert, corrupt=False, stamp=stamp, tag="dp_diag")
-    s = rt.summarize(recs)
+                              switches, expert=expert, corrupt=False, stamp=stamp, tag="dp_diag", **kwargs)
+    s = rt.summarize(recs, stage_keys=task_spec.stage_keys)
     log({"stage": "diag_eval", "diag_rate": args_cli.diag_rate, "task_success": s["task_success"],
-         "acquired": s["acquired"], "inserted": s["inserted"], "settled": s["settled"],
-         "failure_reasons": s["failure_reasons"], "checkpoint": ckpt})
+         "acquired": s["acquired"], "settled": s["settled"],
+         "failure_reasons": s["failure_reasons"], "checkpoint": ckpt,
+         "checkpoint_sha256": sha256_file(ckpt)})
     rt.write_jsonl(os.path.join(args_cli.out_dir, "diag.jsonl"), [rt.light_record(r) for r in recs])
     env.close()
 
