@@ -16,6 +16,7 @@ import argparse
 import json
 import math
 import platform
+import re
 import subprocess
 import sys
 import time
@@ -52,9 +53,12 @@ def parse_args(argv=None):
         description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter
     )
     parser.add_argument("--task", choices=tuple(TASK_DEFAULTS), required=True)
+    parser.add_argument("--embodiment", choices=("g1_l6", "panda_allegro_right", "ur5_inspire_right"), default="g1_l6")
     parser.add_argument("--demos", default=None)
     parser.add_argument("--out_dir", default=None)
     parser.add_argument("--device", default="cuda")
+    parser.add_argument("--model-review", type=Path, default=None,
+                        help="Explicit user approval of exact model sources; required for new embodiments")
     parser.add_argument("--epochs", type=int, default=2000)
     parser.add_argument("--batch", type=int, default=8)
     parser.add_argument("--lr", type=float, default=1e-5)
@@ -173,10 +177,64 @@ def prepare_output(path: Path) -> None:
     (path / "checkpoints").mkdir()
 
 
+def validate_demonstration_contract(source, embodiment: str) -> None:
+    """Keep the frozen release default; admit dexterous data only explicitly."""
+    expected = (147, 16)
+    if embodiment == "panda_allegro_right":
+        from panda_allegro_contract import JOINT_NAMES, PROTOCOL_ID, OBSERVATION_SCHEMA
+        expected = (94, 23)
+        metadata = source.get("embodiment_contract", {})
+        required = {"embodiment": embodiment, "protocol_id": PROTOCOL_ID,
+                    "observation_schema": OBSERVATION_SCHEMA, "observation_dim": 94,
+                    "control_rate_hz": 50, "control": "absolute_joint_position_radians",
+                    "joint_names": list(JOINT_NAMES), "task_validated": True}
+        for key, value in required.items():
+            if metadata.get(key) != value:
+                raise ValueError(f"Panda–Allegro demonstration contract mismatch: {key}")
+        if not metadata.get("source_sha256") or not source.get("readiness_report_sha256"):
+            raise ValueError("Panda–Allegro demonstrations require source and readiness provenance")
+        records = source.get("all_records", [])
+        if not records:
+            raise ValueError("Panda–Allegro demonstrations require all attempt records")
+        admitted = sum(bool(record["task_success"]) for record in records)
+        if admitted < max(2, math.ceil(0.75 * len(records))):
+            raise ValueError("Panda–Allegro collection admission failed")
+        if admitted != len(source.get("episodes", [])):
+            raise ValueError("Panda–Allegro admitted records and episodes differ")
+    elif embodiment == "ur5_inspire_right":
+        from ur_inspire_contract import validate_metadata
+        expected = (77, 12)
+        validate_metadata(source.get("embodiment_contract"), require_task_validated=True)
+        readiness_hash = source.get("readiness_report_sha256")
+        if not isinstance(readiness_hash, str) or re.fullmatch(r"[0-9a-f]{64}", readiness_hash) is None:
+            raise ValueError("UR5–Inspire demonstrations require a valid readiness SHA-256")
+        records = source.get("all_records")
+        if not isinstance(records, list) or not records:
+            raise ValueError("UR5–Inspire demonstrations require all attempt records")
+        if any(not isinstance(record, dict) or type(record.get("task_success")) is not bool for record in records):
+            raise ValueError("UR5–Inspire attempt task_success must be an explicit boolean")
+        admitted = sum(record["task_success"] for record in records)
+        if admitted < max(2, math.ceil(0.75 * len(records))):
+            raise ValueError("UR5–Inspire collection admission failed")
+        if admitted != len(source.get("episodes", [])):
+            raise ValueError("UR5–Inspire admitted records and episodes differ")
+    elif embodiment != "g1_l6":
+        raise ValueError(f"unknown embodiment: {embodiment}")
+    if (source.get("obs_dim"), source.get("act_dim")) != expected:
+        raise ValueError(f"expected {expected[0]} observations and {expected[1]} actions, got "
+                         f"{source.get('obs_dim')} and {source.get('act_dim')}")
+
+
 def main(argv=None) -> int:
     args = parse_args(argv)
     if args.epochs <= 0 or args.batch <= 0 or args.checkpoint_every <= 0:
         raise ValueError("epochs, batch, and checkpoint_every must be positive")
+    if args.embodiment != "g1_l6" and (not args.demos or not args.out_dir):
+        raise ValueError("new embodiments require explicit --demos and --out_dir")
+    if args.embodiment == "panda_allegro_right" and args.task != "upright":
+        raise ValueError("Panda–Allegro currently supports upright training only")
+    if args.embodiment == "ur5_inspire_right" and args.task != "upright":
+        raise ValueError("UR5–Inspire currently supports upright training only")
     demos_path = Path(args.demos or TASK_DEFAULTS[args.task])
     output_path = Path(
         args.out_dir
@@ -187,12 +245,12 @@ def main(argv=None) -> int:
         raise RuntimeError("CUDA was requested but is not available")
 
     source = torch.load(demos_path, map_location="cpu", weights_only=False)
+    validate_demonstration_contract(source, args.embodiment)
+    model_review = None
+    if args.embodiment != "g1_l6":
+        from embodiment_model_review import require_model_review
+        model_review = require_model_review(args.model_review, source["embodiment_contract"]["source_sha256"])
     episodes = [(obs.float(), action.float()) for obs, action, _ in source["episodes"]]
-    if source.get("obs_dim") != 147 or source.get("act_dim") != 16:
-        raise ValueError(
-            f"expected 147 observations and 16 actions, got "
-            f"{source.get('obs_dim')} and {source.get('act_dim')}"
-        )
     split = split_episode_indices(
         len(episodes), args.validation_fraction, args.split_seed
     )
@@ -208,6 +266,10 @@ def main(argv=None) -> int:
     prepare_output(output_path)
     provenance = {
         "task": args.task,
+        "embodiment": args.embodiment,
+        "model_review": model_review,
+        "embodiment_contract": source.get("embodiment_contract"),
+        "readiness_report_sha256": source.get("readiness_report_sha256"),
         "git_sha": git_sha(),
         "demonstrations": str(demos_path),
         "demonstrations_sha256": demonstration_checksum,

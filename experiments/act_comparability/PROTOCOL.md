@@ -181,46 +181,62 @@ summary path already exists. There is no overwrite option.
 
 ## Nominal Comparison Calculation
 
+Author decision, 2026-09-11: report measured results without an acceptable
+success-rate deficit. The proposed 0.10 noninferiority margin is rejected.
+Do not replace it with a zero-margin pass/fail test. No noninferiority,
+equivalence, or nominal-comparability designation is part of this reporting
+rule. Report all predeclared policy seeds regardless of the direction of the
+expert–learner difference.
+
 The paired outcome for matched initial condition \(i\) is \(d_i=+1\) when ACT
 succeeds and the expert fails, \(d_i=-1\) when the expert succeeds and ACT
 fails, and \(d_i=0\) otherwise. The estimate is the sample mean of these
 outcomes, which equals \(p_{\mathrm{ACT}}-p_{\mathrm{expert}}\) on the matched
 episodes.
 
-The one-sided lower confidence bound uses the benchmark's paired bootstrap:
+The final driver's per-rate seed is the base seed plus 1,000 times the
+zero-based rate index. Thus the nominal rows use seed 75001 in the final
+eight-rate grid, while the nominal-only development rows use seed 42001.
+Extract the nominal rows explicitly when reporting from a multi-rate file;
+do not change the evaluation grid to accommodate the reporting tool.
+
+Report both success counts and their denominators, all four paired outcome
+counts, and the signed difference in percentage points. Negative values mean
+ACT succeeds less often than the expert. Report a two-sided 95% paired
+percentile-bootstrap confidence interval:
 
 1. Resample matched initial-condition pairs with replacement.
 2. Compute the mean paired outcome for each of 20,000 resamples.
-3. Use NumPy's `default_rng(0)` and the linear fifth percentile of the
-   bootstrap means.
-4. At supplied margin \(m\), declare paired noninferiority only when the lower
-   bound is strictly greater than \(-m\). Equality with \(-m\) fails.
+3. Use NumPy's `default_rng(0)` and the linear 2.5th and 97.5th percentiles of
+   the bootstrap means.
 
-Run the calculation with an explicit margin:
+These are pointwise intervals, not simultaneous intervals across tasks,
+rates, and seeds. An interval containing zero is not evidence of equivalence.
+Identical observed paired outcomes can produce a degenerate bootstrap
+interval; report the counts and this limitation rather than claiming certainty
+about population equality.
+
+The reporting implementation must validate the task, nominal rate, bank role, initial-condition
+bank checksum, condition identifiers, initial object poses, evaluation
+factors, and episode count. It must retain the bootstrap configuration and
+SHA-256 checksums of the input files alongside the counts and interval.
+Development-bank output is labeled as development evidence, not a final
+conclusion. The calculation never selects a checkpoint or policy seed.
+
+The descriptive command accepts no margin and refuses to overwrite a report:
 
 ```bash
 python3 scripts/assess_nominal_comparability.py \
   --expert-record EXPERT.jsonl \
   --learner-record ACT.jsonl \
-  --margin 0.10 \
   --output RESULT.json
 ```
 
-The command validates the task, nominal rate, bank role, initial-condition
-bank checksum, condition identifiers, initial object poses, evaluation
-factors, and episode count. It reports both success counts, all four paired
-outcome counts, the paired difference, bootstrap configuration, lower bound,
-supplied margin, decision, and SHA-256 checksums of the input files.
-Development-bank output is labeled as development evidence, not a final
-conclusion. The calculation never selects a checkpoint or policy seed.
-
-> The 0.10 noninferiority margin is proposed and requires author approval before final evaluation.
-
-The proposed margin would permit ACT to succeed on as many as ten percentage
-points fewer episodes than the expert, subject to sampling uncertainty. It
-would support nominal comparability, not equality. Until the author approves
-or replaces the margin, retained results must state that the nominal comparison
-is pending.
+The historical margin-based Python helpers remain available for reproducing
+older calculations, but are not used by this command or reporting rule.
+Freeze this protocol revision, the tested reporting implementation, and
+selected checkpoint hashes before opening the final bank. Existing records
+remain unchanged.
 
 ## Fixed-Phase Rate Diagnostic
 
@@ -298,8 +314,8 @@ procedure.
 
 ## Deferred Bimanual Asset Review
 
-After both upright placement and keyed peg insertion satisfy the author-approved
-nominal ACT comparison criterion, review assets for a future bimanual
+After completing and reporting the upright-placement and keyed-peg-insertion
+comparisons, review assets for a future bimanual
 manipulation system based on a RealHand A7 or P7 arm configuration. The source
 organization is [RealHand-Robotics](https://github.com/RealHand-Robotics).
 As checked on 2026-09-04, its

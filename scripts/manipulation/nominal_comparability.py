@@ -14,7 +14,8 @@ BOOTSTRAP_SEED = 0
 CONFIDENCE_LEVEL = 0.95
 ROLE_CONDITIONS = {
     "development": {"episodes": 100, "eval_seed": 42001},
-    "final": {"episodes": 200, "eval_seed": 73001},
+    # The final grid places r=1 at index 2; drivers add 1000 per rate index.
+    "final": {"episodes": 200, "eval_seed": 75001},
 }
 
 
@@ -202,6 +203,58 @@ def validate_margin(margin: float | None) -> float:
     if not math.isfinite(value) or not 0.0 < value <= 1.0:
         raise ValueError("the noninferiority margin must be in (0, 1]")
     return value
+
+
+def describe_nominal_pair(
+    expert_records: Sequence[Mapping[str, Any]],
+    learner_records: Sequence[Mapping[str, Any]],
+) -> dict[str, Any]:
+    """Report paired outcomes and a pointwise interval without a decision rule."""
+    matched = validate_nominal_pair(expert_records, learner_records)
+    rng = np.random.default_rng(BOOTSTRAP_SEED)
+    sampled = rng.choice(
+        matched.outcomes,
+        size=(BOOTSTRAP_RESAMPLES, matched.episode_count),
+        replace=True,
+    )
+    lower, upper = np.percentile(sampled.mean(axis=1), [2.5, 97.5], method="linear")
+    return {
+        "schema_version": 2,
+        "reporting_rule": "descriptive_paired_difference",
+        "task": matched.task,
+        "rate": 1.0,
+        "bank_role": matched.bank_role,
+        "evidence_status": (
+            "development evidence; not a final conclusion"
+            if matched.bank_role == "development" else "final-bank descriptive evidence"
+        ),
+        "initial_condition_bank_sha256": matched.bank_sha256,
+        "learner_policy": matched.learner_policy,
+        "expert_successes": matched.expert_successes,
+        "expert_denominator": matched.episode_count,
+        "learner_successes": matched.learner_successes,
+        "learner_denominator": matched.episode_count,
+        "both_success_count": matched.both_success_count,
+        "expert_only_count": matched.expert_only_count,
+        "learner_only_count": matched.learner_only_count,
+        "neither_success_count": matched.neither_success_count,
+        "paired_difference": matched.paired_difference,
+        "paired_difference_percentage_points": 100.0 * matched.paired_difference,
+        "difference_direction": "learner_minus_expert",
+        "confidence_interval": [float(lower), float(upper)],
+        "confidence_interval_percentage_points": [100.0 * float(lower), 100.0 * float(upper)],
+        "confidence_level": CONFIDENCE_LEVEL,
+        "interval_method": "two-sided paired percentile bootstrap; linear percentiles",
+        "interval_scope": "pointwise; not simultaneous across comparisons",
+        "bootstrap_resamples": BOOTSTRAP_RESAMPLES,
+        "bootstrap_seed": BOOTSTRAP_SEED,
+        "degenerate_interval": bool(lower == upper),
+        "interpretation_limit": (
+            "An interval containing zero does not establish equivalence. Identical "
+            "observed paired outcomes yield a degenerate bootstrap interval, not "
+            "certainty about the population difference."
+        ),
+    }
 
 
 def paired_bootstrap_lower_bound(

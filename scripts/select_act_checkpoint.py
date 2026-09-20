@@ -58,6 +58,8 @@ def parse_args() -> argparse.Namespace:
 
 def main() -> int:
     args = parse_args()
+    if args.output and args.output.exists():
+        raise FileExistsError(f"refusing to overwrite selection: {args.output}")
     task = get_task(args.task)
     candidate_payload = load_json(args.training_dir / "candidates.json")
     run_config_path = args.training_dir / "run_config.json"
@@ -124,7 +126,7 @@ def main() -> int:
     selected = select_candidate(evidence)
     result: dict[str, Any] = {
         "task": args.task,
-        "status": "development evidence; nominal comparison pending author approval",
+        "status": "development selection; not final performance evidence",
         "selection_rule": [
             "highest task-success count",
             "highest lexicographic task-specific stage-count vector",
@@ -247,7 +249,8 @@ def main() -> int:
     text = json.dumps(result, indent=2, sort_keys=True) + "\n"
     if args.output:
         args.output.parent.mkdir(parents=True, exist_ok=True)
-        args.output.write_text(text)
+        with args.output.open("x", encoding="utf-8") as stream:
+            stream.write(text)
         print(f"Selection evidence: {args.output}")
     else:
         print(text, end="")

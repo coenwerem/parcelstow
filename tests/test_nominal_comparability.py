@@ -3,6 +3,7 @@ import sys
 from pathlib import Path
 
 import pytest
+import numpy as np
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "scripts"))
@@ -12,6 +13,7 @@ from assess_nominal_comparability import main, parse_args  # noqa: E402
 from file_integrity import sha256_file  # noqa: E402
 from nominal_comparability import (  # noqa: E402
     assess_nominal_pair,
+    describe_nominal_pair,
     paired_bootstrap_lower_bound,
     passes_noninferiority,
     validate_margin,
@@ -143,7 +145,7 @@ def test_noninferiority_comparison_is_strict_at_the_margin():
     assert passes_noninferiority(-0.099, 0.10) is True
 
 
-def test_cli_requires_an_explicit_margin(tmp_path):
+def test_cli_rejects_a_margin(tmp_path):
     with pytest.raises(SystemExit):
         parse_args(
             [
@@ -153,6 +155,7 @@ def test_cli_requires_an_explicit_margin(tmp_path):
                 str(tmp_path / "learner.jsonl"),
                 "--output",
                 str(tmp_path / "result.json"),
+                "--margin", "0.10",
             ]
         )
 
@@ -170,8 +173,6 @@ def test_cli_writes_input_file_hashes(tmp_path):
             str(expert_path),
             "--learner-record",
             str(learner_path),
-            "--margin",
-            "0.10",
             "--output",
             str(output_path),
         ]
@@ -182,3 +183,49 @@ def test_cli_writes_input_file_hashes(tmp_path):
     assert result["bootstrap_resamples"] == 20_000
     assert result["bootstrap_seed"] == 0
     assert result["confidence_level"] == 0.95
+    assert "passes_noninferiority" not in result
+    with pytest.raises(FileExistsError):
+        main(["--expert-record", str(expert_path), "--learner-record",
+              str(learner_path), "--output", str(output_path)])
+
+
+def test_descriptive_interval_matches_independent_bootstrap():
+    expert, learner = _record_sets()
+    result = describe_nominal_pair(expert, learner)
+    outcomes = np.array([0] * 90 + [-1] * 4 + [1] * 3 + [0] * 3)
+    rng = np.random.default_rng(0)
+    means = rng.choice(outcomes, size=(20000, 100), replace=True).mean(axis=1)
+    assert result["confidence_interval"] == pytest.approx(
+        np.percentile(means, [2.5, 97.5], method="linear")
+    )
+    assert result["paired_difference_percentage_points"] == pytest.approx(-1)
+    assert result == describe_nominal_pair(expert[::-1], learner[::-1])
+    assert not any("margin" in key or "noninferiority" in key for key in result)
+
+
+@pytest.mark.parametrize("both,expert_only,learner_only,expected", [
+    (100, 0, 0, 0), (0, 100, 0, -1), (0, 0, 100, 1),
+])
+def test_descriptive_extremes_do_not_produce_decisions(
+    both, expert_only, learner_only, expected
+):
+    expert, learner = _record_sets(
+        both=both, expert_only=expert_only, learner_only=learner_only, neither=0
+    )
+    result = describe_nominal_pair(expert, learner)
+    assert result["paired_difference"] == expected
+    assert result["confidence_interval"] == [expected, expected]
+    assert result["degenerate_interval"] is True
+    assert "passes_noninferiority" not in result
+
+
+def test_descriptive_final_bank_and_mismatch():
+    expert, learner = _record_sets(both=180, expert_only=8, learner_only=6, neither=6)
+    for row in expert + learner:
+        row.update(bank_role="final", seed=75001)
+    result = describe_nominal_pair(expert, learner)
+    assert result["expert_denominator"] == 200
+    assert result["evidence_status"] == "final-bank descriptive evidence"
+    learner[0]["initial_condition_bank_sha256"] = "c" * 64
+    with pytest.raises(ValueError):
+        describe_nominal_pair(expert, learner)
