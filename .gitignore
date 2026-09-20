@@ -24,4 +24,7 @@ _isaac_sim*
 media/local/
 .ruff_cache/
 .pytest_cache/
-docs/IMPL.md
+
+# Local Documentation And Agent Instructions
+/docs/
+/AGENTS.md
