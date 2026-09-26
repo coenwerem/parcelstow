@@ -1,10 +1,10 @@
 # ParcelStow
 
-## Expert–Learner Performance Under Changes in Execution Timing
+## Does Imitation Learning Preserve Robustness Under Execution-Timing Variation?
 
 ParcelStow evaluates how the performance difference between an imitation
 learner and its expert varies with task conditions. Three simulated
-manipulation tasks instantiate this comparison through changes in execution timing.
+manipulation tasks instantiate this comparison through variation in execution timing.
 
 **3 tasks · 970,565 demonstration control steps · scripted experts + ACT, DP, and DAgger checkpoints ·
 canonical evaluation records · one policy interface · CPU-only result reproduction from records**
@@ -15,6 +15,7 @@ canonical evaluation records · one policy interface · CPU-only result reproduc
 [![arXiv:2609.01453](https://img.shields.io/badge/arXiv-2609.01453-b31b1b.svg)](https://arxiv.org/abs/2609.01453)
 [![Hugging Face Dataset](https://img.shields.io/badge/%F0%9F%A4%97-Dataset-yellow.svg)](https://huggingface.co/datasets/cenwerem/parcelstow)
 
+[**Project Page**](https://clintonenwerem.com/parcelstow/) ·
 [**Paper**](https://arxiv.org/abs/2609.01453) ·
 [**Dataset**](https://huggingface.co/datasets/cenwerem/parcelstow) ·
 [**Runbook**](docs/RUNBOOK.md) ·
@@ -22,6 +23,9 @@ canonical evaluation records · one policy interface · CPU-only result reproduc
 [**Reproduce Results on CPU**](#reproduce-results-from-evaluation-records) ·
 [**Evaluate a Policy**](docs/POLICY_INTERFACE.md) ·
 [**Submit Policy Results**](RESULTS.md#submit-a-policy-result)
+
+**Support ParcelStow:** [★ Star on GitHub](https://github.com/coenwerem/parcelstow) ·
+[♥ Like on Hugging Face](https://huggingface.co/datasets/cenwerem/parcelstow)
 
 ## Expert–ACT Comparison
 
