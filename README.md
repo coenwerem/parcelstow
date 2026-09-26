@@ -1,12 +1,13 @@
 # ParcelStow
 
-## A Robot-Manipulation Benchmark for Evaluating Policies Under Temporal Scaling
+## Expert–Learner Performance Under Changes in Execution Timing
 
-ParcelStow is a reproducible robot-manipulation benchmark for testing whether
-learned policies preserve task success when execution timing changes.
+ParcelStow evaluates how the performance difference between an imitation
+learner and its expert varies with task conditions. Three simulated
+manipulation tasks instantiate this comparison through changes in execution timing.
 
-**3 tasks · 970,565 demonstration control steps · scripted experts + ACT checkpoints ·
-matched evaluation records · one policy interface · CPU-only result reproduction from records**
+**3 tasks · 970,565 demonstration control steps · scripted experts + ACT, DP, and DAgger checkpoints ·
+canonical evaluation records · one policy interface · CPU-only result reproduction from records**
 
 [![CI](https://github.com/coenwerem/parcelstow/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/coenwerem/parcelstow/actions/workflows/ci.yml)
 [![Apache-2.0 License](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](LICENSE)
@@ -16,119 +17,51 @@ matched evaluation records · one policy interface · CPU-only result reproducti
 
 [**Paper**](https://arxiv.org/abs/2609.01453) ·
 [**Dataset**](https://huggingface.co/datasets/cenwerem/parcelstow) ·
+[**Runbook**](docs/RUNBOOK.md) ·
 [**Install**](#installation) ·
 [**Reproduce Results on CPU**](#reproduce-results-from-evaluation-records) ·
 [**Evaluate a Policy**](docs/POLICY_INTERFACE.md) ·
 [**Submit Policy Results**](RESULTS.md#submit-a-policy-result)
 
-**Using ParcelStow or planning to try it?** Consider
-[starring the repository](https://github.com/coenwerem/parcelstow) to bookmark it.
-You can also [submit policy results](RESULTS.md#submit-a-policy-result) or
-[cite the benchmark](#citation).
+## Expert–ACT Comparison
 
-## Comparing Learned Policies with Their Expert Demonstrators Under Temporal Scaling
+[![Expert above ACT: parcel insertion, upright placement, and keyed peg insertion at speedup factor 2](media/expert_act_comparison.gif)](https://huggingface.co/datasets/cenwerem/parcelstow/resolve/main/videos/expert_act_comparison.mp4)
 
-ParcelStow compares the task success of learned manipulation policies with that
-of their expert demonstrators across temporal scaling conditions in
-contact-rich manipulation tasks. The speedup factor `r` defines each condition:
-it divides the nominal durations of task phases designated as scaled, while
-fixed-duration phases retain their nominal durations. The nominal condition is
-`r=1`. At `r=2`, scaled phase durations are one-half of their nominal values.
+Expert on the top row; ACT below. Each column shows one task at speedup
+factor `r=2`, played at 2× speed. The ACT recordings use the checkpoints
+reported below. Labels identify each recorded outcome.
 
-### Task Success at `r=1` and `r=2`
+[Watch the full-resolution video](https://huggingface.co/datasets/cenwerem/parcelstow/resolve/main/videos/expert_act_comparison.mp4).
 
-| Task | Expert at `r=1` | ACT at `r=1` | Expert at `r=2` | ACT at `r=2` |
-|---|---:|---:|---:|---:|
-| Parcel insertion | **100/100** | **100/100** | **84/100** | **53/100** |
-| Upright placement | **92/100** | **39/100** | **43/100** | **8/100** |
-| Keyed peg insertion | **93/100** | **75/100** | **87/100** | **0/100** |
+## Execution Timing and Task Success
 
-Each entry reports successes over 100 episodes. Within each task and value of
-`r`, the expert demonstrator and ACT policy use the same indexed initial
-conditions. At `r=2`, expert success exceeds ACT success by 31 percentage
-points for parcel insertion, 35 for upright placement, and 87 for keyed peg
-insertion. The `r=2` condition is within the demonstrated speed range for
-parcel insertion and outside the demonstrated ranges for upright placement
-and keyed peg insertion. Running
-[`python3 scripts/reproduce.py all-tasks`](#reproduce-results-from-evaluation-records)
-recomputes these counts from the episode records.
+A scalar speedup factor `r` divides the nominal durations of selected task
+phases while acquisition and settling retain fixed durations. At `r=1`, the
+schedule is nominal; at `r=2`, the scaled phases have half their nominal
+duration. Expert and learner policies are evaluated over the same factor grid.
 
-The evaluations for all three tasks compare the expert demonstrator and ACT
-policy at the same values of `r`. The released parcel comparison is nominally
-matched: the expert demonstrator and ACT-A each succeed in 100/100 episodes at
-`r=1`, so their difference at `r=2` is not attributable to different nominal
-success rates. The upright and keyed peg ACT checkpoints provide task-specific
-development results, but their nominal success rates differ from those of the
-corresponding expert demonstrators. Their `r=2` differences must therefore be
-interpreted together with the nominal differences. The [complete success
-curves and checkpoint roles](#current-three-task-results) preserve this
-distinction.
+### Nominal and Scaled-Speed Task Success
 
-### Expert–ACT Rollouts at `r=2`
+| Task | Expert at `r=1` | ACT at `r=1` | Higher `r` | Expert | ACT |
+|---|---:|---:|---:|---:|---:|
+| Parcel insertion | **100/100** | **100/100** | 2 | **84/100** | **53/100** |
+| Upright placement | **185/200** | **194/200** | 2 | **105/200** | **24/200** |
+| Keyed peg insertion | **182/200** | **191/200** | 1.5 | **150/200** | **3/200** |
 
-Each video compares the expert and ACT on one matched initial condition. The
-videos illustrate individual outcomes; the table above reports aggregate
-counts over 100 episodes per policy-speed condition.
+Each ACT column reports one trained policy per task. Expert-minus-ACT
+differences at the highlighted factors are 31, 40.5, and 73.5 percentage points,
+with pointwise 95% paired bootstrap intervals `[18,44]`, `[32,49]`, and
+`[67.5,79.5]`. Parcel `r=2` is within its demonstrated range; upright `r=2`
+and peg `r=1.5` are outside theirs. Training replications are reported
+individually in the evaluation records.
 
-<table align="center">
-  <tr>
-    <td align="center" valign="top" width="33%">
-      <a href="https://huggingface.co/datasets/cenwerem/parcelstow/resolve/main/videos/parcel_expert_vs_act_r2_2x_faster.mp4">
-        <img src="media/parcel_expert_vs_act_r2_2x_faster.gif" alt="Expert and ACT parcel insertion rollouts at r=2" width="100%">
-      </a>
-      <br>
-      <sub><b>Parcel Insertion.</b> The expert succeeds; ACT finishes with an orientation error above the success threshold.</sub>
-    </td>
-    <td align="center" valign="top" width="33%">
-      <a href="https://huggingface.co/datasets/cenwerem/parcelstow/resolve/main/videos/upright_expert_vs_act_r2_2x_faster.mp4">
-        <img src="media/upright_expert_vs_act_r2_2x_faster.gif" alt="Expert and ACT upright placement rollouts at r=2" width="100%">
-      </a>
-      <br>
-      <sub><b>Upright Placement.</b> The expert succeeds; the cuboid placed by ACT tips after release.</sub>
-    </td>
-    <td align="center" valign="top" width="33%">
-      <a href="https://huggingface.co/datasets/cenwerem/parcelstow/resolve/main/videos/peg_expert_vs_act_r2_2x_faster.mp4">
-        <img src="media/peg_expert_vs_act_r2_2x_faster.gif" alt="Expert and ACT keyed peg insertion rollouts at r=2" width="100%">
-      </a>
-      <br>
-      <sub><b>Keyed Peg Insertion.</b> The expert succeeds; ACT does not acquire the peg.</sub>
-    </td>
-  </tr>
-</table>
-
-The evaluation holds task geometry, initial-condition distributions, state
-observations, joint-position actions, and physical success predicates fixed as
-`r` changes.
-
-The stable [`v1.0.0`](https://github.com/coenwerem/parcelstow/releases/tag/v1.0.0) release corresponds to the parcel-insertion study in [arXiv:2609.01453](https://arxiv.org/abs/2609.01453). The software on `main` is in active development and contains all three tasks. A v2 release will be tagged only after the consolidated manuscript and software package are final; current `main` is not a released v2 package.
-
-## Task Gallery
-
-<table align="center">
-  <tr>
-    <td align="center" valign="top" width="33%">
-      <a href="https://huggingface.co/datasets/cenwerem/parcelstow/resolve/main/videos/parcel_expert_r2_2x_faster.mp4">
-        <img src="media/parcel_expert_r2_2x_faster.gif" alt="Expert parcel insertion at r=2" width="100%">
-      </a>
-      <br>
-      <sub><b>Parcel Insertion.</b> Acquire and reorient a parcel, then insert it into an open-front receptacle. The full-resolution video is hosted on Hugging Face.</sub>
-    </td>
-    <td align="center" valign="top" width="33%">
-      <a href="https://huggingface.co/datasets/cenwerem/parcelstow/resolve/main/videos/upright_expert_r1_2x_faster.mp4">
-        <img src="media/upright_expert_r1_2x_faster.gif" alt="Expert upright placement at r=1" width="100%">
-      </a>
-      <br>
-      <sub><b>Upright Placement.</b> Reorient a cuboid to an upright pose and release it in a target region. The full-resolution video is hosted on Hugging Face.</sub>
-    </td>
-    <td align="center" valign="top" width="33%">
-      <a href="https://huggingface.co/datasets/cenwerem/parcelstow/resolve/main/videos/peg_expert_r1_2x_faster.mp4">
-        <img src="media/peg_expert_r1_2x_faster.gif" alt="Expert keyed peg insertion at r=1" width="100%">
-      </a>
-      <br>
-      <sub><b>Keyed Peg Insertion.</b> Reorient a cuboid and insert it into a square pocket with 3 mm of clearance per side. The full-resolution video is hosted on Hugging Face.</sub>
-    </td>
-  </tr>
-</table>
+Diffusion Policy (DP) nominal success is 68/100, 181/200, and 95/200 on parcel,
+upright, and peg. Its parcel results support standalone success rates because
+episode-level pairing and distribution matching with the expert are not
+established. DAgger nominal success is 3/100, 1/200, and 0/200; these results
+support failure characterization but not execution-speed degradation claims.
+The record catalogs provide task-stage counts, terminal failures, hashes,
+pairing restrictions, and excluded series.
 
 ## Get the Code
 
@@ -139,16 +72,6 @@ git clone --branch main https://github.com/coenwerem/parcelstow.git
 cd parcelstow
 ```
 
-To reproduce the stable parcel-insertion software associated with arXiv v1,
-check out the `v1.0.0` release instead:
-
-```bash
-git clone --branch v1.0.0 --depth 1 https://github.com/coenwerem/parcelstow.git parcelstow-v1.0.0
-cd parcelstow-v1.0.0
-```
-
-The `v1.0.0` release does not contain the upright-placement or keyed-peg tasks.
-
 ## Installation
 
 Simulator execution requires Isaac Lab and a supported NVIDIA GPU. From the
@@ -158,7 +81,7 @@ repository root, install the extension into the Isaac Lab Python environment:
 uv pip install -p <isaaclab-venv>/bin/python -e source/parcelstow
 ```
 
-The provided records were produced with Python 3.11.14, Isaac Sim 5.1.0, Isaac Lab 0.54.2, PyTorch 2.7.0+cu128, SciPy 1.15.3, NumPy 1.26.4, and one NVIDIA RTX 5070 Ti. CPU-only record reproduction supports Python 3.10 or later.
+Simulator records use Python 3.11.14, Isaac Sim 5.1.0, Isaac Lab 0.54.2, PyTorch 2.7.0+cu128, SciPy 1.15.3, and NumPy 1.26.4 on an RTX 5070 Ti. Upright/peg ACT training used Python 3.12.3, PyTorch 2.8.0+cu128, and NumPy 2.3.5. The [runbook](docs/RUNBOOK.md#5-environments-and-fresh-output-directories) distinguishes the environments.
 
 Run direct module tests without Isaac Lab:
 
@@ -184,8 +107,6 @@ python scripts/run_task.py --task upright
 python scripts/run_task.py --task peg
 ```
 
-Omitting `--task` preserves the `v1.0.0` parcel-insertion behavior: `python scripts/run_task.py`.
-
 Evaluate the released experts through the same public interface:
 
 ```bash
@@ -196,59 +117,42 @@ python scripts/evaluate.py --task peg --actor expert
 
 The `--task` value selects one task: `parcel` selects parcel insertion,
 `upright` selects upright placement, and `peg` selects keyed peg insertion.
-Download the selected task's ACT checkpoint and demonstrations with:
+The canonical checkpoint bundle is explicit:
 
 ```bash
-python scripts/download_artifacts.py --task parcel
-python scripts/download_artifacts.py --task upright
-python scripts/download_artifacts.py --task peg
+python3 scripts/download_artifacts.py --manuscript
+python3 scripts/download_artifacts.py --manuscript --verify
 ```
 
-Evaluate each downloaded ACT checkpoint with:
+For an offline copy from a local Hugging Face checkout, add
+`--local-hf ../parcelstow-hf`. Use the
+[runbook evaluation commands](docs/RUNBOOK.md#6-evaluate-the-frozen-checkpoints)
+with the listed checkpoint paths, episode counts, factor grids, and bank seeds.
+The short commands above are for trying the interface; the runbook specifies
+the complete evaluation configuration.
 
-```bash
-python scripts/evaluate.py --task parcel --actor act
-python scripts/evaluate.py --task upright --actor act
-python scripts/evaluate.py --task peg --actor act
-```
+## Evaluation Records
 
-Parcel insertion also provides Diffusion Policy and DAgger checkpoints through
-`python scripts/download_artifacts.py --paper`. Upright placement and keyed peg
-insertion do not provide those checkpoints.
-
-## Current Three-Task Results
-
-Each policy-speed evaluation condition contains 100 episodes. The expert and learner use initial conditions indexed by speed and episode. Parcel ACT-A is the primary comparison because ACT-A and the expert both succeed in 100/100 episodes at `r=1`. The upright and peg ACT checkpoints do not meet that nominal-matching condition and are secondary task-specific results on the active development branch.
-
-| Task | Gym Identifier | Demonstrated `r` | Expert at `r=1` | ACT at `r=1` | Additional Current Result |
-|---|---|---:|---:|---:|---|
-| Parcel insertion | `ParcelStow-L6-Distill-Play-v0` | `[0.5, 2.0]` | 100/100 | ACT-A 100/100 | at `r=2`: expert 84/100, ACT-A 53/100 |
-| Upright placement | `UprightPlace-L6-Play-v0` | `[0.75, 1.75]` | 92/100 | ACT 39/100 | at `r=1.75`: expert 90/100, ACT 74/100 |
-| Keyed peg insertion | `PegInsert-L6-Play-v0` | `[0.5, 1.0]` | 93/100 | ACT 75/100 | ACT acquisition is 0/100 at each evaluated `r >= 1.5` |
-
-The [Benchmark Specification](docs/BENCHMARK.md) defines matched evaluation. The task specifications freeze each task's geometry, phase schedule, initial-condition distribution, stage outcomes, failure reasons, and physical success predicates:
-
-- [Parcel Insertion Task Specification](docs/TASK_SPEC.md)
-- [Upright Placement Task Specification](docs/TASK_SPEC_UPRIGHT.md)
-- [Keyed Peg Insertion Task Specification](docs/TASK_SPEC_PEG.md)
+The [canonical inventory](data/manuscript_20260921/MANUSCRIPT_EVIDENCE.csv)
+and [artifact index](data/manuscript_20260921/ARTIFACT_INDEX.csv) identify each
+condition, checkpoint, and dataset. The [record guide](data/manuscript_20260921/README.md)
+explains how to resolve original source paths and interpret pairing status.
+Task specifications: [parcel](docs/TASK_SPEC.md), [upright](docs/TASK_SPEC_UPRIGHT.md),
+and [peg](docs/TASK_SPEC_PEG.md).
 
 ## Reproduce Results from Evaluation Records
 
-The compressed evaluation records in `data/records/` can be analyzed without
-Isaac Lab. Install NumPy and Matplotlib in a Python 3 environment, then
-recompute the success counts, tables, and figures for all three tasks:
+Recompute the canonical counts, stages, failures and pairing checks without
+Isaac Lab or a GPU:
 
 ```bash
-python3 -m pip install numpy matplotlib
-python3 scripts/reproduce.py all-tasks
+python3 scripts/reproduce_manuscript.py --output-dir outputs/reproduce/canonical
 ```
 
-The parcel records belong to v1.0.0; the upright and peg records describe the
-active development branch. This analysis does not require a GPU, checkpoint,
-or demonstration file. The existing parcel-paper targets remain available
-through `python3 scripts/reproduce.py all`. See [Reproducing the
-Results](docs/REPRODUCING_THE_PAPER.md) for the source record behind each
-result.
+Add `--bootstrap` with NumPy installed for 20,000-resample paired intervals.
+The expected audit covers 136 conditions and 20 source series. The output
+path must be new. See the [detailed runbook](docs/RUNBOOK.md) for environment setup,
+training, checkpoint selection, evaluation and all dataset/record locations.
 
 ## Evaluate a Custom Policy on All Tasks
 
@@ -266,9 +170,14 @@ All tasks produce a 147-dimensional state observation and accept a 16-dimensiona
 
 ## Data, Checkpoints, and Videos
 
-The [Hugging Face dataset](https://huggingface.co/datasets/cenwerem/parcelstow) hosts Parquet demonstrations for interactive loading, `.pt` demonstrations used by training scripts, task-specific checkpoints, and videos. GitHub stores the frozen v1 parcel records, current development records for upright and peg, and CPU-only reproduction code. [`artifacts/manifest.json`](artifacts/manifest.json) preserves every hosted path, byte count, and SHA-256 checksum.
+The [Hugging Face repository](https://huggingface.co/datasets/cenwerem/parcelstow)
+organizes demonstrations, training tensors, checkpoints, evaluation records,
+and videos by artifact role. The `manuscript_20260921` directories contain
+the checkpoints, records, and illustrations used for the three-task results.
 
-See [Data and Checkpoints](docs/DATA_AND_CHECKPOINTS.md) for the file map and checkpoint limitations.
+[artifacts/manifest.json](artifacts/manifest.json) records download paths, sizes
+and SHA-256. [Data and Checkpoints](docs/DATA_AND_CHECKPOINTS.md) and the
+[runbook](docs/RUNBOOK.md) identify the files used by each training and evaluation command.
 
 ## Contributing
 
@@ -284,17 +193,18 @@ required before a task can be listed as part of ParcelStow.
 | Path | Content |
 |---|---|
 | `scripts/run_task.py`, `scripts/evaluate.py` | public simulator commands for all three tasks |
-| `scripts/reproduce.py` | CPU-only numerical reproduction |
+| `scripts/reproduce_manuscript.py` | canonical counts, intervals, and pairing from frozen records |
+| `docs/RUNBOOK.md` | training, evaluation, environments, and artifact locations |
 | `scripts/task_registry.py` | task aliases, gym IDs, defaults, stage keys, experts, monitors, and schedules |
 | `source/parcelstow/` | Isaac Lab extension and task definitions |
-| `data/records/` | frozen v1 parcel records and current development records for upright and peg |
+| `data/manuscript_20260921/` | canonical records, pairing, exclusions, artifact index and provenance |
 | `examples/custom_policy.py` | one policy class loadable on all tasks |
 | `RESULTS.md` | included baselines and policy-result submission requirements |
 | `docs/` | current benchmark, policy, reproduction, contribution, and task specifications |
 
 ## Citation
 
-The current arXiv v1 reports the parcel-insertion study:
+Cite the accompanying preprint:
 
 ```bibtex
 @misc{enwerem2026parcelstow,
@@ -308,4 +218,4 @@ The current arXiv v1 reports the parcel-insertion study:
 }
 ```
 
-Use `CITATION.cff` for the stable `v1.0.0` software citation. The file records the latest software release; changes on `main` have not been released.
+A software citation is available in [CITATION.cff](CITATION.cff).

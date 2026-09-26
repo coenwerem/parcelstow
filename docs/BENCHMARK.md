@@ -1,15 +1,16 @@
 # Benchmark Specification
 
-ParcelStow compares an imitation learner with the expert that generated its
-demonstrations as task execution speed changes. The expert and learner receive
-the same initial-condition draws, task geometry, success criteria, observation,
-and action interface at each tested speed. This matched evaluation measures
-whether the learner preserves the expert's task-success response to execution
-speed rather than whether the learner succeeds under nominal conditions alone.
-Parcel insertion supplies the primary nominally matched comparison reported in
-arXiv:2609.01453. Upright placement and keyed peg insertion retain the same
-evaluation procedure but their released ACT checkpoints do not match expert
-success at nominal speed.
+ParcelStow evaluates how the success-rate difference between an imitation
+learner and its expert varies under changes in task conditions. The three tasks
+use execution timing as the experimental variable, with fixed geometry,
+physical parameters, action interface, and success criteria.
+
+The expert–ACT comparisons use verified episode-level pairing at each speedup
+factor. Parcel ACT matches the expert's observed nominal success; upright and
+peg ACT exceed it. All three comparisons favor the expert at the highlighted
+higher factors. Other learners have different nominal performance and pairing
+restrictions, recorded in [PAIRING_STATUS.csv](../data/manuscript_20260921/PAIRING_STATUS.csv).
+The [runbook](RUNBOOK.md) specifies artifacts, evaluation banks, and commands.
 
 | Task | Task Specification | Demonstrated `r` | Evaluation Grid |
 |---|---|---:|---|
@@ -31,9 +32,12 @@ Evaluation outside that range tests speed extrapolation. Every policy observes
 `r`; the task identity is selected by the public command and is not appended to
 the observation.
 
-Changing `r` does not change a task's geometry, mass, friction, expert path,
-initial-condition distribution, observation, action, or success predicates.
-The expert and learner use the same sampled initial conditions at each speed.
+Changing `r` preserves geometry, mass, friction, the expert's reference path,
+initial-condition distribution, observation layout, action semantics, and
+success predicates. The observation contains the speedup factor and task phase,
+so the intervention changes both the schedule and the timing inputs to the policy.
+The expert–ACT comparisons use verified recorded initial conditions at
+each speed; baseline exceptions are listed in the pairing catalog.
 
 ## Task Success
 
@@ -45,26 +49,26 @@ requires insertion and settling inside the square pocket.
 
 ## Evaluation Protocol
 
-Each recorded evaluation contains 100 episodes for each policy and speedup
-factor in the task-specific grids above. It runs 32 environments per process
-with observation corruption disabled. The 32-environment batch width is part
-of the evaluation configuration; results from another batch width are not
-benchmark-comparable. The seed for speed index `i` is
-`12345 + 1000*i`. The evaluator uses that seed to construct an
-initial-condition bank indexed by logical episode, then assigns every actor
-the same indexed robot and object state. This assignment does not depend on
-the order in which parallel environments terminate. Reported task-success
-intervals are Wilson 95% intervals. The
-expert–learner difference at `r=2` uses a paired bootstrap over the shared
-initial-condition draws.
+The canonical parcel conditions have 100 episodes per actor and speedup factor,
+with base seed 12345 and pairing verified from recorded initial poses. Upright and peg final
+conditions have 200 episodes per actor and factor, an indexed initial-condition
+bank with base seed 73001, and 32 environments. All use 10 mm planar jitter,
+no observation corruption and no action noise. Per-factor seeds add 1000 times
+the zero-based index in the full ordered grid.
+
+Pairing is established per condition from the recorded initial conditions and
+configuration. Some parcel DP/DAgger conditions fail pairing and support standalone
+rates. See [PAIRING_STATUS.csv](../data/manuscript_20260921/PAIRING_STATUS.csv).
+Report Wilson 95% intervals and paired bootstrap differences only where pairing
+is verified. Different factors and training seeds are not pooled.
 
 ## Evaluated Policies
 
 | policy | construction | role in the evaluation |
 |---|---|---|
 | Expert | scripted policy following an inverse-kinematics trajectory after grasp-bank acquisition | generates the demonstrations and provides the matched reference at each speed |
-| ACT-A/B/C | state-based Action Chunking with Transformers policies trained on the same 297 expert demonstrations | test sensitivity to parameter initialization; ACT-A matches the expert's observed success at `r=1` |
-| Diffusion Policy | state-based `ConditionalUnet1D` policy trained on the same demonstrations | evaluates a second imitation-learning architecture that does not reach nominal expert success |
+| ACT | trained on each task’s demonstrations, with task-specific checkpoint selection | one policy per task in the headline comparison; two additional training runs reported individually |
+| Diffusion Policy | state-based `ConditionalUnet1D`, trained separately on each task's admitted demonstrations | secondary speed-response evidence with task-dependent nominal performance |
 | DAgger | multilayer-perceptron policy trained by dataset aggregation | illustrates why high-speed differences are not interpretable as temporal sensitivity when nominal success is already low |
 
 The episode records also contain stage outcomes, hand–object relative motion,
@@ -83,8 +87,6 @@ python scripts/evaluate.py --task upright --actor your.module:YourPolicy
 python scripts/evaluate.py --task peg --actor your.module:YourPolicy
 ```
 
-Then plot its task-success curve with
-
-```bash
-python scripts/reproduce.py all-tasks
-```
+Retain the new policy records separately and validate their identities before
+comparison. `reproduce_manuscript.py` reads only the frozen canonical bundle; it
+does not analyze a newly submitted policy.

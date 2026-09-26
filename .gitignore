@@ -6,7 +6,7 @@
 .DS_Store
 
 # Simulator and run outputs, released artifacts arrive through
-# scripts/download_artifacts.py, see ARTIFACTS.md
+# scripts/download_artifacts.py; see docs/DATA_AND_CHECKPOINTS.md
 outputs/
 logs/
 wandb/
@@ -25,6 +25,22 @@ media/local/
 .ruff_cache/
 .pytest_cache/
 
-# Local Documentation And Agent Instructions
-/docs/
+# Public runbook; other untracked documentation and agent notes stay local.
+/docs/*
+!/docs/RUNBOOK.md
 /AGENTS.md
+
+# Retained exploratory baselines, outside the manuscript release.
+/experiments/bc_rnn*/
+/experiments/vq_bet/
+/scripts/manipulation/bc_rnn*.py
+/scripts/manipulation/vq_bet.py
+/scripts/train_bc_rnn*.py
+/scripts/train_vq_bet.py
+/tests/test_bc_rnn*.py
+/tests/test_vq_bet.py
+/third_party/vq_bet/
+/.venv-analysis/
+
+# Local venue-specific artifacts; required audit copies use neutral paths.
+*[iI][cC][lL][rR]*

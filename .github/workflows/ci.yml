@@ -23,6 +23,8 @@ jobs:
         run: python -m pytest tests/ -q
       - name: Artifact manifest schema
         run: python -c "import json; m = json.load(open('artifacts/manifest.json')); [m['artifacts'][n] for b in m['bundles'].values() for n in b]"
+      - name: Canonical manuscript record validation
+        run: python scripts/reproduce_manuscript.py --output-dir outputs/reproduce/ci-canonical
       - name: Tier 0 reproduction from released records
         run: |
           python scripts/reproduce.py all-tasks

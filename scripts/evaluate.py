@@ -1,14 +1,15 @@
 """Evaluate a policy on one ParcelStow benchmark task. Needs Isaac Lab.
 
-The command wraps the validated evaluation driver
-scripts/manipulation/eval_stow_policies.py, which runs every requested
-actor over every requested speed on the shared frozen evaluation draws and
-writes one episode-record JSONL per actor plus a summary JSONL.
+The command selects the task-specific driver and evaluates each requested
+actor over the requested speedup factors using indexed initial conditions.
+It writes one episode-record JSONL per actor plus a summary JSONL.
+Use docs/RUNBOOK.md for manuscript checkpoint paths and evaluation settings;
+scripts/reproduce_manuscript.py reproduces the historical counts from records.
 
 Actors,
   expert                     scripted expert policy
   act | dp | dagger          released learner policies, checkpoints via
-                             scripts/download_artifacts.py --paper
+                             scripts/download_artifacts.py --manuscript
   module.path:ClassName      your policy, see docs/POLICY_INTERFACE.md
 
 Run,
@@ -55,7 +56,7 @@ def main():
     ap.add_argument("--out_dir", default=None)
     ap.add_argument("--custom_ckpt", default=None, help="checkpoint handed to a custom actor")
     ap.add_argument("--eval_seed", type=int, default=12345,
-                    help="12345 reproduces the frozen paper draws")
+                    help="base initial-condition seed; see docs/RUNBOOK.md for task-specific settings")
     args, passthrough = ap.parse_known_args()
 
     cmd = build_command(args, passthrough, task_explicit=task_explicit)

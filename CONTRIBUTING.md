@@ -1,6 +1,6 @@
 # Contributing to ParcelStow
 
-ParcelStow accepts software fixes, documentation corrections, policy integrations, policy results, and candidate benchmark tasks. The immutable `v1.0.0` release and its records define the parcel-insertion study reported in arXiv:2609.01453. Do not modify released task definitions or records in place.
+ParcelStow accepts software fixes, documentation corrections, policy integrations, policy results, and candidate benchmark tasks. Use the task definitions and evaluation settings in [the runbook](docs/RUNBOOK.md). Do not modify released task definitions or records in place.
 
 ## Contribution Types
 
@@ -80,4 +80,4 @@ Videos are supporting evidence, not numerical or physical validation. Reviewers 
 
 ## Review and Release Boundaries
 
-Maintainers review software compatibility and scientific validity separately. Acceptance of a pull request does not make a candidate task part of a stable release. A release requires an explicit versioned software and record boundary. Current development on `main` is not a released v2 package.
+Maintainers review software compatibility and scientific validity separately. Acceptance of a pull request does not make a candidate task part of a stable release. A release requires an explicit versioned software and record boundary.

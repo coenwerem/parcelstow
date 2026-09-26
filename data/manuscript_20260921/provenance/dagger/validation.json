@@ -1,0 +1,551 @@
+{
+  "status": "PASS",
+  "created_at_utc": "2026-09-20T20:30:26.799070+00:00",
+  "checks_per_category": {
+    "frozen_file_hash": 40,
+    "total_count": 8,
+    "summary_conditions": 8,
+    "registered_rates": 8,
+    "duplicate_pairing_keys": 8,
+    "checkpoint_file_hash": 2,
+    "final_is_round_four": 2,
+    "record_metadata": 160000,
+    "config_task": 12800,
+    "stage_field_type": 96000,
+    "monitor_predicate_implication": 102400,
+    "failure_success_consistency": 12800,
+    "condition_count": 64,
+    "complete_unique_indices": 128,
+    "aggregate_monitor_predicate_implication": 512,
+    "summary_metadata": 704,
+    "summary_checkpoint": 128,
+    "summary_counts": 480,
+    "summary_failure_counts": 64,
+    "paired_key_sets": 6,
+    "pairing": 67200,
+    "paired_task_config": 9600,
+    "regression_case_preserved": 4,
+    "regression_case_valid": 4
+  },
+  "failures_per_category": {},
+  "failures": [],
+  "conditions": [
+    {
+      "task": "upright",
+      "actor": "dagger",
+      "rate": 0.5,
+      "records": 200
+    },
+    {
+      "task": "upright",
+      "actor": "dagger",
+      "rate": 0.75,
+      "records": 200
+    },
+    {
+      "task": "upright",
+      "actor": "dagger",
+      "rate": 1.0,
+      "records": 200
+    },
+    {
+      "task": "upright",
+      "actor": "dagger",
+      "rate": 1.25,
+      "records": 200
+    },
+    {
+      "task": "upright",
+      "actor": "dagger",
+      "rate": 1.5,
+      "records": 200
+    },
+    {
+      "task": "upright",
+      "actor": "dagger",
+      "rate": 1.75,
+      "records": 200
+    },
+    {
+      "task": "upright",
+      "actor": "dagger",
+      "rate": 2.0,
+      "records": 200
+    },
+    {
+      "task": "upright",
+      "actor": "dagger",
+      "rate": 2.5,
+      "records": 200
+    },
+    {
+      "task": "upright",
+      "actor": "expert",
+      "rate": 0.5,
+      "records": 200
+    },
+    {
+      "task": "upright",
+      "actor": "expert",
+      "rate": 0.75,
+      "records": 200
+    },
+    {
+      "task": "upright",
+      "actor": "expert",
+      "rate": 1.0,
+      "records": 200
+    },
+    {
+      "task": "upright",
+      "actor": "expert",
+      "rate": 1.25,
+      "records": 200
+    },
+    {
+      "task": "upright",
+      "actor": "expert",
+      "rate": 1.5,
+      "records": 200
+    },
+    {
+      "task": "upright",
+      "actor": "expert",
+      "rate": 1.75,
+      "records": 200
+    },
+    {
+      "task": "upright",
+      "actor": "expert",
+      "rate": 2.0,
+      "records": 200
+    },
+    {
+      "task": "upright",
+      "actor": "expert",
+      "rate": 2.5,
+      "records": 200
+    },
+    {
+      "task": "upright",
+      "actor": "act",
+      "rate": 0.5,
+      "records": 200
+    },
+    {
+      "task": "upright",
+      "actor": "act",
+      "rate": 0.75,
+      "records": 200
+    },
+    {
+      "task": "upright",
+      "actor": "act",
+      "rate": 1.0,
+      "records": 200
+    },
+    {
+      "task": "upright",
+      "actor": "act",
+      "rate": 1.25,
+      "records": 200
+    },
+    {
+      "task": "upright",
+      "actor": "act",
+      "rate": 1.5,
+      "records": 200
+    },
+    {
+      "task": "upright",
+      "actor": "act",
+      "rate": 1.75,
+      "records": 200
+    },
+    {
+      "task": "upright",
+      "actor": "act",
+      "rate": 2.0,
+      "records": 200
+    },
+    {
+      "task": "upright",
+      "actor": "act",
+      "rate": 2.5,
+      "records": 200
+    },
+    {
+      "task": "upright",
+      "actor": "dp",
+      "rate": 0.5,
+      "records": 200
+    },
+    {
+      "task": "upright",
+      "actor": "dp",
+      "rate": 0.75,
+      "records": 200
+    },
+    {
+      "task": "upright",
+      "actor": "dp",
+      "rate": 1.0,
+      "records": 200
+    },
+    {
+      "task": "upright",
+      "actor": "dp",
+      "rate": 1.25,
+      "records": 200
+    },
+    {
+      "task": "upright",
+      "actor": "dp",
+      "rate": 1.5,
+      "records": 200
+    },
+    {
+      "task": "upright",
+      "actor": "dp",
+      "rate": 1.75,
+      "records": 200
+    },
+    {
+      "task": "upright",
+      "actor": "dp",
+      "rate": 2.0,
+      "records": 200
+    },
+    {
+      "task": "upright",
+      "actor": "dp",
+      "rate": 2.5,
+      "records": 200
+    },
+    {
+      "task": "peg",
+      "actor": "dagger",
+      "rate": 0.5,
+      "records": 200
+    },
+    {
+      "task": "peg",
+      "actor": "dagger",
+      "rate": 0.75,
+      "records": 200
+    },
+    {
+      "task": "peg",
+      "actor": "dagger",
+      "rate": 1.0,
+      "records": 200
+    },
+    {
+      "task": "peg",
+      "actor": "dagger",
+      "rate": 1.25,
+      "records": 200
+    },
+    {
+      "task": "peg",
+      "actor": "dagger",
+      "rate": 1.5,
+      "records": 200
+    },
+    {
+      "task": "peg",
+      "actor": "dagger",
+      "rate": 1.75,
+      "records": 200
+    },
+    {
+      "task": "peg",
+      "actor": "dagger",
+      "rate": 2.0,
+      "records": 200
+    },
+    {
+      "task": "peg",
+      "actor": "dagger",
+      "rate": 2.5,
+      "records": 200
+    },
+    {
+      "task": "peg",
+      "actor": "expert",
+      "rate": 0.5,
+      "records": 200
+    },
+    {
+      "task": "peg",
+      "actor": "expert",
+      "rate": 0.75,
+      "records": 200
+    },
+    {
+      "task": "peg",
+      "actor": "expert",
+      "rate": 1.0,
+      "records": 200
+    },
+    {
+      "task": "peg",
+      "actor": "expert",
+      "rate": 1.25,
+      "records": 200
+    },
+    {
+      "task": "peg",
+      "actor": "expert",
+      "rate": 1.5,
+      "records": 200
+    },
+    {
+      "task": "peg",
+      "actor": "expert",
+      "rate": 1.75,
+      "records": 200
+    },
+    {
+      "task": "peg",
+      "actor": "expert",
+      "rate": 2.0,
+      "records": 200
+    },
+    {
+      "task": "peg",
+      "actor": "expert",
+      "rate": 2.5,
+      "records": 200
+    },
+    {
+      "task": "peg",
+      "actor": "act",
+      "rate": 0.5,
+      "records": 200
+    },
+    {
+      "task": "peg",
+      "actor": "act",
+      "rate": 0.75,
+      "records": 200
+    },
+    {
+      "task": "peg",
+      "actor": "act",
+      "rate": 1.0,
+      "records": 200
+    },
+    {
+      "task": "peg",
+      "actor": "act",
+      "rate": 1.25,
+      "records": 200
+    },
+    {
+      "task": "peg",
+      "actor": "act",
+      "rate": 1.5,
+      "records": 200
+    },
+    {
+      "task": "peg",
+      "actor": "act",
+      "rate": 1.75,
+      "records": 200
+    },
+    {
+      "task": "peg",
+      "actor": "act",
+      "rate": 2.0,
+      "records": 200
+    },
+    {
+      "task": "peg",
+      "actor": "act",
+      "rate": 2.5,
+      "records": 200
+    },
+    {
+      "task": "peg",
+      "actor": "dp",
+      "rate": 0.5,
+      "records": 200
+    },
+    {
+      "task": "peg",
+      "actor": "dp",
+      "rate": 0.75,
+      "records": 200
+    },
+    {
+      "task": "peg",
+      "actor": "dp",
+      "rate": 1.0,
+      "records": 200
+    },
+    {
+      "task": "peg",
+      "actor": "dp",
+      "rate": 1.25,
+      "records": 200
+    },
+    {
+      "task": "peg",
+      "actor": "dp",
+      "rate": 1.5,
+      "records": 200
+    },
+    {
+      "task": "peg",
+      "actor": "dp",
+      "rate": 1.75,
+      "records": 200
+    },
+    {
+      "task": "peg",
+      "actor": "dp",
+      "rate": 2.0,
+      "records": 200
+    },
+    {
+      "task": "peg",
+      "actor": "dp",
+      "rate": 2.5,
+      "records": 200
+    }
+  ],
+  "seed_contract": "Evaluation base seed 73001; recorded per-rate reset-bank seed 73001 + 1000 * rate_index, matching frozen evaluators.",
+  "monitor_predicate_implications": {
+    "upright": {
+      "lifted_clear": [
+        "acquired"
+      ],
+      "reoriented_upright": [
+        "acquired"
+      ],
+      "placed": [
+        "acquired"
+      ],
+      "released": [
+        "placed"
+      ],
+      "settled": [
+        "released"
+      ],
+      "task_success": [
+        "placed",
+        "released",
+        "settled"
+      ]
+    },
+    "peg": {
+      "lifted_clear": [
+        "acquired"
+      ],
+      "reoriented_upright": [
+        "acquired"
+      ],
+      "aligned": [
+        "acquired"
+      ],
+      "released": [
+        "inserted"
+      ],
+      "settled": [
+        "released"
+      ],
+      "task_success": [
+        "inserted",
+        "released",
+        "settled"
+      ]
+    }
+  },
+  "regression_cases": [
+    {
+      "actor": "act",
+      "rate": 0.75,
+      "episode": 5,
+      "source": "outputs/iclr_dp_three_task_20260919/raw/final/peg/act_protocol-1.jsonl",
+      "line": 206,
+      "raw_line_sha256": "f4b806b4047ed550a0bc3ec58319e7f96b62591937d6ea1aeb03fceb23de3fa6",
+      "predicates": {
+        "acquired": true,
+        "lifted_clear": true,
+        "reoriented_upright": false,
+        "aligned": true,
+        "inserted": false,
+        "released": false,
+        "settled": false,
+        "task_success": false
+      },
+      "valid_under_monitor_implications": true
+    },
+    {
+      "actor": "dp",
+      "rate": 1.5,
+      "episode": 66,
+      "source": "outputs/iclr_dp_three_task_20260919/raw/final/peg/dp_protocol-1.jsonl",
+      "line": 867,
+      "raw_line_sha256": "924464df5b2a37fca0d6266abd997bd844c8e5ff27c2680723ce4cd067159118",
+      "predicates": {
+        "acquired": true,
+        "lifted_clear": true,
+        "reoriented_upright": true,
+        "aligned": false,
+        "inserted": true,
+        "released": true,
+        "settled": false,
+        "task_success": false
+      },
+      "valid_under_monitor_implications": true
+    },
+    {
+      "actor": "dp",
+      "rate": 1.5,
+      "episode": 118,
+      "source": "outputs/iclr_dp_three_task_20260919/raw/final/peg/dp_protocol-1.jsonl",
+      "line": 919,
+      "raw_line_sha256": "ace7c1a48f4a0ff87c1d01038b082694c51199594e7eb7ba8006f8272b3fc550",
+      "predicates": {
+        "acquired": true,
+        "lifted_clear": true,
+        "reoriented_upright": true,
+        "aligned": false,
+        "inserted": true,
+        "released": true,
+        "settled": false,
+        "task_success": false
+      },
+      "valid_under_monitor_implications": true
+    },
+    {
+      "actor": "dp",
+      "rate": 1.5,
+      "episode": 142,
+      "source": "outputs/iclr_dp_three_task_20260919/raw/final/peg/dp_protocol-1.jsonl",
+      "line": 943,
+      "raw_line_sha256": "67e23c585ca7fefccad34aa510dad24ec6b36f8e29698692c3201235d1171e65",
+      "predicates": {
+        "acquired": true,
+        "lifted_clear": true,
+        "reoriented_upright": true,
+        "aligned": false,
+        "inserted": true,
+        "released": true,
+        "settled": false,
+        "task_success": false
+      },
+      "valid_under_monitor_implications": true
+    }
+  ],
+  "implementation_audit": "NOT_STARTED",
+  "policy_comparisons_computed": false,
+  "validator_revision_note": "2026-09-20: User resolved validator-specification mismatch. Independently latched predicates are checked only against direct monitor implications. Supersedes validation_adjacent_stage_assumption.json; four formerly flagged records are preserved as valid regression cases. Final checkpoints are compared to round four by tensor equality, not serialization bytes.",
+  "limitations": [
+    "Initial poses are recorded bank poses; record pairing does not independently prove simulator reset execution.",
+    "Comparator checkpoint digests checked against frozen validator constants; historical checkpoint files were not reloaded.",
+    "Stage flags permit prerequisite consistency checks, but do not contain all stage timestamps to prove chronological order."
+  ]
+}

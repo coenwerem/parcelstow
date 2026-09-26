@@ -6,26 +6,33 @@ results included with ParcelStow from external submissions.
 
 ## Included Policy Results
 
-Each entry reports 100 episodes at the indicated speed. The expert and policy
-use the same indexed initial conditions within each task and speed. The
-[Benchmark Specification](docs/BENCHMARK.md) defines the complete evaluation
-grids, and `python3 scripts/reproduce.py all-tasks` recomputes every count from
-the episode records.
+| Task | Expert at `r=1` | ACT at `r=1` | Higher `r` | Expert | ACT |
+|---|---:|---:|---:|---:|---:|
+| Parcel insertion | **100/100** | **100/100** | 2 | **84/100** | **53/100** |
+| Upright placement | **185/200** | **194/200** | 2 | **105/200** | **24/200** |
+| Keyed peg insertion | **182/200** | **191/200** | 1.5 | **150/200** | **3/200** |
 
-| Task | Policy | `r=1` | `r=2` | Evidence Scope |
-|---|---|---:|---:|---|
-| Parcel insertion | Expert | 100/100 | 84/100 | `v1.0.0` and arXiv v1 |
-| Parcel insertion | ACT (ACT-A checkpoint) | 100/100 | 53/100 | `v1.0.0` and arXiv v1 |
-| Upright placement | Expert | 92/100 | 43/100 | current `main` development records |
-| Upright placement | ACT | 39/100 | 8/100 | current `main` development records |
-| Keyed peg insertion | Expert | 93/100 | 87/100 | current `main` development records |
-| Keyed peg insertion | ACT | 75/100 | 0/100 | current `main` development records |
+Each ACT column reports one trained policy per task. Expert-minus-ACT
+differences at the highlighted factors are 31, 40.5, and 73.5 percentage points,
+with pointwise 95% paired bootstrap intervals `[18,44]`, `[32,49]`, and
+`[67.5,79.5]`. Parcel `r=2` is within its demonstrated range; upright `r=2`
+and peg `r=1.5` are outside theirs. Training replications are reported
+individually in the evaluation records.
 
-The parcel rows are the primary nominally matched comparison because the
-expert and ACT both succeed in 100/100 episodes at `r=1`. The included upright
-and keyed peg ACT checkpoints do not meet that condition. Their rows are
-task-specific development results, not primary matched comparisons or results
-from a released v2 package.
+Diffusion Policy (DP) nominal success is 68/100, 181/200, and 95/200 on parcel,
+upright, and peg. Its parcel results support standalone success rates because
+episode-level pairing and distribution matching with the expert are not
+established. DAgger nominal success is 3/100, 1/200, and 0/200; these results
+support failure characterization but not execution-speed degradation claims.
+The record catalogs provide task-stage counts, terminal failures, hashes,
+pairing restrictions, and excluded series.
+
+[Canonical inventory](data/manuscript_20260921/MANUSCRIPT_EVIDENCE.csv) ·
+[Runbook and reproduction commands](docs/RUNBOOK.md)
+
+```bash
+python3 scripts/reproduce_manuscript.py --output-dir outputs/reproduce/results
+```
 
 ## Community Policy Results
 
@@ -36,8 +43,9 @@ No external policy results are listed yet.
 A submission may cover one task or all three. For every submitted task:
 
 1. Evaluate the policy through `scripts/evaluate.py` on the complete registered
-   speed grid with 100 episodes per speed.
-2. Use the evaluator's indexed initial-condition bank without changing the
+   speed grid with 100 parcel episodes or 200 upright/peg episodes per speed,
+   using the task-specific bank and explicit command in [RUNBOOK.md](docs/RUNBOOK.md).
+2. Use the declared task-specific initial-condition bank without changing the
    task geometry, phase schedule, initial-condition distribution, observation,
    action, success predicates, or failure reasons.
 3. Provide the episode records and summary produced by the evaluator. Do not
