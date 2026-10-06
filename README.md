@@ -35,6 +35,12 @@ Expert on the top row; ACT below. Each column shows one task at speedup
 factor `r=2`, played at 2× speed. The ACT recordings use the checkpoints
 reported below. Labels identify each recorded outcome.
 
+We also extend ParcelStow to bimanual assembly. In the demonstrated trials,
+the expert completes assembly in **54.74 s**, and **ACT with feedback control**
+in **58.80 s**, a **4.06 s** difference from identical initial configurations.
+The expert moves more smoothly; ACT exhibits visibly jerky, stop–start motion.
+See the demo in [Bimanual Assembly Extension](#bimanual-assembly-extension).
+
 [Watch the full-resolution video](https://huggingface.co/datasets/cenwerem/parcelstow/resolve/main/videos/expert_act_comparison.mp4).
 
 ## Execution Timing and Task Success
@@ -182,6 +188,20 @@ the checkpoints, records, and illustrations used for the three-task results.
 [artifacts/manifest.json](artifacts/manifest.json) records download paths, sizes
 and SHA-256. [Data and Checkpoints](docs/DATA_AND_CHECKPOINTS.md) and the
 [runbook](docs/RUNBOOK.md) identify the files used by each training and evaluation command.
+
+## Bimanual Assembly Extension
+
+[![A7 with bilateral L6 hands: expert and ACT with feedback control perform bimanual assembly](media/extensions/a7_l6_bimanual_expert_act.gif)](https://clintonenwerem.com/videos/bimanual_expert_act_demo.mp4)
+
+The bimanual extension uses the A7 robot with bilateral L6 hands.
+One hand stabilizes the housing while the other acquires, aligns, and inserts
+the part. The video compares an expert controller with ACT and feedback control
+from identical initial configurations, visualized in Isaac Lab at 1.5× playback.
+Both complete assembly, with visibly smoother expert motion and more intermittent
+ACT motion during the approach and insertion.
+
+[**Watch the video**](https://clintonenwerem.com/videos/bimanual_expert_act_demo.mp4) ·
+[**Repository copy**](media/extensions/a7_l6_bimanual_expert_act.mp4)
 
 ## Contributing
 
